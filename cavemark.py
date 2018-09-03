@@ -310,6 +310,12 @@ class CaveMark:
         return res_html
 
     def _process(self, s):
+        # is the ist unit a new one?
+        if self._re_unit_sep_start.search(s):
+            1st_unit_new = False
+        else:
+            1st_unit_new = True
+
         # will the last unit be a pending one?
         if self._re_unit_sep_end.search(s):
             last_unit_pending = False
@@ -334,6 +340,12 @@ class CaveMark:
             units_html += self._res_pending_boxes
             self._res_pending_boxes = []
 
+            # will this unit be pending?
+            if i == len(units_orig)-1 and last_unit_pending:
+                this_unit_pending = True
+            else:
+                this_unit_pending = False
+
             # process new unit
             u = units_orig[i]
             if len(self._units_pending) == 0:
@@ -341,7 +353,7 @@ class CaveMark:
                 m = self._re_h.match(u)
                 if m:
                     # will this unit be pending?
-                    if i == len(units_orig)-1 and last_unit_pending:
+                    if this_unit_pending:
                         self._units_pending.append(S_PENDING_H)
 
                     # add prefix
@@ -365,15 +377,50 @@ class CaveMark:
                             )
                         )
                         self.footnotes.append(
-                            [self._fn_last_index, text[start+2:endo-1]]
+                            [self._fn_last_index, fn.group(1)]
                         )
                         if fn.group(2) != ']' and this_unit_pending:
                             self._units_pending.append(S_PENDING_FOOTNOTE)
                         prev_endo = endo
                     self._html.append(text[prev_endo:])
 
-                    # next unit!
+                    # add suffix
+                    if len(self._units_pending) == 0:
+                        self._html.append(
+                            self.frmt_h_suffix.format(
+                                **{'LEVEL':level}
+                            )
+                        )
+
                     continue
+
+                # new paragraph
+                # will this unit be pending?
+                if this_unit_pending:
+                    self._units_pending.append(S_PENDING_P)
+
+                # add prefix
+                self._html.append(self.frmt_p_prefix)
+
+                # add paragraph, while also processing footnotes
+                prev_endo = 0
+                for fn in self._re_fn.finditer(u):
+                    start, endo = fn.span()
+                    self._html.append(u[prev_endo:start])
+                    self._fn_last_index += 1
+                    self._html.append(
+                        self.frmt_fn_sc.format(
+                           **{'INDEX':self._fn_last_index}
+                        )
+                    )
+                    self.footnotes.append(
+                        [self._fn_last_index, fn.group(1)]
+                    )
+                    if fn.group(2) != ']' and last_unit_pending:
+                        self._units_pending.append(S_PENDING_FOOTNOTE)
+                    prev_endo = endo
+                self._html.append(u[prev_endo:])
+                continue
 
             # process pending header
             elif self._units_pending[-1] == S_PENDING_H:
@@ -381,14 +428,6 @@ class CaveMark:
 
             # process pending paragraph
             elif self._units_pending[-1] == S_PENDING_P:
-                pass
-
-            # process pending unordered list
-            elif self._units_pending[-1] == S_PENDING_UL:
-                pass
-
-            # process pending ordered list
-            elif self._units_pending[-1] == S_PENDING_OL:
                 pass
 
             # process pending footnote
