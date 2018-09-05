@@ -107,7 +107,7 @@ class CaveMark:
             self.frmt_p_prefix = '<p>'
         else:
             self.frmt_p_prefix = frmt_p_prefix
-        if p_suffix is None:
+        if frmt_p_suffix is None:
             self.frmt_p_suffix = '</p>\n\n'
         else:
             self.frmt_p_suffix = frmt_p_suffix
@@ -254,18 +254,18 @@ class CaveMark:
             self._html.append(self._process(s[prev_endo:start]))
             if s[start:start+3] == s[endo-3:endo] == '```':
                 unescaped = self._re_unesc.sub(r'\1', s[start+3:endo-3])
-                self._html.append(self.code_box_format.format(
+                self._html.append(self.frmt_code_box.format(
                     **{'TEXT':unescaped}
                 ))
-            elif s[start] == s[end] == '`':
+            elif s[start] == s[endo-1] == '`':
                 unescaped = self._re_unesc.sub(r'\1', s[start+1:endo-1])
-                self._html.append(self.code_inline_format.format(
+                self._html.append(self.frmt_code_inline.format(
                     **{'TEXT':unescaped}
                 ))
             else:
                 unescapable = self._re_unescable.search(s[start:endo])
                 unescaped = self._re_unesc.sub(r'\1', unescapable.group(1))
-                html.append(self.code_inline_format.format(
+                html.append(self.frmt_code_inline.format(
                     **{'TEXT':unescaped}
                 ))
             prev_endo = endo
@@ -282,6 +282,8 @@ class CaveMark:
     def get_html(self):
         """Get the HTML representation of your CaveMark string.
         """
+        for i in self._html:
+            print(i)
         return ''.join(self._html)
 
     def _process_res(self, m):
@@ -313,7 +315,7 @@ class CaveMark:
             # box is placed previously, then no need to do it again)
             if (
                 res_id not in self._res_box_cited
-                and res_type in self.res_cite_box_format
+                and res_type in self.frmt_cite_box
             ):
                 res_html_box = self.frmt_cite_box[res_type].format(
                     **self.resources[res_id],
@@ -390,26 +392,27 @@ class CaveMark:
             s
         )
 
-        # process cited resources
-        s = self._re_citation.sub(self._process_res, s)
-
         # create units
         units_orig = self._re_unit_sep_mid.split(s)
 
         # parse units
         for i in range(0, len(units_orig)):
-            # place pending boxes
-            units_html += self._res_pending_boxes
-            self._res_pending_boxes = []
-
             # will this unit be pending?
             if i == len(units_orig)-1 and last_unit_pending:
                 this_unit_pending = True
             else:
                 this_unit_pending = False
 
-            # process new unit
+            # process cited resources
             u = units_orig[i]
+            s = self._re_cite.sub(self._process_res, u)
+
+            # place pending resource boxes
+            if not this_unit_pending and len(self._res_pending_boxes):
+                self._html += self._res_pending_boxes
+                self._res_pending_boxes = []
+
+            # process new unit
             if len(self._units_pending) == 0:
                 # new heading
                 m = self._re_h.match(u)
@@ -424,7 +427,7 @@ class CaveMark:
                         )
                     )
                     text = m.group(2)
-                    self._process_new_h(text, this_unit_pending)
+                    self._process_h(text, this_unit_pending)
                     if not this_unit_pending:
                         self._html.append(
                             self.frmt_h_suffix.format(
@@ -444,7 +447,7 @@ class CaveMark:
 
             # process pending header
             elif self._units_pending[-1] == S_PENDING_H:
-                self._process_new_h(text, this_unit_pending)
+                self._process_h(text, this_unit_pending)
                 if not this_unit_pending:
                     self._html.append(
                         self.frmt_h_suffix.format(
