@@ -24,7 +24,7 @@ class CaveMark:
 
     def __init__(
         self, resources=None, escape=None, ignore=None, h_offset=None,
-        frmt_fn_sc=None frmt_cite_inline=None, frmt_cite_box=None,
+        frmt_fn_sc=None, frmt_cite_inline=None, frmt_cite_box=None,
         frmt_p_prefix=None, frmt_p_suffix=None, frmt_emph=None,
         frmt_code_inline=None, frmt_code_box=None, frmt_list_o_prefix=None,
         frmt_list_o_suffix=None, frmt_list_u_prefix=None,
