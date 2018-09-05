@@ -1,5 +1,16 @@
 import re
 
+# thanks to these nice ppl from irc.freenode.irc/#python.  they gave me so much
+# help that makes me think that it might have been easier for them to code this
+# and get the full glory of being the main dev.  but they decided to teach me
+# instead, so that i become a better person.  i dunno why r they so nice.
+# (alphabetically sorted):
+#   - Yhg1s
+#   - nedbat
+#   - ouemt
+#   - squirrel
+#   - stealth_
+
 # parser states
 S_PENDING_H         = 0
 S_PENDING_P         = 1
@@ -206,12 +217,16 @@ class CaveMark:
                 r'^\s*?(#+)\s*?(\S+.*?)$', flags=re.DOTALL
         )
         self._re_emph       = re.compile(
-            r'[^{0}]_(.*?\S+.*?)[^{0}]_'.format(self.escape),
+            r'_(.*?\S+.*?)_',
             flags=re.DOTALL
         )
         self._re_cite       = re.compile(r'(?:\s|^)\[\s*?(\S+)\s*?\]')
-        self._re_fn         = re.compile(
-            r'[^{0}]\^\[(.+?)([^{0}]\]|$)'.format(self.escape),
+        self._re_fn_new     = re.compile(
+            r'\^\[(.+?)(\]|$)',
+            flags=re.DOTALL
+        )
+        self._re_fn_pending = re.compile(
+            r'^(.+?)(\]|$)',
             flags=re.DOTALL
         )
 
@@ -236,7 +251,7 @@ class CaveMark:
         prev_endo = 0
         for m in self._re_ignore.finditer(s):
             start, endo = m.span()
-            self._html.append(self._process(s[prev_end:start]))
+            self._html.append(self._process(s[prev_endo:start]))
             if s[start:start+3] == s[endo-3:endo] == '```':
                 unescaped = self._re_unesc.sub(r'\1', s[start+3:endo-3])
                 self._html.append(self.code_box_format.format(
@@ -253,7 +268,7 @@ class CaveMark:
                 html.append(self.code_inline_format.format(
                     **{'TEXT':unescaped}
                 ))
-            prev_end = endo
+            prev_endo = endo
             first = False
         self._html.append(self._process(s[prev_endo:]))
 
@@ -269,7 +284,7 @@ class CaveMark:
         """
         return ''.join(self._html)
 
-    def _res_process(self, m):
+    def _process_res(self, m):
         res_id = m.group(1)
         if res_id in self.resources:
             res_type = self.resources[res_id]['TYPE']
@@ -309,12 +324,59 @@ class CaveMark:
 
         return res_html
 
+    def _process_h(self, text, this_unit_pending):
+        # add heading text, while also processing footnotes
+        prev_endo = 0
+        for fn in self._re_fn_new.finditer(text):
+            start, endo = fn.span()
+            self._html.append(text[prev_endo:start])
+            self._fn_last_index += 1
+            self._html.append(
+                self.frmt_fn_sc.format(
+                    **{'INDEX':self._fn_last_index}
+                )
+            )
+            self.footnotes.append(
+                [self._fn_last_index, fn.group(1)]
+            )
+            if fn.group(2) != ']' and this_unit_pending:
+                self._units_pending.append(S_PENDING_FOOTNOTE)
+            prev_endo = endo
+        self._html.append(text[prev_endo:])
+
+    def _process_p(self, u, this_unit_pending):
+        # add paragraph, while also processing footnotes
+        prev_endo = 0
+        for fn in self._re_fn_new.finditer(u):
+            start, endo = fn.span()
+            self._html.append(u[prev_endo:start])
+            self._fn_last_index += 1
+            self._html.append(
+                self.frmt_fn_sc.format(
+                   **{'INDEX':self._fn_last_index}
+                )
+            )
+            self.footnotes.append(
+                [self._fn_last_index, fn.group(1)]
+            )
+            if fn.group(2) != ']' and last_unit_pending:
+                self._units_pending.append(S_PENDING_FOOTNOTE)
+            prev_endo = endo
+        self._html.append(u[prev_endo:])
+
     def _process(self, s):
-        # is the ist unit a new one?
+        # is the 1st unit a new one?  if so, end all previously pending ones
         if self._re_unit_sep_start.search(s):
-            1st_unit_new = False
-        else:
-            1st_unit_new = True
+            for state in reversed(self._units_pending):
+                if state == S_PENDING_H:
+                    self._html.append(
+                        self.frmt_h_suffix.format(
+                            **{'LEVEL':self._h_pending_level}
+                        )
+                    )
+                elif state == S_PENDING_P:
+                    self._html.append(self.frmt_p_suffix)
+            self._units_pending = []
 
         # will the last unit be a pending one?
         if self._re_unit_sep_end.search(s):
@@ -329,14 +391,14 @@ class CaveMark:
         )
 
         # process cited resources
-        s = self._re_citation.sub(self._res_process, s)
+        s = self._re_citation.sub(self._process_res, s)
 
         # create units
         units_orig = self._re_unit_sep_mid.split(s)
 
         # parse units
         for i in range(0, len(units_orig)):
-            # place pending boxes.
+            # place pending boxes
             units_html += self._res_pending_boxes
             self._res_pending_boxes = []
 
@@ -352,89 +414,73 @@ class CaveMark:
                 # new heading
                 m = self._re_h.match(u)
                 if m:
-                    # will this unit be pending?
                     if this_unit_pending:
                         self._units_pending.append(S_PENDING_H)
-
-                    # add prefix
+                        self._h_pending_level = level
                     level = len(m.group(1))
                     self._html.append(
                         self.frmt_h_prefix.format(
                             **{'LEVEL':level}
                         )
                     )
-
-                    # add heading text, while also processing footnotes
                     text = m.group(2)
-                    prev_endo = 0
-                    for fn in self._re_fn.finditer(text):
-                        start, endo = fn.span()
-                        self._html.append(text[prev_endo:start])
-                        self._fn_last_index += 1
-                        self._html.append(
-                            self.frmt_fn_sc.format(
-                                **{'INDEX':self._fn_last_index}
-                            )
-                        )
-                        self.footnotes.append(
-                            [self._fn_last_index, fn.group(1)]
-                        )
-                        if fn.group(2) != ']' and this_unit_pending:
-                            self._units_pending.append(S_PENDING_FOOTNOTE)
-                        prev_endo = endo
-                    self._html.append(text[prev_endo:])
-
-                    # add suffix
-                    if len(self._units_pending) == 0:
+                    self._process_new_h(text, this_unit_pending)
+                    if not this_unit_pending:
                         self._html.append(
                             self.frmt_h_suffix.format(
                                 **{'LEVEL':level}
                             )
                         )
-
                     continue
 
                 # new paragraph
-                # will this unit be pending?
                 if this_unit_pending:
                     self._units_pending.append(S_PENDING_P)
-
-                # add prefix
                 self._html.append(self.frmt_p_prefix)
-
-                # add paragraph, while also processing footnotes
-                prev_endo = 0
-                for fn in self._re_fn.finditer(u):
-                    start, endo = fn.span()
-                    self._html.append(u[prev_endo:start])
-                    self._fn_last_index += 1
-                    self._html.append(
-                        self.frmt_fn_sc.format(
-                           **{'INDEX':self._fn_last_index}
-                        )
-                    )
-                    self.footnotes.append(
-                        [self._fn_last_index, fn.group(1)]
-                    )
-                    if fn.group(2) != ']' and last_unit_pending:
-                        self._units_pending.append(S_PENDING_FOOTNOTE)
-                    prev_endo = endo
-                self._html.append(u[prev_endo:])
+                self._process_p(u, this_unit_pending)
+                if not this_unit_pending:
+                    self._html.append(self.frmt_p_suffix)
                 continue
 
             # process pending header
             elif self._units_pending[-1] == S_PENDING_H:
-                pass
+                self._process_new_h(text, this_unit_pending)
+                if not this_unit_pending:
+                    self._html.append(
+                        self.frmt_h_suffix.format(
+                            **{'LEVEL':level}
+                        )
+                    )
+                    del self._units_pending[-1]
 
             # process pending paragraph
             elif self._units_pending[-1] == S_PENDING_P:
-                pass
+                self._process_p(u, this_unit_pending)
+                if not this_unit_pending:
+                    self._html.append(self.frmt_p_suffix)
+                del self._units_pending[-1]
 
             # process pending footnote
             elif self._units_pending[-1] == S_PENDING_FOOTNOTE:
-                pass
+                m = self._re_fn_pending(u)
+                self.footnotes[-1].append(m.group(1))
+                if m.group(2) == ']':
+                    del self._units_pending[-1]
+                    start, endo = m.span()
+                    remaining_text = u[endo:]
+                    if len(self._units_pending):
+                        if self._units_pending[-1] == S_PENDING_H:
+                            self._process_h(remaining_text, this_unit_pending)
+                            if not this_unit_pending:
+                                self._html.append(
+                                    self.frmt_h_suffix.format(
+                                        **{'LEVEL':level}
+                                    )
+                                )
 
-            else:
-                raise Exception(
-                    'unknown state "{}"'.format(self._units_pending[-1])
-                )
+                        elif self._units_pending[-1] == S_PENDING_P:
+                            self._process_p(remaining_text, this_unit_pending)
+                            if not this_unit_pending:
+                                self._html.append(self.frmt_p_suffix)
+
+                        del self._units_pending[-1]
