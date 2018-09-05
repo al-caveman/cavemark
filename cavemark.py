@@ -251,7 +251,7 @@ class CaveMark:
         prev_endo = 0
         for m in self._re_ignore.finditer(s):
             start, endo = m.span()
-            self._html.append(self._process(s[prev_endo:start]))
+            self._process(s[prev_endo:start])
             if s[start:start+3] == s[endo-3:endo] == '```':
                 unescaped = self._re_unesc.sub(r'\1', s[start+3:endo-3])
                 self._html.append(self.frmt_code_box.format(
@@ -270,7 +270,7 @@ class CaveMark:
                 ))
             prev_endo = endo
             first = False
-        self._html.append(self._process(s[prev_endo:]))
+        self._process(s[prev_endo:])
 
     def flush(self):
         """Flush all pending objects.  E.g. pending cited box resources such as
@@ -282,8 +282,6 @@ class CaveMark:
     def get_html(self):
         """Get the HTML representation of your CaveMark string.
         """
-        for i in self._html:
-            print(i)
         return ''.join(self._html)
 
     def _process_res(self, m):
