@@ -1,4 +1,5 @@
 # Overview
+
 As you know, we post things online.  Most blogs nowadays kinda support some
 variant of markdown.  CaveMark is yet another markdown variant, but very unique
 compared to anything out there.
@@ -7,7 +8,39 @@ CaveMark is an efficient, lightweight, markdown variant that generates
 LaTeX-like output, but maintains the simple markdown syntax.  This makes it the
 easiest markdown variant to author documents online.
 
-Here is a basic example:
+# Benchmark
+
+CaveMark is the fastest pure-Python markdown-to-HTML parser as shown by my
+[early
+benchmarks](https://github.com/Al-Caveman/cavemark/blob/master/benchmark/)
+where it's noticeably faster than
+[mistune](https://github.com/lepture/mistune):
+
+Results with Python:
+
+```
+cavemark     : 5.032131602000001 seconds
+mistune      : 6.584615278999999 seconds
+difference   : -1.5524836769999988 seconds
+```
+
+Results with PyPy3:
+
+```
+cavemark     : 0.9286151840000001 seconds
+mistune      : 4.276765432 seconds
+difference   : -3.3481502480000005 seconds
+```
+
+I will do a final benchmark later on when I finish the to-do tasks (some
+features to add).  But, the addition of the missing features is pretty much not
+related to speed. So being optimistic that CaveMark would remain the fasted
+pure-Python markdown parser, after its features completion, is very high.
+
+
+# Basic examples
+Here is a basic example: of a document written in CaveMark's markdown-variant
+syntax:
 
 ```markdown
 # This is some main heading
@@ -25,6 +58,18 @@ will show it as a neat image, with caption and all goodies.
 You can also split your documents/text files as you want. CaveMark is stateful,
 and can generate HTML pages while still maintaing consistent citation/footnote
 counts.  It just works.
+```
+
+Here is an example of how to use CaveMark in your Python project, where output
+is stored in `html` variable:
+
+```
+text = '# this is some _text_ file'
+parser = cavemark.CaveMark()
+parser.parse(text)
+parser.flush()
+html = parser.get_html()
+parser.reset(html=True, footnotes=True, bibliography=True)
 ```
 
 # Features
@@ -59,6 +104,7 @@ counts.  It just works.
 
   - [ ] Nested ordered/unordered lists.
   - [ ] Tables.
-  - [ ] Benchmark against `mistune` and show who is the Big Daddy now.
+  - [ ] Full benchmark against `mistune` and show who is the Big Daddy now
+    (early benchmark done; CaveMark is faster!).
   - [ ] A few rough edges (e.g. how to report user errors when a cited resource
     does not exist).
