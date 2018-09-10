@@ -8,6 +8,10 @@ CaveMark is an efficient, lightweight, markdown variant that generates
 LaTeX-like output, but maintains the simple markdown syntax.  This makes it the
 easiest markdown variant to author documents online.
 
+**Note:** this is currently _pre-alpha_.  Some key features missing, and rough
+edges.  But soon I will release the feature-complete CaveMark, with final
+benchmarks against [mistune](https://github.com/lepture/mistune)!
+
 # Benchmark
 
 CaveMark is the fastest pure-Python markdown-to-HTML parser as shown by my
