@@ -87,6 +87,10 @@ parser.reset(html=True, footnotes=True, bibliography=True)
     [mistune](https://github.com/lepture/mistune), you (as a user posting
     texts in markdown) will need to write a tedius code to get close to what
     CaveMark does automatically.
+  - Also lightweight, efficient and scalable. E.g. you can split large markdown
+    files into many smaller chunks, and only load each chunk at once, while
+    guaranteeing getting the same outcome as if you loaded the full file at
+    once.  This is thanks to CaveMark's stateful design.
 
  Currently, the following are supported:
 
