@@ -383,7 +383,9 @@ class CaveMark:
     def get_html(self):
         """Get the HTML representation of your CaveMark string.
         """
-        return ''.join(self._html)
+        html = ''.join(self._html)
+        self._html = []
+        return html
 
     def _new_resource(self, m):
         res_id = m.group(1)
