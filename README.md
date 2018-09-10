@@ -3,7 +3,7 @@
 As you know, we post things online.  Most blogs nowadays kinda support some
 variant of markdown.  CaveMark is yet another markdown variant, but very unique
 compared to anything out there.  You can read more about it in the 1st column
-[here](https://cave.mn):.
+[here](https://cave.mn).
 
 CaveMark is an efficient, lightweight, markdown variant that generates
 LaTeX-like output, but maintains the simple markdown syntax.  This makes it the
