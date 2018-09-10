@@ -26,6 +26,8 @@ easiest markdown variant to author documents online.
   - [x] Automatic placement of floats (e.g. figures) based on your citations.
     These are called box resources.
   - [x] Both inline and block codes.
+  - [x] Flexible way to add your custom resource types.
+  - [x] Flexible way to customize HTML tags.
   - [x] Flexible way to ignore certain substrings (e.g. if you wish to ignore
     things between `\[...\]` for MathJax.
 
