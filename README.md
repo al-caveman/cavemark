@@ -56,7 +56,7 @@ This is some paragraph^{this is some footnote}.  The footnote will be
 automatically parsed and placed properly.  You don't need to worry about it.
 
 This is another paragraph that cites this resource [myresource].  CaveMark will
-cite it properly based on its time.  E.g. if it's a book/paper, it will put it
+cite it properly based on its type.  E.g. if it's a book/paper, it will put it
 in a bibliography section, without you doing anything.  If it's an image, it
 will show it as a neat image, with caption and all goodies.
 

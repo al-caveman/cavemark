@@ -384,7 +384,7 @@ class CaveMark:
         """Get the HTML representation of your CaveMark string.
         """
         html = ''.join(self._html)
-        self._html = []
+        self.reset(html=True)
         return html
 
     def _new_resource(self, m):
