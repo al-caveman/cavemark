@@ -60,9 +60,11 @@ cite it properly based on its type.  E.g. if it's a book/paper, it will put it
 in a bibliography section, without you doing anything.  If it's an image, it
 will show it as a neat image, with caption and all goodies.
 
-You can also split your documents/text files as you want. CaveMark is stateful,
-and can generate HTML pages while still maintaing consistent citation/footnote
-counts.  It just works.
+CaveMark is stateful, and can generate HTML pages while still maintaing
+consistent citation/footnote counts.  It just works.  This gives you the
+liberty to also be able to split your large markdown text files into smaller
+ones, and feed them one after the other, in order to achieve higher
+scalability.
 ```
 
 Here is an example of how to use CaveMark in your Python project:
