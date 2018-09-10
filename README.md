@@ -9,10 +9,10 @@ easiest markdown variant to author documents online.
 
 Here is a basic example:
 
-```md
+```markdown
 # This is some main heading
 
-## A subheading like usal
+## A subheading like usual
 
 This is some paragraph^{this is some footnote}.  The footnote will be
 automatically parsed and placed properly.  You don't need to worry about it.
