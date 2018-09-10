@@ -87,9 +87,6 @@ parser.reset(html=True, footnotes=True, bibliography=True)
     [mistune](https://github.com/lepture/mistune), you (as a user posting
     texts in markdown) will need to write a tedius code to get close to what
     CaveMark does automatically.
-  - It's also lightweight and efficient.  I will soon benchmark it against
-    [mistune](https://github.com/lepture/mistune), and I think it will be as
-    fast, or faster.
 
  Currently, the following are supported:
 
