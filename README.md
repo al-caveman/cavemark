@@ -67,7 +67,7 @@ counts.  It just works.
 Here is an example of how to use CaveMark in your Python project, where output
 is stored in `html` variable:
 
-```
+```python
 text = '# this is some _text_ file'
 parser = cavemark.CaveMark()
 parser.parse(text)
