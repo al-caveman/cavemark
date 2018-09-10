@@ -64,15 +64,14 @@ and can generate HTML pages while still maintaing consistent citation/footnote
 counts.  It just works.
 ```
 
-Here is an example of how to use CaveMark in your Python project, where output
-is stored in `html` variable:
+Here is an example of how to use CaveMark in your Python project:
 
 ```python
-text = '# this is some _text_ file'
+text_input = '# this is some _text_ file'
 parser = cavemark.CaveMark()
-parser.parse(text)
+parser.parse(text_input)
 parser.flush()
-html = parser.get_html()
+html_output = parser.get_html()
 parser.reset(html=True, footnotes=True, bibliography=True)
 ```
 
