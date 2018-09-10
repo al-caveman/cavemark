@@ -23,6 +23,7 @@ easiest markdown variant to author documents online.
   - [x] Headings.
   - [x] Emphasized texts.
   - [x] Inline citations.
+  - [x] Footnotes.
   - [x] Automatic placement of floats (e.g. figures) based on your citations.
     These are called box resources.
   - [x] Both inline and block codes.
