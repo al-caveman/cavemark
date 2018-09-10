@@ -111,7 +111,8 @@ parser.reset(html=True, footnotes=True, bibliography=True)
   - [ ] Nested ordered/unordered lists.
   - [ ] Tables.
   - [ ] Full benchmark against [mistune](https://github.com/lepture/mistune)
-    and show who is the Big Daddy now
-    (early benchmark done; CaveMark is faster!).
+    and show who is the Big Daddy now ([early
+    benchmarks](https://github.com/Al-Caveman/cavemark/blob/master/benchmark/)
+    done; CaveMark is faster so far!).
   - [ ] A few rough edges (e.g. how to report user errors when a cited resource
     does not exist).
