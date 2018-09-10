@@ -309,7 +309,8 @@ class CaveMark:
         footnotes, bibliographies.
         """
         if pending:
-            self._close_pending()
+            while len(self._state):
+                self._close_pending()
             self._html += self._resources_pending_boxes
             self._resources_pending_boxes = []
 
@@ -384,7 +385,7 @@ class CaveMark:
         """Get the HTML representation of your CaveMark string.
         """
         html = ''.join(self._html)
-        self.reset(html=True)
+        self._html = []
         return html
 
     def _new_resource(self, m):
