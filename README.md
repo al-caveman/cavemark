@@ -77,11 +77,13 @@ parser.reset(html=True, footnotes=True, bibliography=True)
   - Simple markdown-like syntax for authors.
   - Generates beautiful LaTeX-like HTML for your website.
   - As a result, you easily type less to do much more.  On the other hand, if
-    you use other markdown variants, such as `mistune`, you (as a user posting
+    you use other markdown variants, such as
+    [mistune](https://github.com/lepture/mistune), you (as a user posting
     texts in markdown) will need to write a tedius code to get close to what
     CaveMark does automatically.
   - It's also lightweight and efficient.  I will soon benchmark it against
-    `mistune`, and I think it will be as fast, or faster.
+    [mistune](https://github.com/lepture/mistune), and I think it will be as
+    fast, or faster.
 
  Currently, the following are supported:
 
@@ -104,7 +106,8 @@ parser.reset(html=True, footnotes=True, bibliography=True)
 
   - [ ] Nested ordered/unordered lists.
   - [ ] Tables.
-  - [ ] Full benchmark against `mistune` and show who is the Big Daddy now
+  - [ ] Full benchmark against [mistune](https://github.com/lepture/mistune)
+    and show who is the Big Daddy now
     (early benchmark done; CaveMark is faster!).
   - [ ] A few rough edges (e.g. how to report user errors when a cited resource
     does not exist).
