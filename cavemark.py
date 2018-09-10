@@ -309,7 +309,7 @@ class CaveMark:
         footnotes, bibliographies.
         """
         if pending:
-            while len(self._state):
+            while len(self._state) > 1:
                 self._close_pending()
             self._html += self._resources_pending_boxes
             self._resources_pending_boxes = []
