@@ -311,8 +311,9 @@ class CaveMark:
         if pending:
             while len(self._state) > 1:
                 self._close_pending()
-            self._html += self._resources_pending_boxes
-            self._resources_pending_boxes = []
+            if len(self._resources_pending_boxes):
+                self._html += self._resources_pending_boxes
+                self._resources_pending_boxes = []
 
         if footnotes:
             self._html.append(
@@ -545,8 +546,6 @@ class CaveMark:
             start, endo = match_unit_border.span()
             self._parse_unit(text[prev_endo:start])
             self._close_pending()
-            if len(self._resources_pending_boxes):
-                self._html += self._resources_pending_boxes
-                self._resources_pending_boxes = []
+            self.flush(pending=True)
             prev_endo = endo
         self._parse_unit(text[prev_endo:])
