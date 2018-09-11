@@ -5,9 +5,17 @@ variant of markdown.  CaveMark is yet another markdown variant, but very unique
 compared to anything out there.  You can read more about it in the 1st column
 [here](https://cave.mn).
 
-CaveMark is an efficient, lightweight, markdown variant that generates
-LaTeX-like output, but maintains the simple markdown syntax.  This makes it the
-easiest markdown variant to author documents online.
+CaveMark is an efficient, lightweight, markdown variant.  It's differs by the
+fact that it is typesetting (e.g. generates LaTeX-like output.  So, you don't
+need to worry about figure/quote/theorem/definition/figure indexes), while
+maintaing the simple markdown*-ish* syntax.  
+
+The typesetting aspect, and the simple markdown*-ish* syntax makes CaveMark the
+easiest markdown variant to author documents in.  If you use others, such as
+[mistune](https://github.com/lepture/mistune) (which are not typesetting), you
+will end up wasting more time writing far larger texts to achieve what CaveMark
+does for you automatically.  Of course, CaveMark is also faster than
+[mistune](https://github.com/lepture/mistune) with 50% less code lines.
 
 **Note:** this is currently _pre-alpha_.  Some key features missing, and rough
 edges.  But soon I will release the feature-complete CaveMark, with final
@@ -82,7 +90,8 @@ parser.reset(html=True, footnotes=True, bibliography=True)
 # Features
 
   - Simple markdown-like syntax for authors.
-  - Generates beautiful LaTeX-like HTML for your website.
+  - Typesetting (can generate beautiful documents, like LaTex depending on your
+    themes, without needing to do the tidious formatting by yourself).
   - As a result, you easily type less to do much more.  On the other hand, if
     you use other markdown variants, such as
     [mistune](https://github.com/lepture/mistune), you (as a user posting

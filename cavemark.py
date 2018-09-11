@@ -546,6 +546,6 @@ class CaveMark:
             start, endo = match_unit_border.span()
             self._parse_unit(text[prev_endo:start])
             self._close_pending()
-            self.flush(pending=True)
+            self.flush(pending=True, footnotes=False, bibliography=True)
             prev_endo = endo
         self._parse_unit(text[prev_endo:])

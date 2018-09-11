@@ -71,7 +71,7 @@ let's hope all is good.  how fast is _CaveMark_?  one way to find out :)
 # cavemark output
 cm_parser = cavemark.CaveMark(heading_offset=0)
 cm_parser.parse(common_things)
-cm_parser.flush()
+cm_parser.flush(pending=True, footnotes=False, bibliography=False)
 cm_html = cm_parser.get_html()
 cm_parser.reset(html=True, footnotes=True, bibliography=True)
 with open('output_cavemark.html', 'w') as f:
@@ -90,7 +90,7 @@ n = 10000
 cm_start = time.process_time()
 for i in range(0, n):
     cm_parser.parse(common_things)
-    cm_parser.flush()
+    cm_parser.flush(pending=True, footnotes=False, bibliography=False)
     cm_html = cm_parser.get_html()
     cm_parser.reset(html=True, footnotes=True, bibliography=True)
 cm_end = time.process_time()
