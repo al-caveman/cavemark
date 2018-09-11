@@ -8,9 +8,9 @@ compared to anything out there.  You can read more about it in the 1st column
 CaveMark is an efficient, lightweight, markdown variant.  It's differs by the
 fact that it is typesetting (e.g. generates LaTeX-like output.  So, you don't
 need to worry about figure/quote/theorem/definition/figure indexes), while
-maintaing the simple markdown*-ish* syntax.  
+maintaing the simple markdown-ish syntax.  
 
-The typesetting aspect, and the simple markdown*-ish* syntax makes CaveMark the
+The typesetting aspect, and the simple markdown-ish syntax makes CaveMark the
 easiest markdown variant to author documents in.  If you use others, such as
 [mistune](https://github.com/lepture/mistune) (which are not typesetting), you
 will end up wasting more time writing far larger texts to achieve what CaveMark
