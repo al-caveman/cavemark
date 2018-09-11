@@ -1,3 +1,0 @@
-cavemark     : 0.9286151840000001 seconds
-mistune      : 4.276765432 seconds
-difference   : -3.3481502480000005 seconds
