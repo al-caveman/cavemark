@@ -129,3 +129,6 @@ parser.reset(html=True, footnotes=True, bibliography=True)
     done; CaveMark is faster so far!).
   - [ ] A few rough edges (e.g. how to report user errors when a cited resource
     does not exist).
+  - [ ] Documentation.
+  - [ ] Figure out a license.  Currently I am consiering GPLv3, or
+    [GGPLv3](https://cave.mn/page/1/).
