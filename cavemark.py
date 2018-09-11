@@ -427,26 +427,29 @@ class CaveMark:
 
         return res_html
 
-    def _parse_unit(self, text):
+    def _parse_sentence(self, sentence):
         # parse emphasized texts
-        text = self._re_emph.sub(
+        sentence = self._re_emph.sub(
             self.frmt_emph.format(**{'TEXT':r'\g<1>'}),
-            text
+            sentence
         )
 
         # parse cited resources
-        text = self._re_cite.sub(
+        sentence = self._re_cite.sub(
             self._new_resource,
-            text
+            sentence
         )
 
+        return sentence
+
+    def _parse_unit(self, text):
         # resume heading text insertion
         if self._state[-1] == S_HEADING_IN:
-            self._html.append(text)
+            self._html.append(self._parse_sentence(text))
 
         # resume paragraph text insertion
         elif self._state[-1] == S_PARAGRAPH_IN:
-            self._html.append(text)
+            self._html.append(self._parse_sentence(text))
 
         # add footnote
         elif self._state[-1] == S_FOOTNOTE:
@@ -461,16 +464,18 @@ class CaveMark:
                 )
             )
 
-            # format any code segments in the footnote
+            # format the footnote text into a temporary list
             footnote_text_temp = []
             prev_endo = 0
             for m in self._re_ignore.finditer(text):
                 start, endo = m.span()
-                footnote_text_temp.append(text[prev_endo:start])
                 matched         = [i for i in m.groups() if i is not None]
                 ignr_open       = matched[0]
                 ignr_text       = matched[1]
                 ignr_close      = matched[2]
+                footnote_text_temp.append(
+                    self._parse_sentence(text[prev_endo:start])
+                )
                 if ignr_open in self.ignore_unescape:
                     ignr_text   = self._re_ignore_unescs[ignr_open].sub(
                         r'\1',
@@ -486,8 +491,11 @@ class CaveMark:
                     )
                 footnote_text_temp.append(ignr_text)
                 prev_endo = endo
-            footnote_text_temp.append(text[prev_endo:])
+            footnote_text_temp.append(
+                self._parse_sentence(text[prev_endo:])
+            )
 
+            # finalize temporary list into a more usable list
             self.footnotes.append(
                 (
                     self._footnotes_last_index,
@@ -498,6 +506,9 @@ class CaveMark:
             del self._state[-1]
 
         elif self._state[-1] == S_START:
+            # format basic stuff
+            text = self._parse_sentence(text)
+
             # add new heading
             m = self._re_heading.match(text)
             if m:

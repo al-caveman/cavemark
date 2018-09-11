@@ -19,7 +19,8 @@ CaveMark is the fastest pure-Python markdown-to-HTML parser as shown by my
 [early
 benchmarks](https://github.com/Al-Caveman/cavemark/blob/master/benchmark/)
 where it's noticeably faster than
-[mistune](https://github.com/lepture/mistune):
+[mistune](https://github.com/lepture/mistune) (latter used to be the fastest,
+no longer now):
 
 Results with Python:
 
