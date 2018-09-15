@@ -68,11 +68,16 @@ related to speed. So being optimistic that CaveMark would remain the fasted
 pure-Python markdown parser, after its features completion, is very high.
 
 **Update:** I have just added support for nested lists, and therefore I
-extended teh benchmark to also included nested lists.  As I expected, CaveMark
-did not lose its speed advantages as I added more features (actually appears
-faster now; maybe [mistune](https://github.com/lepture/mistune)'s lists are a
-weakness point).  So I will keep my prediction: CaveMark will not lose its
-speed as I add the other features in the to-do list below.
+extended the benchmark to also included them.  As I expected, CaveMark did not
+lose its speed advantage over [mistune](https://github.com/lepture/mistune) as
+I added more features (actually appears faster now; maybe
+[mistune](https://github.com/lepture/mistune)'s lists are a weakness point).
+So I will keep my prediction: CaveMark will not lose its speed as I add the
+other features in the to-do list below.
+
+**Note:** CaveMark's key advantage is the fact that it is a typesetting
+markdown variant, allowing easier authorship of texts with far less efforts.
+It is just interesting that it's also the fastest pure-Python markdown parser.
 
 
 # Basic examples
