@@ -180,27 +180,27 @@ class CaveMark:
 
         # ordered lists format
         if frmt_olist_prefix is None:
-            self.frmt_olist_prefix = '{LEVEL}<ol>\n'
+            self.frmt_olist_prefix = '<ol>\n'
         else:
             self.frmt_olist_prefix = frmt_olist_prefix
         if frmt_olist_suffix is None:
-            self.frmt_olist_suffix = '{LEVEL}</ol>\n\n'
+            self.frmt_olist_suffix = '</ol>\n'
         else:
             self.frmt_olist_suffix = frmt_olist_suffix
 
         # unordered lists format
         if frmt_ulist_prefix is None:
-            self.frmt_ulist_prefix = '{LEVEL}<ul>\n'
+            self.frmt_ulist_prefix = '<ul>\n'
         else:
             self.frmt_ulist_prefix = frmt_ulist_prefix
         if frmt_ulist_suffix is None:
-            self.frmt_ulist_suffix = '{LEVEL}</ul>\n\n'
+            self.frmt_ulist_suffix = '</ul>\n'
         else:
             self.frmt_ulist_suffix = frmt_ulist_suffix
 
         # listed items format
         if frmt_list_item_prefix is None:
-            self.frmt_list_item_prefix = '{LEVEL}  <li>'
+            self.frmt_list_item_prefix = '<li>'
         else:
             self.frmt_list_item_prefix = frmt_list_item_prefix
         if frmt_list_item_suffix is None:
@@ -226,7 +226,6 @@ class CaveMark:
         self._resources_bib_flushed = set()
         self._footnotes_last_index = 0
         self._list = [[-1, None]]
-        self._list_need_item_suffix = False
         self.resources_cited = {}
         self.footnotes = []
 
@@ -472,61 +471,30 @@ class CaveMark:
                 item_ordered = False 
             while True:
                 prev_item_level, prev_item_ordered = self._list[-1]
-                if self._list_need_item_suffix:
-                    self._html.append(
-                        self.frmt_list_item_suffix.format(
-                            **{'LEVEL':' '*prev_item_level}
-                        )
-                    )
                 if item_level == prev_item_level:
-                    self._html.append(
-                        self.frmt_list_item_prefix.format(
-                            **{'LEVEL':' '*item_level}
-                        )
-                    )
+                    self._html.append(self.frmt_list_item_suffix)
+                    self._html.append(self.frmt_list_item_prefix)
                     self._html.append(item_text)
-                    self._list_need_item_suffix = True
                     break
                 elif item_level > prev_item_level:
                     self._list.append([item_level, item_ordered])
                     if item_ordered:
-                        self._html.append(
-                            self.frmt_olist_prefix.format(
-                                **{'LEVEL':' '*item_level}
-                            )
-                        )
+                        self._html.append(self.frmt_olist_prefix)
                     else:
-                        self._html.append(
-                            self.frmt_ulist_prefix.format(
-                                **{'LEVEL':' '*item_level}
-                            )
-                        )
-                    self._html.append(
-                        self.frmt_list_item_prefix.format(
-                            **{'LEVEL':' '*item_level}
-                        )
-                    )
+                        self._html.append(self.frmt_ulist_prefix)
+                    self._html.append(self.frmt_list_item_prefix)
                     self._html.append(item_text)
-                    self._list_need_item_suffix = True
                     break
                 else:
                     del self._list[-1]
                     pprev_item_level, pprev_item_ordered = self._list[-1]
                     if item_level > pprev_item_level:
                         item_level = pprev_item_level
+                    self._html.append(self.frmt_list_item_suffix)
                     if prev_item_ordered:
-                        self._html.append(
-                            self.frmt_olist_suffix.format(
-                                **{'LEVEL':' '*prev_item_level}
-                            )
-                        )
+                        self._html.append(self.frmt_olist_suffix)
                     else:
-                        self._html.append(
-                            self.frmt_ulist_suffix.format(
-                                **{'LEVEL':' '*prev_item_level}
-                            )
-                        )
-                    self._list_need_item_suffix = False
+                        self._html.append(self.frmt_ulist_suffix)
             prev_endo = endo
 
     def _parse_unit(self, text):
@@ -637,24 +605,14 @@ class CaveMark:
         elif state == S_PARAGRAPH_IN:
             self._html.append(self.frmt_paragraph_suffix)
         elif state == S_LIST_IN:
-            if self._list_need_item_suffix:
-                self._html.append(self.frmt_list_item_suffix)
             while len(self._list) > 1:
                 item_level, item_ordered = self._list[-1]
+                self._html.append(self.frmt_list_item_suffix)
                 if item_ordered:
-                    self._html.append(
-                        self.frmt_olist_suffix.format(
-                            **{'LEVEL':' '*item_level}
-                        )
-                    )
+                    self._html.append(self.frmt_olist_suffix)
                 else:
-                    self._html.append(
-                        self.frmt_ulist_suffix.format(
-                            **{'LEVEL':' '*item_level}
-                        )
-                    )
+                    self._html.append(self.frmt_ulist_suffix)
                 del self._list[-1]
-            self._list_need_item_suffix = False
 
     def _parse_units(self, text):
         prev_endo = 0

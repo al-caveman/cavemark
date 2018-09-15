@@ -30,26 +30,49 @@ where it's noticeably faster than
 [mistune](https://github.com/lepture/mistune) (latter used to be the fastest,
 no longer now):
 
-Results with Python:
+Results with Python (repeated 3 times):
 
 ```
-cavemark     : 5.032131602000001 seconds
-mistune      : 6.584615278999999 seconds
-difference   : -1.5524836769999988 seconds
+cavemark     : 6.646010168 seconds
+mistune      : 12.874110873 seconds
+difference   : -6.228100704999999 seconds
+
+cavemark     : 6.723984773000001 seconds
+mistune      : 13.174228654 seconds
+difference   : -6.450243881 seconds
+
+cavemark     : 6.67836511 seconds
+mistune      : 13.056082964000002 seconds
+difference   : -6.377717854000002 seconds
 ```
 
-Results with PyPy3:
+Results with PyPy3 (repeated 3 times):
 
 ```
-cavemark     : 0.9286151840000001 seconds
-mistune      : 4.276765432 seconds
-difference   : -3.3481502480000005 seconds
+cavemark     : 1.2484515040000002 seconds
+mistune      : 9.08504784 seconds
+difference   : -7.8365963359999995 seconds
+
+cavemark     : 1.219511551 seconds
+mistune      : 8.463517529999999 seconds
+difference   : -7.244005978999999 seconds
+
+cavemark     : 1.223279422 seconds
+mistune      : 8.776520554 seconds
+difference   : -7.553241131999999 seconds
 ```
 
 I will do a final benchmark later on when I finish the to-do tasks (some
 features to add).  But, the addition of the missing features is pretty much not
 related to speed. So being optimistic that CaveMark would remain the fasted
 pure-Python markdown parser, after its features completion, is very high.
+
+**Update:** I have just added support for nested lists, and therefore I
+extended teh benchmark to also included nested lists.  As I expected, CaveMark
+did not lose its speed advantages as I added more features (actually appears
+faster now; maybe [mistune](https://github.com/lepture/mistune)'s lists are a
+weakness point).  So I will keep my prediction: CaveMark will not lose its
+speed as I add the other features in the to-do list below.
 
 
 # Basic examples
