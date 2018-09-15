@@ -18,7 +18,7 @@ for i in range(0, 100):
 * some `UNORDERED` list.
 * bas_ic ya?
 * ye_p.
-    * hmm more?^{nice eye} i know.
+    * hmm more?^{nice aye} i know.
       * moorrre? ```code block``` yep.
       * no let's wait a bit here..
         + moore numbered?
@@ -31,7 +31,7 @@ for i in range(0, 100):
 + some `ORDERED` list.
 + bas_ic ya?
 + ye_p.
-    * hmm more?^{nice eye} i know.
+    * hmm more?^{nice aye} i know.
       * moorrre? ```code block``` yep.
       * no let's wait a bit here..
         + moore numbered?
