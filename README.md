@@ -1,14 +1,14 @@
 # Overview
 
-As you know, we post things online.  Most blogs nowadays kinda support some
-variant of markdown.  CaveMark is yet another markdown variant, but very unique
-compared to anything out there.  You can read more about it in the 1st column
-[here](https://cave.mn).
+You can read more about the typesetting aspect in the 1st column
+[here](https://cave.mn).  I will add complete documentation when CaveMark is
+feature-complete (in a few weeks).
 
-CaveMark is an efficient, lightweight, markdown variant.  It's differs by the
-fact that it is typesetting (e.g. generates LaTeX-like output.  So, you don't
-need to worry about figure/quote/theorem/definition/figure indexes), while
-maintaing the simple markdown-ish syntax.  
+CaveMark is the fastest pure-Python markdown parser.  Aside from its superior
+speed, it differs from the rest by the fact that it follows typesetting
+principles (e.g.  generates LaTeX-like output.  So, you don't need to worry
+about figure/quote/theorem/definition/figure indexes), while maintain the
+simple markdown-ish syntax.  
 
 The typesetting aspect, and the simple markdown-ish syntax makes CaveMark the
 easiest markdown variant to author documents in.  If you use others, such as
