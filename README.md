@@ -1,9 +1,5 @@
 # Overview
 
-You can read more about the typesetting aspect in the 1st column
-[here](https://cave.mn).  I will add complete documentation when CaveMark is
-feature-complete (in a few weeks).
-
 CaveMark is the fastest pure-Python markdown parser.  Aside from its superior
 speed, it differs from the rest by the fact that it follows typesetting
 principles (e.g.  generates LaTeX-like output.  So, you don't need to worry
@@ -16,6 +12,10 @@ easiest markdown variant to author documents in.  If you use others, such as
 will end up wasting more time writing far larger texts to achieve what CaveMark
 does for you automatically.  Of course, CaveMark is also faster than
 [mistune](https://github.com/lepture/mistune) with 50% less code lines.
+
+You can read more about the typesetting aspect in the 1st column
+[here](https://cave.mn).  I will add complete documentation when CaveMark is
+feature-complete (in a few weeks).
 
 **Note:** this is currently _pre-alpha_.  Some key features missing, and rough
 edges.  But soon I will release the feature-complete CaveMark, with final
