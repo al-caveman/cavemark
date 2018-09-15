@@ -29,17 +29,17 @@ for i in range(0, 100):
 * fully back.
 
 + some `ORDERED` list.
-* bas_ic ya?
-* ye_p.
-    * hmm more?
-      * moorrre?
++ bas_ic ya?
++ ye_p.
+    * hmm more?^{nice eye} i know.
+      * moorrre? ```code block``` yep.
       * no let's wait a bit here..
         + moore numbered?
         + no let's wait a bit here..
       * let's go back.
      * kinda bak?
   * more kinda bak?
-* fully back.
++ fully back.
 
 
 this is just some innocent paragraphs^{yep :) [mybook]]}. this is just some
@@ -161,7 +161,7 @@ parser = cavemark.CaveMark(
     }
 )
 parser.parse(s + '  and this [lolbook].')
-parser.flush(bibliography=True)
+parser.flush(bibliography=False)
 parser.parse(s + '  and this [hisbook].')
 parser.flush()
 html = parser.get_html()
