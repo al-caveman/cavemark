@@ -5,6 +5,7 @@ S_START             = 0
 S_HEADING_IN        = 1
 S_PARAGRAPH_IN      = 2
 S_FOOTNOTE          = 3
+S_LIST_IN           = 4
 
 class CaveMark:
     """Create a new CaveMark string parser object,
@@ -179,27 +180,27 @@ class CaveMark:
 
         # ordered lists format
         if frmt_olist_prefix is None:
-            self.frmt_olist_prefix = '<ol>\n'
+            self.frmt_olist_prefix = '{LEVEL}<ol>\n'
         else:
             self.frmt_olist_prefix = frmt_olist_prefix
         if frmt_olist_suffix is None:
-            self.frmt_olist_suffix = '</ol>\n\n'
+            self.frmt_olist_suffix = '{LEVEL}</ol>\n\n'
         else:
             self.frmt_olist_suffix = frmt_olist_suffix
 
         # unordered lists format
         if frmt_ulist_prefix is None:
-            self.frmt_ulist_prefix = '<ul>\n'
+            self.frmt_ulist_prefix = '{LEVEL}<ul>\n'
         else:
             self.frmt_ulist_prefix = frmt_ulist_prefix
         if frmt_ulist_suffix is None:
-            self.frmt_ulist_suffix = '</ul>\n\n'
+            self.frmt_ulist_suffix = '{LEVEL}</ul>\n\n'
         else:
             self.frmt_ulist_suffix = frmt_ulist_suffix
 
         # listed items format
         if frmt_list_item_prefix is None:
-            self.frmt_list_item_prefix = '  <li>'
+            self.frmt_list_item_prefix = '{LEVEL}  <li>'
         else:
             self.frmt_list_item_prefix = frmt_list_item_prefix
         if frmt_list_item_suffix is None:
@@ -224,6 +225,8 @@ class CaveMark:
         self._resources_pending_boxes = []
         self._resources_bib_flushed = set()
         self._footnotes_last_index = 0
+        self._list = [[-1, None]]
+        self._list_need_item_suffix = False
         self.resources_cited = {}
         self.footnotes = []
 
@@ -250,7 +253,7 @@ class CaveMark:
                 )
             ) for o in self.ignore if o in self.ignore_unescape
         }
-        self._re_unit_sep   = re.compile(r'\n\s*?\n')
+        self._re_unit_sep   = re.compile(r'\n\s*\n')
         self._re_heading    = re.compile(
             r'^\s*?(?<!{})(#+)\s+(.*)'.format(re.escape(self.escape)),
             flags=re.DOTALL
@@ -263,6 +266,18 @@ class CaveMark:
             r'(?<!{0})\[\s*(\S+?)\s*(?<!{0})\]'.format(
                 re.escape(self.escape)
             )
+        )
+        self._re_list       = re.compile(
+            r' *(?<!{0})(?:\*|\+)'.format(
+                re.escape(self.escape)
+            ),
+            flags=re.DOTALL
+        )
+        self._re_list_items = re.compile(
+            r'( *)(?<!{})(\*|\+)\s*(\S.*?)(?=(?:\n *\*|\n *\+|$))'.format(
+                re.escape(self.escape)
+            ),
+            flags=re.DOTALL
         )
 
     def parse(self, text):
@@ -304,16 +319,15 @@ class CaveMark:
             prev_endo = endo
         self._parse_units(text[prev_endo:])
 
-    def flush(self, pending=True, footnotes=True, bibliography=True):
+    def flush(self, footnotes=True, bibliography=True):
         """Flush all pending objects: cited box resources such as figures,
         footnotes, bibliographies.
         """
-        if pending:
-            while len(self._state) > 1:
-                self._close_pending()
-            if len(self._resources_pending_boxes):
-                self._html += self._resources_pending_boxes
-                self._resources_pending_boxes = []
+        while len(self._state) > 1:
+            self._close_pending()
+        if len(self._resources_pending_boxes):
+            self._html += self._resources_pending_boxes
+            self._resources_pending_boxes = []
 
         if footnotes:
             self._html.append(
@@ -383,13 +397,13 @@ class CaveMark:
             self.resources_cited = {}
 
     def get_html(self):
-        """Get the HTML representation of your CaveMark string.
+        """Get the HTML representation of parsed texts.
         """
         html = ''.join(self._html)
         self._html = []
         return html
 
-    def _new_resource(self, m):
+    def _parse_resource(self, m):
         res_id = m.group(1)
         if res_id in self.resources:
             res_type = self.resources[res_id]['TYPE']
@@ -437,11 +451,83 @@ class CaveMark:
 
         # parse cited resources
         sentence = self._re_cite.sub(
-            self._new_resource,
+            self._parse_resource,
             sentence
         )
 
         return sentence
+
+    def _parse_list(self, text):
+        prev_endo = 0
+        for item in self._re_list_items.finditer(text):
+            start, endo = item.span()
+            pending_text = text[prev_endo:start].strip()
+            if len(pending_text):
+                self._html.append(' ' + pending_text.strip())
+            item_level = len(item.group(1))
+            item_text = item.group(3)
+            if item.group(2) == '+':
+                item_ordered = True
+            elif item.group(2) == '*':
+                item_ordered = False 
+            while True:
+                prev_item_level, prev_item_ordered = self._list[-1]
+                if self._list_need_item_suffix:
+                    self._html.append(
+                        self.frmt_list_item_suffix.format(
+                            **{'LEVEL':' '*prev_item_level}
+                        )
+                    )
+                if item_level == prev_item_level:
+                    self._html.append(
+                        self.frmt_list_item_prefix.format(
+                            **{'LEVEL':' '*item_level}
+                        )
+                    )
+                    self._html.append(item_text)
+                    self._list_need_item_suffix = True
+                    break
+                elif item_level > prev_item_level:
+                    self._list.append([item_level, item_ordered])
+                    if item_ordered:
+                        self._html.append(
+                            self.frmt_olist_prefix.format(
+                                **{'LEVEL':' '*item_level}
+                            )
+                        )
+                    else:
+                        self._html.append(
+                            self.frmt_ulist_prefix.format(
+                                **{'LEVEL':' '*item_level}
+                            )
+                        )
+                    self._html.append(
+                        self.frmt_list_item_prefix.format(
+                            **{'LEVEL':' '*item_level}
+                        )
+                    )
+                    self._html.append(item_text)
+                    self._list_need_item_suffix = True
+                    break
+                else:
+                    del self._list[-1]
+                    pprev_item_level, pprev_item_ordered = self._list[-1]
+                    if item_level > pprev_item_level:
+                        item_level = pprev_item_level
+                    if prev_item_ordered:
+                        self._html.append(
+                            self.frmt_olist_suffix.format(
+                                **{'LEVEL':' '*prev_item_level}
+                            )
+                        )
+                    else:
+                        self._html.append(
+                            self.frmt_ulist_suffix.format(
+                                **{'LEVEL':' '*prev_item_level}
+                            )
+                        )
+                    self._list_need_item_suffix = False
+            prev_endo = endo
 
     def _parse_unit(self, text):
         # resume heading text insertion
@@ -451,6 +537,10 @@ class CaveMark:
         # resume paragraph text insertion
         elif self._state[-1] == S_PARAGRAPH_IN:
             self._html.append(self._parse_sentence(text))
+
+        # resume list text insertion
+        elif self._state[-1] == S_LIST_IN:
+            self._parse_list(self._parse_sentence(text))
 
         # add footnote
         elif self._state[-1] == S_FOOTNOTE:
@@ -524,10 +614,17 @@ class CaveMark:
                 self._state.append(S_HEADING_IN)
 
             else:
+                # add new list
+                m = self._re_list.match(text)
+                if m:
+                    self._parse_list(text)
+                    self._state.append(S_LIST_IN)
+
                 # add new paragraph
-                self._html.append(self.frmt_paragraph_prefix)
-                self._html.append(text)
-                self._state.append(S_PARAGRAPH_IN)
+                else:
+                    self._html.append(self.frmt_paragraph_prefix)
+                    self._html.append(text)
+                    self._state.append(S_PARAGRAPH_IN)
 
     def _close_pending(self):
         state = self._state.pop()
@@ -539,6 +636,25 @@ class CaveMark:
             )
         elif state == S_PARAGRAPH_IN:
             self._html.append(self.frmt_paragraph_suffix)
+        elif state == S_LIST_IN:
+            if self._list_need_item_suffix:
+                self._html.append(self.frmt_list_item_suffix)
+            while len(self._list) > 1:
+                item_level, item_ordered = self._list[-1]
+                if item_ordered:
+                    self._html.append(
+                        self.frmt_olist_suffix.format(
+                            **{'LEVEL':' '*item_level}
+                        )
+                    )
+                else:
+                    self._html.append(
+                        self.frmt_ulist_suffix.format(
+                            **{'LEVEL':' '*item_level}
+                        )
+                    )
+                del self._list[-1]
+            self._list_need_item_suffix = False
 
     def _parse_units(self, text):
         prev_endo = 0
@@ -546,6 +662,6 @@ class CaveMark:
             start, endo = match_unit_border.span()
             self._parse_unit(text[prev_endo:start])
             self._close_pending()
-            self.flush(pending=True, footnotes=False, bibliography=True)
+            self.flush(footnotes=False, bibliography=False)
             prev_endo = endo
         self._parse_unit(text[prev_endo:])

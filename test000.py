@@ -15,6 +15,33 @@ for i in range(0, 100):
     # hell yeah!
 ```
 
+* some `UNORDERED` list.
+* bas_ic ya?
+* ye_p.
+    * hmm more?^{nice eye} i know.
+      * moorrre? ```code block``` yep.
+      * no let's wait a bit here..
+        + moore numbered?
+        + no let's wait a bit here..
+      * let's go back.
+     * kinda bak?
+  * more kinda bak?
+* fully back.
+
++ some `ORDERED` list.
+* bas_ic ya?
+* ye_p.
+    * hmm more?
+      * moorrre?
+      * no let's wait a bit here..
+        + moore numbered?
+        + no let's wait a bit here..
+      * let's go back.
+     * kinda bak?
+  * more kinda bak?
+* fully back.
+
+
 this is just some innocent paragraphs^{yep :) [mybook]]}. this is just some
 innocent paragraphs.  this is just some innocent paragraphs. this is just some
 innocent paragraphs.  here [mybook] and [mybook] this is just some innocent
