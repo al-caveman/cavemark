@@ -160,3 +160,12 @@ parser.reset(html=True, footnotes=True, bibliography=True)
   - [ ] Documentation.
   - [ ] Figure out a license.  Currently I am consiering GPLv3, or
     [GGPLv3](https://cave.mn/page/1/).
+
+# Limitations
+
+I'm also thinking about whether, or how to, remove these limitations:
+
+  - Can't put multiple paragraphs as a single listing item.
+  - Emphasazation cannot span codes and footnotes.  E.g. `_abc \`abc\` abc_` is
+    a case where emphasazation does not apply.  Instead, you hould `_abc_
+    \`abc\' _abc_`.

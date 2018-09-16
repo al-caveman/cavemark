@@ -234,14 +234,15 @@ class CaveMark:
 
     def compile_re(self):
         re_ignore_pattern = r'(?:{})'.format(
-            r'|'.join([
+            r'|'.join(
                 r'(?<!{0})({1})(.*?)((?<!{0}){2})'.format(
                     re.escape(self.escape),
                     re.escape(o),
                     re.escape(self.ignore[o]),
 
                 )
-            for o in self.ignore])
+                for o in self.ignore
+            )
         )
         self._re_ignore = re.compile(re_ignore_pattern, flags=re.DOTALL)
         self._re_ignore_unescs = {
@@ -324,6 +325,7 @@ class CaveMark:
         """
         while len(self._state) > 1:
             self._close_pending()
+
         if len(self._resources_pending_boxes):
             self._html += self._resources_pending_boxes
             self._resources_pending_boxes = []
@@ -333,15 +335,13 @@ class CaveMark:
                 self.frmt_footnote_cnt.format(
                     **{
                         'TEXT':''.join(
-                            [
-                                self.frmt_footnote_item.format(
-                                    **{
-                                        'TEXT' :fn[1],
-                                        'INDEX':fn[0]
-                                    }
-                                )
-                                for fn in self.footnotes
-                            ]
+                            self.frmt_footnote_item.format(
+                                **{
+                                    'TEXT' :fn[1],
+                                    'INDEX':fn[0]
+                                }
+                            )
+                            for fn in self.footnotes
                         )
                     }
                 )
@@ -621,7 +621,6 @@ class CaveMark:
         for match_unit_border in self._re_unit_sep.finditer(text):
             start, endo = match_unit_border.span()
             self._parse_unit(text[prev_endo:start])
-            self._close_pending()
             self.flush(footnotes=False, bibliography=False)
             prev_endo = endo
         self._parse_unit(text[prev_endo:])

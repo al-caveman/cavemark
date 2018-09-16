@@ -234,14 +234,15 @@ class CaveMark:
 
     def compile_re(self):
         re_ignore_pattern = r'(?:{})'.format(
-            r'|'.join([
+            r'|'.join(
                 r'(?<!{0})({1})(.*?)((?<!{0}){2})'.format(
                     re.escape(self.escape),
                     re.escape(o),
                     re.escape(self.ignore[o]),
 
                 )
-            for o in self.ignore])
+                for o in self.ignore
+            )
         )
         self._re_ignore = re.compile(re_ignore_pattern, flags=re.DOTALL)
         self._re_ignore_unescs = {
@@ -333,15 +334,13 @@ class CaveMark:
                 self.frmt_footnote_cnt.format(
                     **{
                         'TEXT':''.join(
-                            [
-                                self.frmt_footnote_item.format(
-                                    **{
-                                        'TEXT' :fn[1],
-                                        'INDEX':fn[0]
-                                    }
-                                )
-                                for fn in self.footnotes
-                            ]
+                            self.frmt_footnote_item.format(
+                                **{
+                                    'TEXT' :fn[1],
+                                    'INDEX':fn[0]
+                                }
+                            )
+                            for fn in self.footnotes
                         )
                     }
                 )
@@ -572,6 +571,8 @@ class CaveMark:
             m = self._re_heading.match(text)
             if m:
                 self._heading_level = len(m.group(1)) + self.heading_offset
+                if self._heading_level > 6:
+                    self._heading_level = 6
                 heading = m.group(2)
                 self._html.append(
                     self.frmt_heading_prefix.format(

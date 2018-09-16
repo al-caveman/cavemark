@@ -46,8 +46,14 @@ texts_ i guess.
             * this is some nested list
             * this is some nested list
             * this is some nested list
+    * this is _some `with code` nested_ list
     * this is some nested list
-    * this is some nested list
+
+* this is a liset with paragraphs in it.
+
+  2nd paragraph in 1st list.
+
+* 2nd item in same list
 
 
 ```
