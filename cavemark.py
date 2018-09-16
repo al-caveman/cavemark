@@ -572,6 +572,8 @@ class CaveMark:
             m = self._re_heading.match(text)
             if m:
                 self._heading_level = len(m.group(1)) + self.heading_offset
+                if self._heading_level > 6:
+                    self._heading_level = 6
                 heading = m.group(2)
                 self._html.append(
                     self.frmt_heading_prefix.format(

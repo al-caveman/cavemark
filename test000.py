@@ -5,6 +5,10 @@ s = '''
 
 ## this is some 2nd level^{2nd level title also badass} title.
 
+###### H6 heading (with offset should be H7; will cavemark make it H6?)
+
+####### H7 heading (with offset should be H8; will cavemark make it H6?)
+
 look [myimage] is pretty.  no?  also this link [mylink] is also niceee.  agree
 right^{nice footnote with `print(x);` ;)}.  also `this^{not footnote} is some
 code`.
