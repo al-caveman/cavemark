@@ -136,7 +136,7 @@ parser.reset(html=True, footnotes=True, bibliography=True)
   - [x] Emphasized texts.
   - [x] Inline citations.
   - [x] Footnotes.
-  - [ ] Nested ordered/unordered lists.
+  - [x] Nested ordered/unordered lists.
   - [x] Automatic placement of floats (e.g. figures) based on your citations.
     These are called box resources.
   - [x] Both inline and block codes.
