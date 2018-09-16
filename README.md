@@ -3,7 +3,7 @@
 CaveMark is the fastest pure-Python markdown parser.  Aside from its superior
 speed, it differs from the rest by the fact that it follows typesetting
 principles (e.g.  generates LaTeX-like output.  So, you don't need to worry
-about figure/quote/theorem/definition/figure indexes), while maintain the
+about figure/quote/theorem/definition/figure indexes), while maintaining the
 simple markdown-ish syntax.  
 
 The typesetting aspect, and the simple markdown-ish syntax makes CaveMark the
@@ -30,7 +30,7 @@ where it's noticeably faster than
 [mistune](https://github.com/lepture/mistune) (latter used to be the fastest,
 no longer now):
 
-Results with Python (repeated 3 times):
+Results with CPython (repeated 3 times):
 
 ```
 cavemark     : 6.646010168 seconds
