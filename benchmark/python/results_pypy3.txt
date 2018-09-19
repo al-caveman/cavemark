@@ -1,11 +1,11 @@
-cavemark     : 1.2484515040000002 seconds
-mistune      : 9.08504784 seconds
-difference   : -7.8365963359999995 seconds
+cavemark     : 1.167056753 seconds
+mistune      : 9.471078989 seconds
+difference   : -8.304022236 seconds
 
-cavemark     : 1.219511551 seconds
-mistune      : 8.463517529999999 seconds
-difference   : -7.244005978999999 seconds
+cavemark     : 1.095740879 seconds
+mistune      : 9.800921726 seconds
+difference   : -8.705180847000001 seconds
 
-cavemark     : 1.223279422 seconds
-mistune      : 8.776520554 seconds
-difference   : -7.553241131999999 seconds
+cavemark     : 1.0966438090000001 seconds
+mistune      : 9.421558765 seconds
+difference   : -8.324914956 seconds

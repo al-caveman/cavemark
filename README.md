@@ -33,33 +33,33 @@ no longer now):
 Results with CPython (repeated 3 times):
 
 ```
-cavemark     : 6.646010168 seconds
-mistune      : 12.874110873 seconds
-difference   : -6.228100704999999 seconds
+cavemark     : 6.717382162 seconds
+mistune      : 13.820315891000002 seconds
+difference   : -7.102933729000002 seconds
 
-cavemark     : 6.723984773000001 seconds
-mistune      : 13.174228654 seconds
-difference   : -6.450243881 seconds
+cavemark     : 6.620183577 seconds
+mistune      : 13.586179369 seconds
+difference   : -6.965995792 seconds
 
-cavemark     : 6.67836511 seconds
-mistune      : 13.056082964000002 seconds
-difference   : -6.377717854000002 seconds
+cavemark     : 6.562046711 seconds
+mistune      : 13.491889057000002 seconds
+difference   : -6.929842346000002 seconds
 ```
 
 Results with PyPy3 (repeated 3 times):
 
 ```
-cavemark     : 1.2484515040000002 seconds
-mistune      : 9.08504784 seconds
-difference   : -7.8365963359999995 seconds
+cavemark     : 1.167056753 seconds
+mistune      : 9.471078989 seconds
+difference   : -8.304022236 seconds
 
-cavemark     : 1.219511551 seconds
-mistune      : 8.463517529999999 seconds
-difference   : -7.244005978999999 seconds
+cavemark     : 1.095740879 seconds
+mistune      : 9.800921726 seconds
+difference   : -8.705180847000001 seconds
 
-cavemark     : 1.223279422 seconds
-mistune      : 8.776520554 seconds
-difference   : -7.553241131999999 seconds
+cavemark     : 1.0966438090000001 seconds
+mistune      : 9.421558765 seconds
+difference   : -8.324914956 seconds
 ```
 
 I will do a final benchmark later on when I finish the to-do tasks (some
@@ -166,13 +166,3 @@ parser.reset(html=True, footnotes=True, bibliography=True)
 I'm also thinking about whether, or how to, remove these limitations:
 
   - Can't put multiple paragraphs as a single listing item.
-  - Emphasazation cannot span codes and footnotes.  E.g:
-  
-    ```
-    _abc `abc` abc_
-    ```
-    is a case where emphasazation does not apply.  Instead, you should:
-
-    ```
-    _abc_ `abc` _abc_
-    ```

@@ -9,7 +9,7 @@ s = '''
 
 ####### H7 heading (with offset should be H8; will cavemark make it H6?)
 
-look [myimage] is pretty.  no?  also this link [mylink] is also niceee.  agree
+look [myimage] is pretty.  no?  also _this link [mylink] is also niceee.  agree
 right^{nice footnote with `print(x);` ;)}.  also `this^{not footnote} is some
 code`.
 
@@ -19,10 +19,14 @@ for i in range(0, 100):
     # hell yeah!
 ```
 
-* some `UNORDERED` list.
+look [myimage] is pretty.  no?  also this link [mylink] is also niceee.  agree
+right^{nice footnote with `print(x);` ;)}.  also `this^{not footnote} is some
+code`.
+
+* so_me `UNORDERED` li_st.
 * bas_ic ya?
 * ye_p.
-    * hmm more?^{nice aye} i know.
+    * hmm mo_re?^{nice aye} i kn_ow.
       * moorrre? ```code block``` yep.
       * no let's wait a bit here..
         + moore numbered?
@@ -30,6 +34,15 @@ for i in range(0, 100):
       * let's go back.
      * kinda bak?
   * more kinda bak?
+
+  testing testing testing
+  testing testing testing
+  testing testing testing
+
+  testing testing testing
+  testing testing testing
+  testing testing testing
+
 * fully back.
 
 + some `ORDERED` list.

@@ -16,12 +16,12 @@ class CaveMark:
         heading_offset=None, frmt_footnote_ss=None, frmt_footnote_item=None,
         frmt_footnote_cnt=None, frmt_cite_inline=None, frmt_cite_box=None,
         frmt_bibliography_item=None, frmt_bibliography_cnt=None,
-        frmt_paragraph_prefix=None, frmt_paragraph_suffix=None, frmt_emph=None,
-        frmt_ignore=None, frmt_code_inline=None, frmt_code_box=None,
-        frmt_olist_prefix=None, frmt_olist_suffix=None, frmt_ulist_prefix=None,
-        frmt_ulist_suffix=None, frmt_list_item_prefix=None,
-        frmt_list_item_suffix=None, frmt_heading_prefix=None,
-        frmt_heading_suffix=None,
+        frmt_paragraph_prefix=None, frmt_paragraph_suffix=None,
+        frmt_emph_prefix=None, frmt_emph_suffix=None, frmt_ignore=None,
+        frmt_code_inline=None, frmt_code_box=None, frmt_olist_prefix=None,
+        frmt_olist_suffix=None, frmt_ulist_prefix=None, frmt_ulist_suffix=None,
+        frmt_list_item_prefix=None, frmt_list_item_suffix=None,
+        frmt_heading_prefix=None, frmt_heading_suffix=None,
     ):
         # references/resources dictionary
         if resources is None:
@@ -155,10 +155,14 @@ class CaveMark:
             self.frmt_paragraph_suffix = frmt_paragraph_suffix
 
         # emphasized text format
-        if frmt_emph is None:
-            self.frmt_emph = '<em>{TEXT}</em>'
+        if frmt_emph_prefix is None:
+            self.frmt_emph_prefix = '<em>'
         else:
-            self.frmt_emph = frmt_emph
+            self.frmt_emph_prefix = frmt_emph_prefix
+        if frmt_emph_suffix is None:
+            self.frmt_emph_suffix = '</em>'
+        else:
+            self.frmt_emph_suffix = frmt_emph_suffix
 
         # ignore format
         if frmt_ignore is None:
@@ -221,6 +225,7 @@ class CaveMark:
         # states
         self._state = [S_START]
         self._html = []
+        self._emph_open = False
         self._resources_last_index = {}
         self._resources_pending_boxes = []
         self._resources_bib_flushed = set()
@@ -259,7 +264,7 @@ class CaveMark:
             flags=re.DOTALL
         )
         self._re_emph       = re.compile(
-            r'(?<!{0})_(.*?\S+.*?)(?<!{0})_'.format(re.escape(self.escape)),
+            r'(?<!{0})_'.format(re.escape(self.escape)),
             flags=re.DOTALL
         )
         self._re_cite       = re.compile(
@@ -325,10 +330,7 @@ class CaveMark:
         """
         while len(self._state) > 1:
             self._close_pending()
-
-        if len(self._resources_pending_boxes):
-            self._html += self._resources_pending_boxes
-            self._resources_pending_boxes = []
+        self._flush_boxes()
 
         if footnotes:
             self._html.append(
@@ -402,7 +404,15 @@ class CaveMark:
         self._html = []
         return html
 
-    def _parse_resource(self, m):
+    def _parse_emph(self, m):
+        if self._emph_open:
+            self._emph_open = False
+            return self.frmt_emph_suffix
+        else:
+            self._emph_open = True
+            return self.frmt_emph_prefix
+
+    def _parse_cite(self, m):
         res_id = m.group(1)
         if res_id in self.resources:
             res_type = self.resources[res_id]['TYPE']
@@ -423,8 +433,6 @@ class CaveMark:
                     **self.resources[res_id],
                     **{'ID':res_id, 'INDEX':res_index}
                 )
-            else:
-                res_html = '[{}]'.format(res_id)
 
             # in-box resource expansion
             if (
@@ -444,13 +452,13 @@ class CaveMark:
     def _parse_sentence(self, sentence):
         # parse emphasized texts
         sentence = self._re_emph.sub(
-            self.frmt_emph.format(**{'TEXT':r'\g<1>'}),
+            self._parse_emph,
             sentence
         )
 
         # parse cited resources
         sentence = self._re_cite.sub(
-            self._parse_resource,
+            self._parse_cite,
             sentence
         )
 
@@ -598,6 +606,9 @@ class CaveMark:
 
     def _close_pending(self):
         state = self._state.pop()
+        if self._emph_open:
+            self._html.append(self.frmt_emph_suffix)
+            self._emph_open = False
         if state == S_HEADING_IN:
             self._html.append(
                 self.frmt_heading_suffix.format(
@@ -616,11 +627,18 @@ class CaveMark:
                     self._html.append(self.frmt_ulist_suffix)
                 del self._list[-1]
 
+    def _flush_boxes(self):
+        if len(self._resources_pending_boxes):
+            self._html += self._resources_pending_boxes
+            self._resources_pending_boxes = []
+
     def _parse_units(self, text):
         prev_endo = 0
         for match_unit_border in self._re_unit_sep.finditer(text):
             start, endo = match_unit_border.span()
-            self._parse_unit(text[prev_endo:start])
-            self.flush(footnotes=False, bibliography=False)
+            text_unit = text[prev_endo:start]
+            self._parse_unit(text_unit)
+            self._close_pending()
+            self._flush_boxes()
             prev_endo = endo
         self._parse_unit(text[prev_endo:])
