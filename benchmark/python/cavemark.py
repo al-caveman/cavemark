@@ -29,7 +29,8 @@ class CaveMark:
     def __init__(
         self, resources=None, escape=None, ignore=None, ignore_unescape=None,
         heading_offset=None, frmt_footnote_ss=None, frmt_footnote_item=None,
-        frmt_footnote_cnt=None, frmt_cite_inline=None, frmt_cite_box=None,
+        frmt_footnote_cnt=None, frmt_cite_inline=None,
+        frmt_cite_inline_error=None, frmt_cite_box=None,
         frmt_bibliography_item=None, frmt_bibliography_cnt=None,
         frmt_paragraph_prefix=None, frmt_paragraph_suffix=None,
         frmt_emph_prefix=None, frmt_emph_suffix=None, frmt_ignore=None,
@@ -118,6 +119,12 @@ class CaveMark:
             }
         else:
             self.frmt_cite_inline = frmt_cite_inline
+
+        # errornous inline citation format
+        if frmt_cite_inline_error is None:
+            self.frmt_cite_inline_error = '<strong>[err: {ERROR}]</strong>'
+        else:
+            self.frmt_cite_inline_error = frmt_cite_inline_notfound
 
         # box citation format.
         if frmt_cite_box is None:
@@ -249,6 +256,7 @@ class CaveMark:
         self._footnotes_last_index = 0
         self._list = [[-1, None]]
         self.resources_cited = {}
+        self.resources_new = {}
         self.footnotes = []
 
         # compile all regular expressions
@@ -301,6 +309,18 @@ class CaveMark:
             ),
             flags=re.DOTALL
         )
+        self._re_resource_id = re.compile(
+            r'^\s*(\S+)\s*\n\s*\n'.format(
+                re.escape(self.escape)
+            ),
+            flags=re.DOTALL
+        )
+        self._re_resource_items = re.compile(
+            r'\n\s*\n(\S+?) *(?<!{0})\= *(.*?)(?=\n\s*\n|$)'.format(
+                re.escape(self.escape)
+            ),
+            flags=re.DOTALL
+        )
 
     def parse(self, text):
         """Parse a string text, as per the semantics of CaveMark.
@@ -328,6 +348,17 @@ class CaveMark:
             if ignr_open == '^{':
                 self._state.append(S_FOOTNOTE)
                 self._parse_units(ignr_text)
+            elif ignr_open == '{':
+                m_res_id = self._re_resource_id.match(ignr_text)
+                if m_res_id:
+                    res_id = m_res_id.group(1)
+                    resource_tmp = {}
+                    for m_res_item in self._re_resource_items.finditer(
+                        ignr_text
+                    ):
+                        res_key, res_value = m_res_item.groups()
+                        resource_tmp[res_key] = res_value
+                self.resources_new[res_id] = resource_tmp
             else:
                 if ignr_open in self.frmt_ignore:
                     ignr_text = self.frmt_ignore[ignr_open].format(
@@ -368,9 +399,10 @@ class CaveMark:
             self.footnotes = []
 
         if bibliography:
+            resources_all = {**self.resources,**self.resources_new}
             bib_ids = [
                 k for k in self.resources_cited if (
-                    self.resources[k]['TYPE'] in self.frmt_bibliography_item
+                    resources_all[k]['TYPE'] in self.frmt_bibliography_item
                     and k not in self._resources_bib_flushed
                 )
             ]
@@ -383,13 +415,13 @@ class CaveMark:
                 for bib_id in sorted_bib_ids:
                     html_bib_items.append(
                         self.frmt_bibliography_item[
-                            self.resources[bib_id]['TYPE']
+                            resources_all[bib_id]['TYPE']
                         ].format(
                             **{
                                 'ID'   :bib_id,
                                 'INDEX':self.resources_cited[bib_id],
                             },
-                            **self.resources[bib_id]
+                            **resources_all[bib_id]
                         )
                     )
                 self._html.append(
@@ -431,38 +463,63 @@ class CaveMark:
 
     def _parse_cite(self, m):
         res_id = m.group(1)
-        if res_id in self.resources:
-            res_type = self.resources[res_id]['TYPE']
 
-            # find resource's index
-            if res_id in self.resources_cited:
-                res_index = self.resources_cited[res_id]
-            else:
-                if res_type in self._resources_last_index:
-                    self._resources_last_index[res_type] += 1
+        if res_id in self.resources_new:
+            resources_chosen = self.resources_new
+        elif res_id in self.resources:
+            resources_chosen = self.resources
+        else:
+            resources_chosen = None
+
+        if resources_chosen:
+            if 'TYPE' in resources_chosen[res_id]:
+                res_type = resources_chosen[res_id]['TYPE']
+
+                # find resource's index
+                if res_id in self.resources_cited:
+                    res_index = self.resources_cited[res_id]
                 else:
-                    self._resources_last_index[res_type] = 1
-                res_index = self._resources_last_index[res_type]
+                    if res_type in self._resources_last_index:
+                        self._resources_last_index[res_type] += 1
+                    else:
+                        self._resources_last_index[res_type] = 1
+                    res_index = self._resources_last_index[res_type]
 
-            # inline resource expansion
-            if res_type in self.frmt_cite_inline:
-                res_html = self.frmt_cite_inline[res_type].format(
-                    **self.resources[res_id],
-                    **{'ID':res_id, 'INDEX':res_index}
+                # inline resource expansion
+                if res_type in self.frmt_cite_inline:
+                    res_html = self.frmt_cite_inline[res_type].format(
+                        **resources_chosen[res_id],
+                        **{'ID':res_id, 'INDEX':res_index}
+                    )
+
+                # in-box resource expansion
+                if (
+                    res_id not in self.resources_cited
+                    and res_type in self.frmt_cite_box
+                ):
+                    try:
+                        res_html_box = self.frmt_cite_box[res_type].format(
+                            **resources_chosen[res_id],
+                            **{'ID':res_id, 'INDEX':res_index}
+                        )
+                        self._resources_pending_boxes.append(res_html_box)
+                    except KeyError as err:
+                        res_html = self.frmt_cite_inline_error.format(
+                            **{'ERROR':"resource '{}' lacks {}".format(
+                                res_id,
+                                err
+                            )}
+                        )
+
+                self.resources_cited[res_id] = res_index
+            else:
+                res_html = self.frmt_cite_inline_error.format(
+                    **{'ERROR':"resource '{}' lacks 'TYPE'".format(res_id)}
                 )
-
-            # in-box resource expansion
-            if (
-                res_id not in self.resources_cited
-                and res_type in self.frmt_cite_box
-            ):
-                res_html_box = self.frmt_cite_box[res_type].format(
-                    **self.resources[res_id],
-                    **{'ID':res_id, 'INDEX':res_index}
-                )
-                self._resources_pending_boxes.append(res_html_box)
-
-            self.resources_cited[res_id] = res_index
+        else:
+            res_html = self.frmt_cite_inline_error.format(
+                **{'ERROR':"resource '{}' not found".format(res_id)}
+            )
 
         return res_html
 
