@@ -1,3 +1,18 @@
+# Copyright 2018 caveman <toraboracaveman@protonmail.com>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import re
 
 # parser states
@@ -47,6 +62,7 @@ class CaveMark:
         self.ignore['```']              =  '```'
         self.ignore['`']                =  '`'
         self.ignore['^{']               =  '}'
+        self.ignore['{']                =  '}'
 
         # ignored text intervals to unescape
         if ignore_unescape is None:
@@ -56,6 +72,7 @@ class CaveMark:
         self.ignore_unescape.add('```')
         self.ignore_unescape.add('`')
         self.ignore_unescape.add('^{')
+        self.ignore_unescape.add('{')
 
         # offset heading level.  e.g. if offset=1, "# title" becomes
         # "<h2>title</h2>" instead of "<h1>..."
@@ -225,7 +242,7 @@ class CaveMark:
         # states
         self._state = [S_START]
         self._html = []
-        self._emph_start = True
+        self._emph_open = False
         self._resources_last_index = {}
         self._resources_pending_boxes = []
         self._resources_bib_flushed = set()
@@ -405,12 +422,12 @@ class CaveMark:
         return html
 
     def _parse_emph(self, m):
-        if self._emph_start:
-            self._emph_start = False
-            return self.frmt_emph_prefix
-        else:
-            self._emph_start = True
+        if self._emph_open:
+            self._emph_open = False
             return self.frmt_emph_suffix
+        else:
+            self._emph_open = True
+            return self.frmt_emph_prefix
 
     def _parse_cite(self, m):
         res_id = m.group(1)
@@ -433,8 +450,6 @@ class CaveMark:
                     **self.resources[res_id],
                     **{'ID':res_id, 'INDEX':res_index}
                 )
-            else:
-                res_html = '[{}]'.format(res_id)
 
             # in-box resource expansion
             if (
@@ -523,8 +538,6 @@ class CaveMark:
         # add footnote
         elif self._state[-1] == S_FOOTNOTE:
             # add formatted footnote index
-            if self._emph_start == False:
-                self._html.append(self.frmt_emph_suffix)
             self._footnotes_last_index += 1
             self._html.append(
                 self.frmt_footnote_ss.format(
@@ -534,8 +547,6 @@ class CaveMark:
                     }
                 )
             )
-            if self._emph_start == False:
-                self._html.append(self.frmt_emph_prefix)
 
             # format the footnote text into a temporary list
             footnote_text_temp = []
@@ -612,8 +623,9 @@ class CaveMark:
 
     def _close_pending(self):
         state = self._state.pop()
-        if self._emph_start == False:
+        if self._emph_open:
             self._html.append(self.frmt_emph_suffix)
+            self._emph_open = False
         if state == S_HEADING_IN:
             self._html.append(
                 self.frmt_heading_suffix.format(
