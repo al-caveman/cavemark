@@ -153,9 +153,9 @@ parser.reset(html=True, footnotes=True, bibliography=True)
 
   - [ ] Tables.
   - [ ] Full benchmark against [mistune](https://github.com/lepture/mistune)
-    and show who is the Big Daddy now ([early
+    and reaffirm the correct order ([early
     benchmarks](https://github.com/Al-Caveman/cavemark/blob/master/benchmark/)
-    done; CaveMark is faster so far!).
+    done; CaveMark kicks [mistune](https://github.com/lepture/mistune)'s ass!).
   - [ ] A few rough edges (e.g. how to report user errors when a cited resource
     does not exist).
   - [ ] Documentation.
