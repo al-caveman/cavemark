@@ -445,6 +445,7 @@ class CaveMark:
             self._resources_pending_boxes = []
             self._resources_bib_flushed = set()
             self.resources_cited = {}
+            self.resources_new = {}
 
     def get_html(self):
         """Get the HTML representation of parsed texts.
