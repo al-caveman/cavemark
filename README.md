@@ -125,10 +125,11 @@ parser.reset(html=True, footnotes=True, bibliography=True)
     [mistune](https://github.com/lepture/mistune), you (as a user posting
     texts in markdown) will need to write a tedius code to get close to what
     CaveMark does automatically.
-  - Also lightweight, efficient and scalable. E.g. you can split large markdown
+  - Lightweight, efficient and scalable. E.g. you can split large markdown
     files into many smaller chunks, and only load each chunk at once, while
     guaranteeing getting the same outcome as if you loaded the full file at
     once.  This is thanks to CaveMark's stateful design.
+  - Also tastes like liberty (licensed under GPLv3 or later).
 
  Currently, the following are supported:
 
@@ -158,8 +159,6 @@ parser.reset(html=True, footnotes=True, bibliography=True)
   - [ ] A few rough edges (e.g. how to report user errors when a cited resource
     does not exist).
   - [ ] Documentation.
-  - [ ] Figure out a license.  Currently I am consiering GPLv3, or
-    [GGPLv3](https://cave.mn/page/1/).
 
 # Limitations
 
