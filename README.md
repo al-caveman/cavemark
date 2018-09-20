@@ -11,7 +11,7 @@ easiest markdown variant to author documents in.  If you use others, such as
 [mistune](https://github.com/lepture/mistune) (which are not typesetting), you
 will end up wasting more time writing far larger texts to achieve what CaveMark
 does for you automatically.  Of course, CaveMark is also faster than
-[mistune](https://github.com/lepture/mistune) with 50% less code lines.
+[mistune](https://github.com/lepture/mistune) with 30% less code lines.
 
 You can read more about the typesetting aspect in the 1st column
 [here](https://cave.mn).  I will add complete documentation when CaveMark is
