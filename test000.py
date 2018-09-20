@@ -9,9 +9,20 @@ s = '''
 
 ####### H7 heading (with offset should be H8; will cavemark make it H6?)
 
-look [myimage] is pretty.  no?  also _this link [mylink] is also niceee.  agree
-right^{nice footnote with `print(x);` ;)}.  also `this^{not footnote} is some
-code`.
+{newimage
+
+TYPE  = image
+
+url =  https://cave.mn/pics/cat.png
+
+caption =  this is caveman's cat!
+
+alt = mug}
+
+look [myimage] is pretty.  no?  how about [newimage]? i just added it myself!
+also _this link [mylink] is also niceee.  agree right^{nice footnote with
+`print(x);` ;)}.  also `this^{not footnote} is some code`.  this resource is
+errornous [lolimadethisup].
 
 ```# this is some code block
 for i in range(0, 100):
@@ -37,15 +48,15 @@ code`.
 
   testing testing testing
   testing testing testing
-  testing testing testing
+  testing testing testing.
 
   testing testing testing
   testing testing testing
-  testing testing testing
+  testing testing testing.
 
 * fully back.
 
-testing testing testing testing testing testing testing testing testing
+testing testing testing testing testing testing testing testing testing.
 
 + some `ORDERED` list.
 + bas_ic ya?
