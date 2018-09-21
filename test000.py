@@ -9,9 +9,7 @@ s = '''
 
 ####### H7 heading (with offset should be H8; will cavemark make it H6?)
 
-{newimage
-
-TYPE  = image
+{image:newimage
 
 url =  https://cave.mn/pics/cat.png
 

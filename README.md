@@ -91,9 +91,7 @@ syntax:
 
 This is some paragraph^{this is some footnote}.  This _text is emphasized_.
 
-{myresource
-
-TYPE=image
+{image:myresource
 
 url=https://cave.mn/cat.png
 
