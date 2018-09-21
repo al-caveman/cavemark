@@ -92,19 +92,22 @@ syntax:
 This is some paragraph^{this is some footnote}.  This _text is emphasized_.
 
 {image:myresource
+url     = https://cave.mn/cat.png
+caption = caveman's cat.
+alt     = caveman's cat}
 
-url=https://cave.mn/cat.png
+This is another paragraph that cites [myresource].  CaveMark will expand
+[myresource] automatically based on its type.  E.g. if type is "image", it will
+become "Figure 1" with a proper link pointing to the image that will be placed
+also automatically after this paragraph.
 
-caption=caveman's cat
+A resource could be many other types, and you can easily as your own type and format it.  E.g. quote, theorem, lemma, table, etc.
 
-alt=caveman's cat}
-
-This is another paragraph that cites [myresource].  CaveMark will expand that
-resource automatically based on its type (e.g. it will become "Figure 1").
 CaveMark will also automatically place the figure alongside its caption after
-this apragraph.  Subsequent citations of [myresource] will not place the figure
-(to avoid duplicating it).  Of course, you can tell CaveMark to forget this and
-place figures again (if you want).
+this apragraph.  Subsequent citations of [myresource] will only expand to
+"Figure 1" with a link to the image where it was placed earlier, and not place
+the figure again (no duplicating it).  Of course, you can tell CaveMark to
+forget this and place figures again (if you want).
 
 CaveMark is stateful, and can generate HTML pages while still maintaing
 consistent citation/footnote counts.  It just works.  This gives you the

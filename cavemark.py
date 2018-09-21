@@ -308,9 +308,9 @@ class CaveMark:
             ),
             flags=re.DOTALL
         )
-        self._re_resource_id = re.compile(r'^\s*(\S+):(\S+)\s*\n\s*\n')
+        self._re_resource_id = re.compile(r'^\s*(\S+):(\S+)')
         self._re_resource_items = re.compile(
-            r'\n\s*\n(\S+?) *(?<!{0})\= *(.*?)(?=\n\s*\n|$)'.format(
+            r'\s+(\S+)\s+(?<!{0})\=\s+(.*?)(?=\s+\S+\s*(?<!{0})\=|$)'.format(
                 re.escape(self.escape)
             ),
             flags=re.DOTALL

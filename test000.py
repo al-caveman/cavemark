@@ -10,12 +10,11 @@ s = '''
 ####### H7 heading (with offset should be H8; will cavemark make it H6?)
 
 {image:newimage
-
-url =  https://cave.mn/pics/cat.png
-
-caption =  this is caveman's cat!
-
-alt = mug}
+url     = https://cave.mn/pics/cat.png
+caption = this is caveman's cat! some really long
+          caption that wraps multiple lines
+          like this.
+alt     = don't worry if u can't see this pic.  no biggie.}
 
 look [myimage] is pretty.  no?  how about [newimage]? i just added it myself!
 also _this link [mylink] is also niceee.  agree right^{nice footnote with
@@ -197,3 +196,4 @@ html = parser.get_html()
 #parser.reset(resources=True)
 with open('test000.html', 'w') as f:
     f.write(html)
+print(parser.resources_new)

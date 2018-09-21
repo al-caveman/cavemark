@@ -308,14 +308,9 @@ class CaveMark:
             ),
             flags=re.DOTALL
         )
-        self._re_resource_id = re.compile(
-            r'^\s*(\S+)\s*\n\s*\n'.format(
-                re.escape(self.escape)
-            ),
-            flags=re.DOTALL
-        )
+        self._re_resource_id = re.compile(r'^\s*(\S+):(\S+)')
         self._re_resource_items = re.compile(
-            r'\n\s*\n(\S+?) *(?<!{0})\= *(.*?)(?=\n\s*\n|$)'.format(
+            r'\s+(\S+)\s+(?<!{0})\=\s+(.*?)(?=\s+\S+\s*(?<!{0})\=|$)'.format(
                 re.escape(self.escape)
             ),
             flags=re.DOTALL
@@ -505,12 +500,13 @@ class CaveMark:
     def _parse_resource(self, text):
         m_res_id = self._re_resource_id.match(text)
         if m_res_id:
-            res_id = m_res_id.group(1)
-            resource_tmp = {}
+            res_type = m_res_id.group(1)
+            res_id = m_res_id.group(2)
+            resource_tmp = {'TYPE':res_type}
             for m_res_item in self._re_resource_items.finditer(text):
                 res_key, res_value = m_res_item.groups()
                 resource_tmp[res_key] = res_value
-        self.resources_new[res_id] = resource_tmp
+            self.resources_new[res_id] = resource_tmp
 
     def _parse_cite(self, m):
         res_id = m.group(1)
