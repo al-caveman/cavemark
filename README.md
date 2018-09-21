@@ -33,33 +33,33 @@ no longer now):
 Results with CPython (repeated 3 times):
 
 ```
-cavemark     : 7.8007057170000005 seconds
-mistune      : 16.14421859 seconds
-difference   : -8.343512873000002 seconds
+cavemark     : 7.5477250830000004 seconds
+mistune      : 13.808244271000001 seconds
+difference   : -6.260519188000001 seconds
 
-cavemark     : 7.57758824 seconds
-mistune      : 13.676145506 seconds
-difference   : -6.098557265999999 seconds
+cavemark     : 8.101437898999999 seconds
+mistune      : 14.601920661000001 seconds
+difference   : -6.5004827620000025 seconds
 
-cavemark     : 7.850794522 seconds
-mistune      : 14.272444081000002 seconds
-difference   : -6.421649559000001 seconds
+cavemark     : 7.769339457 seconds
+mistune      : 14.126084542000001 seconds
+difference   : -6.356745085000001 seconds
 ```
 
 Results with PyPy3 (repeated 3 times):
 
 ```
-cavemark     : 1.201506845 seconds
-mistune      : 9.824742759 seconds
-difference   : -8.623235913999999 seconds
+cavemark     : 1.2653777339999999 seconds
+mistune      : 9.957308523 seconds
+difference   : -8.691930789 seconds
 
-cavemark     : 1.19813921 seconds
-mistune      : 8.900979411 seconds
-difference   : -7.702840201 seconds
+cavemark     : 1.1717908750000001 seconds
+mistune      : 9.865782858 seconds
+difference   : -8.693991983 seconds
 
-cavemark     : 1.17185305 seconds
-mistune      : 9.107028176 seconds
-difference   : -7.935175126 seconds
+cavemark     : 1.1799479840000002 seconds
+mistune      : 9.488499085 seconds
+difference   : -8.308551101 seconds
 ```
 
 I will do a final benchmark later on when I finish the to-do tasks (some

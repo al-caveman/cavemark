@@ -19,8 +19,7 @@ import re
 S_START             = 0
 S_HEADING_IN        = 1
 S_PARAGRAPH_IN      = 2
-S_FOOTNOTE          = 3
-S_LIST_IN           = 4
+S_LIST_IN           = 3
 
 class CaveMark:
     """Create a new CaveMark string parser object,
@@ -346,19 +345,9 @@ class CaveMark:
                     ignr_text
                 )
             if ignr_open == '^{':
-                self._state.append(S_FOOTNOTE)
-                self._parse_units(ignr_text)
+                self._parse_footnote(ignr_text)
             elif ignr_open == '{':
-                m_res_id = self._re_resource_id.match(ignr_text)
-                if m_res_id:
-                    res_id = m_res_id.group(1)
-                    resource_tmp = {}
-                    for m_res_item in self._re_resource_items.finditer(
-                        ignr_text
-                    ):
-                        res_key, res_value = m_res_item.groups()
-                        resource_tmp[res_key] = res_value
-                self.resources_new[res_id] = resource_tmp
+                self._parse_resource(ignr_text)
             else:
                 if ignr_open in self.frmt_ignore:
                     ignr_text = self.frmt_ignore[ignr_open].format(
@@ -461,6 +450,67 @@ class CaveMark:
         else:
             self._emph_open = True
             return self.frmt_emph_prefix
+
+    def _parse_footnote(self, text):
+        # add formatted footnote index
+        self._footnotes_last_index += 1
+        self._html.append(
+            self.frmt_footnote_ss.format(
+                **{
+                    'INDEX':self._footnotes_last_index,
+                    'TEXT' :text,
+                }
+            )
+        )
+
+        # format the footnote text into a temporary list
+        footnote_text_temp = []
+        prev_endo = 0
+        for m in self._re_ignore.finditer(text):
+            start, endo = m.span()
+            matched         = [i for i in m.groups() if i is not None]
+            ignr_open       = matched[0]
+            ignr_text       = matched[1]
+            ignr_close      = matched[2]
+            footnote_text_temp.append(
+                self._parse_sentence(text[prev_endo:start])
+            )
+            if ignr_open in self.ignore_unescape:
+                ignr_text   = self._re_ignore_unescs[ignr_open].sub(
+                    r'\1',
+                    ignr_text
+                )
+            if ignr_open in self.frmt_ignore:
+                ignr_text = self.frmt_ignore[ignr_open].format(
+                    **{
+                        'OPEN'  : ignr_open,
+                        'TEXT'  : ignr_text,
+                        'CLOSE' : ignr_close,
+                    }
+                )
+            footnote_text_temp.append(ignr_text)
+            prev_endo = endo
+        footnote_text_temp.append(
+            self._parse_sentence(text[prev_endo:])
+        )
+
+        # finalize temporary list into a more usable list
+        self.footnotes.append(
+            (
+                self._footnotes_last_index,
+                ''.join(footnote_text_temp)
+            )
+        )
+
+    def _parse_resource(self, text):
+        m_res_id = self._re_resource_id.match(text)
+        if m_res_id:
+            res_id = m_res_id.group(1)
+            resource_tmp = {}
+            for m_res_item in self._re_resource_items.finditer(text):
+                res_key, res_value = m_res_item.groups()
+                resource_tmp[res_key] = res_value
+        self.resources_new[res_id] = resource_tmp
 
     def _parse_cite(self, m):
         res_id = m.group(1)
@@ -592,60 +642,6 @@ class CaveMark:
         # resume list text insertion
         elif self._state[-1] == S_LIST_IN:
             self._parse_list(self._parse_sentence(text))
-
-        # add footnote
-        elif self._state[-1] == S_FOOTNOTE:
-            # add formatted footnote index
-            self._footnotes_last_index += 1
-            self._html.append(
-                self.frmt_footnote_ss.format(
-                    **{
-                        'INDEX':self._footnotes_last_index,
-                        'TEXT' :text,
-                    }
-                )
-            )
-
-            # format the footnote text into a temporary list
-            footnote_text_temp = []
-            prev_endo = 0
-            for m in self._re_ignore.finditer(text):
-                start, endo = m.span()
-                matched         = [i for i in m.groups() if i is not None]
-                ignr_open       = matched[0]
-                ignr_text       = matched[1]
-                ignr_close      = matched[2]
-                footnote_text_temp.append(
-                    self._parse_sentence(text[prev_endo:start])
-                )
-                if ignr_open in self.ignore_unescape:
-                    ignr_text   = self._re_ignore_unescs[ignr_open].sub(
-                        r'\1',
-                        ignr_text
-                    )
-                if ignr_open in self.frmt_ignore:
-                    ignr_text = self.frmt_ignore[ignr_open].format(
-                        **{
-                            'OPEN'  : ignr_open,
-                            'TEXT'  : ignr_text,
-                            'CLOSE' : ignr_close,
-                        }
-                    )
-                footnote_text_temp.append(ignr_text)
-                prev_endo = endo
-            footnote_text_temp.append(
-                self._parse_sentence(text[prev_endo:])
-            )
-
-            # finalize temporary list into a more usable list
-            self.footnotes.append(
-                (
-                    self._footnotes_last_index,
-                    ''.join(footnote_text_temp)
-                )
-            )
-
-            del self._state[-1]
 
         elif self._state[-1] == S_START:
             # format basic stuff
