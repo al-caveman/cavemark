@@ -85,23 +85,34 @@ Here is a basic example: of a document written in CaveMark's markdown-variant
 syntax:
 
 ```markdown
-# This is some main heading
+# Main heading
 
-## A subheading like usual
+## Sub heading
 
-This is some paragraph^{this is some footnote}.  The footnote will be
-automatically parsed and placed properly.  You don't need to worry about it.
+This is some paragraph^{this is some footnote}.  This _text is emphasized_.
 
-This is another paragraph that cites this resource [myresource].  CaveMark will
-cite it properly based on its type.  E.g. if it's a book/paper, it will put it
-in a bibliography section, without you doing anything.  If it's an image, it
-will show it as a neat image, with caption and all goodies.
+{myresource
+
+TYPE=image
+
+url=https://cave.mn/cat.png
+
+caption=caveman's cat
+
+alt=caveman's cat}
+
+This is another paragraph that cites [myresource].  CaveMark will expand that
+resource automatically based on its type (e.g. it will become "Figure 1").
+CaveMark will also automatically place the figure alongside its caption after
+this apragraph.  Subsequent citations of [myresource] will not place the figure
+(to avoid duplicating it).  Of course, you can tell CaveMark to forget this and
+place figures again (if you want).
 
 CaveMark is stateful, and can generate HTML pages while still maintaing
 consistent citation/footnote counts.  It just works.  This gives you the
-liberty to also be able to split your large markdown text files into smaller
-ones, and feed them one after the other, in order to achieve higher
-scalability.
+liberty to also be able to split your large markdown text files, per article,
+into smaller ones, and feed them one after the other, and generate a consistent
+page with no duplication, correct resource indecies, etc..
 ```
 
 Here is an example of how to use CaveMark in your Python project:
@@ -112,6 +123,9 @@ parser = cavemark.CaveMark()
 parser.parse(text_input)
 parser.flush()
 html_output = parser.get_html()
+
+# if you want CaveMark to reset its state, so that indecies of cited resources
+# start from 1 again, and cited boxes/floats are placed again.
 parser.reset(html=True, footnotes=True, bibliography=True)
 ```
 
