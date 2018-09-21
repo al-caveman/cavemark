@@ -99,21 +99,11 @@ alt     = don't worry if u can't see this}
 This is another paragraph that cites [myresource].  CaveMark will expand
 [myresource] automatically based on its type.  E.g. if type is "image", it will
 become "Figure 1" with a proper link pointing to the image that will be placed
-also automatically after this paragraph.
+also automatically after this paragraph.  Figure 1 will be automatically placed
+after this paragraph alongisde its caption and all goodies.
 
-A resource could be many other types, and you can easily as your own type and format it.  E.g. quote, theorem, lemma, table, etc.
-
-CaveMark will also automatically place the figure alongside its caption after
-this apragraph.  Subsequent citations of [myresource] will only expand to
-"Figure 1" with a link to the image where it was placed earlier, and not place
-the figure again (no duplicating it).  Of course, you can tell CaveMark to
-forget this and place figures again (if you want).
-
-CaveMark is stateful, and can generate HTML pages while still maintaing
-consistent citation/footnote counts.  It just works.  This gives you the
-liberty to also be able to split your large markdown text files, per article,
-into smaller ones, and feed them one after the other, and generate a consistent
-page with no duplication, correct resource indecies, etc..
+A resource could be many other types, and you can easily as your own type and
+format it.  E.g. quote, theorem, lemma, table, etc.
 ```
 
 Here is an example of how to use CaveMark in your Python project:
