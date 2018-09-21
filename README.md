@@ -93,8 +93,8 @@ This is some paragraph^{this is some footnote}.  This _text is emphasized_.
 
 {image:myresource
 url     = https://cave.mn/cat.png
-caption = caveman's cat.
-alt     = caveman's cat}
+caption = caveman's cat
+alt     = don't worry if u can't see this}
 
 This is another paragraph that cites [myresource].  CaveMark will expand
 [myresource] automatically based on its type.  E.g. if type is "image", it will
