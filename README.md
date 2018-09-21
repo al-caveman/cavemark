@@ -103,7 +103,8 @@ also automatically after this paragraph.  Figure 1 will be automatically placed
 after this paragraph alongisde its caption and all goodies.
 
 A resource could be many other types, and you can easily as your own type and
-format it.  E.g. quote, theorem, lemma, table, etc.
+format it.  E.g. quote, theorem, lemma, table, etc.  Each will be automatically
+expanded properly Quote 1, Theorem 1., etc.
 ```
 
 Here is an example of how to use CaveMark in your Python project:
