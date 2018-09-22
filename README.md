@@ -155,7 +155,7 @@ parser.reset(html=True, footnotes=True, bibliography=True)
     CaveMark's will keep track of everything to keep your page consistent.
     E.g. consistent citation indexes, footnotes, no redundant figures, etc.
 
-# Todo (soon)
+# Todo
 
   - [ ] Tables.
   - [ ] Full benchmark against [mistune](https://github.com/lepture/mistune)

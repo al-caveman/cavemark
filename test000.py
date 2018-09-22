@@ -13,7 +13,14 @@ s = '''
 url     = https://cave.mn/pics/cat.png
 caption = this is caveman's cat! some really long
           caption that wraps multiple lines
-          like this.
+          like this.  `with code!{\}` and even a code block look:
+          ```
+          #include <stdio.h>
+          int main(){
+            printf("lol y not\\n");
+            return 0;
+          \}
+          ```
 alt     = don't worry if u can't see this pic.  no biggie.}
 
 look [myimage] is pretty.  no?  how about [newimage]? i just added it myself!
@@ -196,4 +203,3 @@ html = parser.get_html()
 #parser.reset(resources=True)
 with open('test000.html', 'w') as f:
     f.write(html)
-print(parser.resources_new)

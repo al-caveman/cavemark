@@ -26,9 +26,9 @@ class CaveMark:
     """
 
     def __init__(
-        self, resources=None, escape=None, ignore=None, ignore_unescape=None,
-        heading_offset=None, frmt_footnote_ss=None, frmt_footnote_item=None,
-        frmt_footnote_cnt=None, frmt_cite_inline=None,
+        self, resources=None, resources_ignore=None, escape=None, ignore=None,
+        ignore_unescape=None, heading_offset=None, frmt_footnote_ss=None,
+        frmt_footnote_item=None, frmt_footnote_cnt=None, frmt_cite_inline=None,
         frmt_cite_inline_error=None, frmt_cite_box=None,
         frmt_bibliography_item=None, frmt_bibliography_cnt=None,
         frmt_paragraph_prefix=None, frmt_paragraph_suffix=None,
@@ -40,39 +40,45 @@ class CaveMark:
     ):
         # references/resources dictionary
         if resources is None:
-            self.resources              = {}
+            self.resources = {}
         else:
-            self.resources              = resources
+            self.resources = resources
+
+        # fields in resources to ignore parsing them
+        if resources_ignore is None:
+            self.resources_ignore = {'TYPE', 'url'}
+        else:
+            self.resources_ignore = resources_ignore
 
         # escape char is used to literally print stuff
         if escape is None:
-            self.escape                 = '\\'
+            self.escape = '\\'
         else:
-            self.escape                 = escape     
+            self.escape = escape     
 
-        # opening/closing tags that define substrings to ignore parsing in
+        # opening/closing tags that define substrings to ignore parsing them
         if ignore is None:
-            self.ignore                 = {
-                '\[' : '\]',
-                '\(' : '\)',
-                '$$' : '$$',
-            }
+            self.ignore = [
+                ('\[' , '\]'),
+                ('\(' , '\)'),
+                ('$$' , '$$'),
+            ]
         else:
-            self.ignore                 = ignore
-        self.ignore['```']              =  '```'
-        self.ignore['`']                =  '`'
-        self.ignore['^{']               =  '}'
-        self.ignore['{']                =  '}'
+            self.ignore = ignore
+        self.ignore.append(('```', '```'))
+        self.ignore.append(('`', '`'))
+        self.ignore.append(('^{', '}'))
+        self.ignore.append(('{', '}'))
 
         # ignored text intervals to unescape
         if ignore_unescape is None:
-            self.ignore_unescape        = set()
+            self.ignore_unescape = set()
         else:
-            self.ignore_unescape        = ignore_unescape
-        self.ignore_unescape.add('```')
-        self.ignore_unescape.add('`')
-        self.ignore_unescape.add('^{')
-        self.ignore_unescape.add('{')
+            self.ignore_unescape = ignore_unescape
+        self.ignore_unescape.add(('```' , '```'))
+        self.ignore_unescape.add(('`'   , '`'  ))
+        self.ignore_unescape.add(('^{'  , '}'  ))
+        self.ignore_unescape.add(('{'   , '}'  ))
 
         # offset heading level.  e.g. if offset=1, "# title" becomes
         # "<h2>title</h2>" instead of "<h1>..."
@@ -190,9 +196,9 @@ class CaveMark:
         # ignore format
         if frmt_ignore is None:
             self.frmt_ignore = {
-                '\[' : '<strong>{OPEN}{TEXT}{CLOSE}</strong>',
-                '\(' : '<strong>{OPEN}{TEXT}{CLOSE}</strong>',
-                '$$' : '<strong>{OPEN}{TEXT}{CLOSE}</strong>',
+                ('\[', '\]') : '<strong>{OPEN}{TEXT}{CLOSE}</strong>',
+                ('\(', '\)') : '<strong>{OPEN}{TEXT}{CLOSE}</strong>',
+                ('$$', '$$') : '<strong>{OPEN}{TEXT}{CLOSE}</strong>',
             }
         else:
             self.frmt_ignore = frmt_ignore
@@ -202,8 +208,8 @@ class CaveMark:
             frmt_code_inline    = '<code>{TEXT}</code>'
         if frmt_code_box is None:
             frmt_code_box       = '<pre><code>{TEXT}</code></pre>'
-        self.frmt_ignore['`']   = frmt_code_inline
-        self.frmt_ignore['```'] = frmt_code_box
+        self.frmt_ignore[('`', '`')]     = frmt_code_inline
+        self.frmt_ignore[('```', '```')] = frmt_code_box
 
         # ordered lists format
         if frmt_olist_prefix is None:
@@ -267,20 +273,21 @@ class CaveMark:
                 r'(?<!{0})({1})(.*?)((?<!{0}){2})'.format(
                     re.escape(self.escape),
                     re.escape(o),
-                    re.escape(self.ignore[o]),
+                    re.escape(c),
 
                 )
-                for o in self.ignore
+                for o, c in self.ignore
             )
         )
+        self._re_unesc = re.compile(r'{}(.)'.format(re.escape(self.escape)))
         self._re_ignore = re.compile(re_ignore_pattern, flags=re.DOTALL)
         self._re_ignore_unescs = {
-            o : re.compile(
+            (o, c) : re.compile(
                 r'{}({})'.format(
                     re.escape(self.escape),
-                    re.escape(self.ignore[o])
+                    re.escape(c)
                 )
-            ) for o in self.ignore if o in self.ignore_unescape
+            ) for o, c in self.ignore if (o, c) in self.ignore_unescape
         }
         self._re_unit_sep   = re.compile(r'\n\s*\n')
         self._re_heading    = re.compile(
@@ -331,25 +338,25 @@ class CaveMark:
             start, endo = m.span()
             self._parse_units(text[prev_endo:start])
             matched         = [i for i in m.groups() if i is not None]
-            ignr_open       = matched[0]
+            ignr_o          = matched[0]
             ignr_text       = matched[1]
-            ignr_close      = matched[2]
-            if ignr_open in self.ignore_unescape:
-                ignr_text   = self._re_ignore_unescs[ignr_open].sub(
+            ignr_c          = matched[2]
+            if (ignr_o, ignr_c) in self.ignore_unescape:
+                ignr_text   = self._re_ignore_unescs[(ignr_o, ignr_c)].sub(
                     r'\1',
                     ignr_text
                 )
-            if ignr_open == '^{':
+            if ignr_o == '^{':
                 self._parse_footnote(ignr_text)
-            elif ignr_open == '{':
+            elif ignr_o == '{':
                 self._parse_resource(ignr_text)
             else:
-                if ignr_open in self.frmt_ignore:
-                    ignr_text = self.frmt_ignore[ignr_open].format(
+                if (ignr_o, ignr_c) in self.frmt_ignore:
+                    ignr_text = self.frmt_ignore[(ignr_o, ignr_c)].format(
                         **{
-                            'OPEN'  : ignr_open,
+                            'OPEN'  : ignr_o,
                             'TEXT'  : ignr_text,
-                            'CLOSE' : ignr_close,
+                            'CLOSE' : ignr_c,
                         }
                     )
                 self._html.append(ignr_text)
@@ -464,23 +471,23 @@ class CaveMark:
         for m in self._re_ignore.finditer(text):
             start, endo = m.span()
             matched         = [i for i in m.groups() if i is not None]
-            ignr_open       = matched[0]
+            ignr_o          = matched[0]
             ignr_text       = matched[1]
-            ignr_close      = matched[2]
+            ignr_c          = matched[2]
             footnote_text_temp.append(
                 self._parse_sentence(text[prev_endo:start])
             )
-            if ignr_open in self.ignore_unescape:
-                ignr_text   = self._re_ignore_unescs[ignr_open].sub(
+            if (ignr_o, ignr_c) in self.ignore_unescape:
+                ignr_text   = self._re_ignore_unescs[(ignr_o, ignr_c)].sub(
                     r'\1',
                     ignr_text
                 )
-            if ignr_open in self.frmt_ignore:
-                ignr_text = self.frmt_ignore[ignr_open].format(
+            if (ignr_o, ignr_c) in self.frmt_ignore:
+                ignr_text = self.frmt_ignore[(ignr_o, ignr_c)].format(
                     **{
-                        'OPEN'  : ignr_open,
+                        'OPEN'  : ignr_o,
                         'TEXT'  : ignr_text,
-                        'CLOSE' : ignr_close,
+                        'CLOSE' : ignr_c,
                     }
                 )
             footnote_text_temp.append(ignr_text)
@@ -507,6 +514,45 @@ class CaveMark:
                 res_key, res_value = m_res_item.groups()
                 resource_tmp[res_key] = res_value
             self.resources_new[res_id] = resource_tmp
+
+    def _parse_resource_fields(self, resource):
+        resource_parsed = {}
+        for key in resource:
+            if key in self.resources_ignore:
+                resource_parsed[key] = resource[key]
+                continue
+            text = resource[key]
+            text_parsed = []
+            prev_endo = 0
+            for m in self._re_ignore.finditer(text):
+                start, endo = m.span()
+                matched     = [i for i in m.groups() if i is not None]
+                ignr_o      = matched[0]
+                ignr_text   = matched[1]
+                ignr_c      = matched[2]
+                text_parsed.append(
+                    self._parse_sentence(text[prev_endo:start])
+                )
+                if (ignr_o, ignr_c) in self.ignore_unescape:
+                    ignr_text = self._re_ignore_unescs[(ignr_o, ignr_c)].sub(
+                        r'\1',
+                        ignr_text
+                    )
+                if (ignr_o, ignr_c) in self.frmt_ignore:
+                    ignr_text = self.frmt_ignore[(ignr_o, ignr_c)].format(
+                        **{
+                            'OPEN'  : ignr_o,
+                            'TEXT'  : ignr_text,
+                            'CLOSE' : ignr_c,
+                        }
+                    )
+                text_parsed.append(ignr_text)
+                prev_endo = endo
+            text_parsed.append(
+                self._parse_sentence(text[prev_endo:])
+            )
+            resource_parsed[key] = ''.join(text_parsed)
+        return resource_parsed
 
     def _parse_cite(self, m):
         res_id = m.group(1)
@@ -544,9 +590,12 @@ class CaveMark:
                     res_id not in self.resources_cited
                     and res_type in self.frmt_cite_box
                 ):
+                    resource_chosen_parsed = self._parse_resource_fields(
+                        resources_chosen[res_id]
+                    )
                     try:
                         res_html_box = self.frmt_cite_box[res_type].format(
-                            **resources_chosen[res_id],
+                            **resource_chosen_parsed,
                             **{'ID':res_id, 'INDEX':res_index}
                         )
                         self._resources_pending_boxes.append(res_html_box)
@@ -582,6 +631,9 @@ class CaveMark:
             self._parse_cite,
             sentence
         )
+
+        # unescape
+        sentence = self._re_unesc.sub(r'\1', sentence)
 
         return sentence
 
