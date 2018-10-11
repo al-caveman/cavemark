@@ -666,17 +666,18 @@ class CaveMark:
                 m = self._re_tag_close_listparagraph.search(text)
                 start, endo = m.span()
                 text = text[endo:]
+                self._listparagraph_close()
                 if m.group(_I_CLOSE_LISTPARAGRAPH) is not None:
                     while len(self._list) > 1:
                         self._list_close()
                 elif m.group(_I_CLOSE_LISTPARAGRAPH_PARAGRAPH) is not None:
+                    self._listparagraph_open()
                     self._paragraph_open()
                 elif m.group(_I_CLOSE_LISTPARAGRAPH_LIST_LEVEL) is not None:
                     self._list_item_new(
                         len(m.group(_I_CLOSE_LISTPARAGRAPH_LIST_LEVEL)),
                         m.group(_I_CLOSE_LISTPARAGRAPH_LIST_TYPE)
                     )
-                    self._listparagraph_close()
 
             # resume parsing heading
             elif self._state[-1] == _S_HEADING_IN:
