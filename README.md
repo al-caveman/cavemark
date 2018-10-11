@@ -124,3 +124,8 @@ If you open `test.html` using your browser, you will see something neat:
   - [ ] Tables.
   - [ ] Add referenceable heading indices.
   - [ ] Documentation.
+
+Note:  CaveMark will remain faster than
+[mistune](https://github.com/lepture/mistune) after adding those features.
+Design-wise, nothing in CaveMark's architecture indicates any slowdown when
+those missing features are added.
