@@ -18,7 +18,7 @@ other conventional markdown parser around.
 
 Speed is certainly not the main reason I made CaveMark, but I think the speed
 benchmark is a nice way to show you how honestly I made CaveMark.  E.g. I
-wasn't a lazy sucker that hoped people to just buy faster hard.
+wasn't a lazy sucker that just hoped hardware to become faster.
 
 Before CaveMark was born, [mistune](https://github.com/lepture/mistune) used to
 be the fastest pure-Python markdown parser.  So I am comparing against mistune
@@ -67,7 +67,9 @@ Ordered lists are defined by `+`, and the unordered by `*`.  E.g.:
     + another ordered item.
 ```
 
-The most unique bit (syntax-wise) is how resources are defined:
+The most interesting part of CaveMark is how it defines _resources_.  Below is
+an example where a figure is defined.  This figure can then be cited later in
+the document (as shown later in this section).
 
 ```
 image  : myimage
