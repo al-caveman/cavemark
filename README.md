@@ -112,6 +112,8 @@ with open('test.html', 'w') as f:
 
 If you open `test.html` using your browser, you will see something neat:
 
+![rendered output](https://github.com/al-caveman/cavemark/test001.png)
+
 * `[myimage]` automatically expands into _Figure 1_, and is clickable.
 * `myimage` figure will be shown after the paragraph it is cited, alongside
   captions, figure index, bookmark, and everything!
