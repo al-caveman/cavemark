@@ -7,10 +7,10 @@ If you don't know what's a typesetting parser read [this
 ](https://en.wikipedia.org/wiki/Typesetting).  I don't know any typesetting
 markdown parser for Python.  So maybe CaveMark is the only one.  I know about
 [Madoko](https://www.madoko.net/), but its syntax sucks and I guess it's not a
-python module (JavaScript).  I never used Madoko.
+Python module (JavaScript).  I never used Madoko.
 
 This typesetting aspect makes CaveMark the easiest way to allow you write
-pretty documents for your blog/website/whatever. than, say, mistune or any
+pretty documents for your blog/website/whatever, than, say, mistune or any
 other conventional markdown parser around.
 
 
@@ -54,7 +54,7 @@ cavemark: 1.703783539 seconds (5.3 times faster!)
 # Syntax
 
 `#` defines section headings.  E.g. `# heading` becomes `<h1>heading</h1>`, `##
-heading` becomes ``<h2>heading</h2>`.
+heading` becomes `<h2>heading</h2>`.
 
 `_` emphasizes texts.  E.g.  `_this_` = _this_.
 
