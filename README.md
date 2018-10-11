@@ -106,7 +106,7 @@ parser.parse(text_input)
 parser.flush()
 html_output = parser.get_html()
 
-with open('test.html') as f:
+with open('test.html', 'w') as f:
     f.write(html_output)
 ```
 
