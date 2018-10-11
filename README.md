@@ -105,9 +105,12 @@ parser = cavemark.CaveMark()
 parser.parse(text_input)
 parser.flush()
 html_output = parser.get_html()
+
+with open('test.html') as f:
+    f.write(html_output)
 ```
 
-Which will show something neat:
+If you open `test.html` using your browser, you will see something neat:
 
 * `[myimage]` automatically expands into _Figure 1_, and is clickable.
 * `myimage` figure will be shown after the paragraph it is cited, alongside
