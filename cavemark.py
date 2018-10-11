@@ -16,27 +16,87 @@
 import re
 
 # parser states
-S_START             = 0
-S_HEADING_IN        = 1
-S_PARAGRAPH_IN      = 2
-S_LIST_IN           = 3
+_S_START                            = 0
+_S_PARAGRAPH_IN                     = 1
+_S_EMPHASIZE_IN                     = 2
+_S_CITATION_IN                      = 3
+_S_HEADING_IN                       = 4
+_S_LIST_IN                          = 5
+_S_LISTPARAGRAPH_IN                 = 6
+_S_RESOURCE_IN                      = 7
+_S_RESOURCE_IGNORED_KEY_IN          = 8
+_S_CODE_IN                          = 9
+
+# tag indices
+_I_OPEN_ANY_SEP                     = 1
+_I_OPEN_ANY_EMPHASIZE               = 2
+_I_OPEN_ANY_CITATION                = 3
+_I_OPEN_ANY_HEADING                 = 4
+_I_OPEN_ANY_LIST_LEVEL              = 5
+_I_OPEN_ANY_LIST_TYPE               = 6
+_I_OPEN_ANY_RESOURCE_TYPE           = 7
+_I_OPEN_ANY_RESOURCE_ID             = 8
+_I_OPEN_ANY_CODE                    = 9
+
+_I_CLOSE_HEADING                    = 1
+_I_CLOSE_HEADING_EMPHASIZE          = 2
+_I_CLOSE_HEADING_CITATION           = 3
+_I_CLOSE_HEADING_CODE               = 4
+
+_I_CLOSE_LIST_PARAGRAPH             = 1
+_I_CLOSE_LIST                       = 2
+_I_CLOSE_LIST_EMPHASIZE             = 3
+_I_CLOSE_LIST_CITATION              = 4
+_I_CLOSE_LIST_LIST_LEVEL            = 5
+_I_CLOSE_LIST_LIST_TYPE             = 6
+_I_CLOSE_LIST_CODE                  = 7
+
+_I_CLOSE_LISTPARAGRAPH_PARAGRAPH    = 1
+_I_CLOSE_LISTPARAGRAPH              = 2
+_I_CLOSE_LISTPARAGRAPH_LIST_LEVEL   = 3
+_I_CLOSE_LISTPARAGRAPH_LIST_TYPE    = 4
+
+_I_CLOSE_PARAGRAPH                  = 1
+_I_CLOSE_PARAGRAPH_EMPHASIZE        = 2
+_I_CLOSE_PARAGRAPH_CITATION         = 3
+_I_CLOSE_PARAGRAPH_CODE             = 4
+
+_I_CLOSE_RESOURCE                   = 1
+_I_CLOSE_RESOURCE_ENTRY_KEY         = 2
+_I_CLOSE_RESOURCE_EMPHASIZE         = 3
+_I_CLOSE_RESOURCE_CITATION          = 4
+_I_CLOSE_RESOURCE_CODE              = 5
+
+_I_CLOSE_RESOURCEIGNK               = 1
+_I_CLOSE_RESOURCEIGNK_ENTRY_KEY     = 2
+
+_I_CLOSE_EMPHASIZE                  = 1
+_I_CLOSE_EMPHASIZE_CITATION         = 2
+_I_CLOSE_EMPHASIZE_CODE             = 3
+
+_I_CLOSE_CITATION                   = 1
+
+_I_CLOSE_CODE                       = 1
 
 class CaveMark:
     """Create a new CaveMark string parser object,
     """
 
     def __init__(
-        self, resources=None, resources_ignore=None, escape=None, ignore=None,
-        ignore_unescape=None, heading_offset=None, frmt_footnote_ss=None,
-        frmt_footnote_item=None, frmt_footnote_cnt=None, frmt_cite_inline=None,
-        frmt_cite_inline_error=None, frmt_cite_box=None,
-        frmt_bibliography_item=None, frmt_bibliography_cnt=None,
+        self, resources=None, resource_keys_ignored=None,
+        resource_counters=None, escape=None, code=None, code_unescape=None,
+        heading_offset=None, frmt_cite_inline=None, frmt_cite_box=None,
+        frmt_cite_error_inline=None, frmt_cite_error_box=None,
+        frmt_bibliography_prefix=None, frmt_bibliography_suffix=None,
+        frmt_bibliography_item=None, frmt_bibliography_error_item=None,
+        frmt_footnote_prefix=None, frmt_footnote_suffix=None,
+        frmt_footnote_item=None, frmt_footnote_error_item=None,
         frmt_paragraph_prefix=None, frmt_paragraph_suffix=None,
-        frmt_emph_prefix=None, frmt_emph_suffix=None, frmt_ignore=None,
-        frmt_code_inline=None, frmt_code_box=None, frmt_olist_prefix=None,
-        frmt_olist_suffix=None, frmt_ulist_prefix=None, frmt_ulist_suffix=None,
+        frmt_emph_prefix=None, frmt_emph_suffix=None, frmt_code_prefix=None,
+        frmt_code_suffix=None, frmt_olist_prefix=None, frmt_olist_suffix=None,
+        frmt_ulist_prefix=None, frmt_ulist_suffix=None,
         frmt_list_item_prefix=None, frmt_list_item_suffix=None,
-        frmt_heading_prefix=None, frmt_heading_suffix=None,
+        frmt_heading_prefix=None, frmt_heading_suffix=None
     ):
         # references/resources dictionary
         if resources is None:
@@ -44,11 +104,25 @@ class CaveMark:
         else:
             self.resources = resources
 
-        # fields in resources to ignore parsing them
-        if resources_ignore is None:
-            self.resources_ignore = {'TYPE', 'url'}
+        # ignored resource keys
+        if resource_keys_ignored is None:
+            self.resource_keys_ignored = {'url'}
         else:
-            self.resources_ignore = resources_ignore
+            self.resource_keys_ignored = resource_keys_ignored
+
+        # counters per resource
+        if resource_counters is None:
+            self.resource_counters = {
+                'link'      :'counter_a',
+                'book'      :'counter_a',
+                'image'     :'counter_b',
+                'quotation' :'counter_c',
+                'definition':'counter_d',
+                'theorem'   :'counter_e',
+                'footnote'  :'counter_f',
+            }
+        else:
+            self.resource_counters = resource_counters
 
         # escape char is used to literally print stuff
         if escape is None:
@@ -57,28 +131,22 @@ class CaveMark:
             self.escape = escape     
 
         # opening/closing tags that define substrings to ignore parsing them
-        if ignore is None:
-            self.ignore = [
-                ('\[' , '\]'),
-                ('\(' , '\)'),
-                ('$$' , '$$'),
-            ]
+        if code is None:
+            self.code = {
+                '\[' : '\]',
+                '\(' : '\)',
+                '$$' : '$$',
+                '`'  : '`',
+                '```': '```',
+            }
         else:
-            self.ignore = ignore
-        self.ignore.append(('```', '```'))
-        self.ignore.append(('`', '`'))
-        self.ignore.append(('^{', '}'))
-        self.ignore.append(('{', '}'))
+            self.code = code
 
         # ignored text intervals to unescape
-        if ignore_unescape is None:
-            self.ignore_unescape = set()
+        if code_unescape is None:
+            self.code_unescape = {'`', '```'}
         else:
-            self.ignore_unescape = ignore_unescape
-        self.ignore_unescape.add(('```' , '```'))
-        self.ignore_unescape.add(('`'   , '`'  ))
-        self.ignore_unescape.add(('^{'  , '}'  ))
-        self.ignore_unescape.add(('{'   , '}'  ))
+            self.code_unescape = code_unescape
 
         # offset heading level.  e.g. if offset=1, "# title" becomes
         # "<h2>title</h2>" instead of "<h1>..."
@@ -87,91 +155,119 @@ class CaveMark:
         else:
             self.heading_offset = heading_offset
 
-        # footnote superscript format
-        if frmt_footnote_ss is None:
-            self.frmt_footnote_ss = '<sup>'\
-                                    '<a href="#fn_{INDEX}">'\
-                                    '{INDEX}'\
-                                    '</a>'\
-                                    '</sup>'
-        else:
-            self.frmt_footnote_ss = frmt_footnote_ss
-
-        # footnote items format
-        if frmt_footnote_item is None:
-            self.frmt_footnote_item = '<li id="fn_{INDEX}">'\
-                                      '{INDEX}. {TEXT}'\
-                                      '</li>\n'
-        else:
-            self.frmt_footnote_item = frmt_footnote_item
-
-        # footnote container format
-        if frmt_footnote_cnt is None:
-            self.frmt_footnote_cnt = '<hr/>\n <ul style="list-style:none;'\
-                                     'padding:0; margin:0;">{TEXT}</ul>\n\n'
-        else:
-            self.frmt_footnote_cnt = frmt_footnote_cnt
-
         # inline citation format
         if frmt_cite_inline is None:
             self.frmt_cite_inline = {
-                'url'       :' <a href="{url}">[{INDEX}]</a>',
-                'book'      :' <a href="#cite_{ID}">[{INDEX}]</a>',
-                'image'     :' <a href="#cite_{ID}">Figure {INDEX}</a>',
-                'quotation' :' <a href="#cite_{ID}">Quote {INDEX}</a>',
-                'definition':' <a href="#cite_{ID}">Definition {INDEX}</a>',
-                'theorem'   :' <a href="#cite_{ID}">Theorem {INDEX}</a>',
+            'link'      :' <a href="{url}">[{INDEX}]</a>',
+            'book'      :' <a href="#cite_{ID}_{INDEX}">[{INDEX}]</a>',
+            'image'     :' <a href="#cite_{ID}_{INDEX}">Figure {INDEX}</a>',
+            'quotation' :' <a href="#cite_{ID}_{INDEX}">Quote {INDEX}</a>',
+            'definition':' <a href="#cite_{ID}_{INDEX}">Definition {INDEX}</a>',
+            'theorem'   :' <a href="#cite_{ID}_{INDEX}">Theorem {INDEX}</a>',
+            'footnote'  :'<sup><a href="#fn_{ID}_{INDEX}">{INDEX}</a></sup>',
             }
         else:
             self.frmt_cite_inline = frmt_cite_inline
 
-        # errornous inline citation format
-        if frmt_cite_inline_error is None:
-            self.frmt_cite_inline_error = '<strong>[err: {ERROR}]</strong>'
-        else:
-            self.frmt_cite_inline_error = frmt_cite_inline_notfound
-
         # box citation format.
         if frmt_cite_box is None:
             self.frmt_cite_box = {
-                'image'     :'<figure id="cite_{ID}" '
+                'image'     :'<figure id="cite_{ID}_{INDEX}" '
                              'style="text-align:center;">\n'
                              '  <img alt="{alt}" src="{url}" />\n'
                              '  <figcaption>\n'
-                             '    <strong>Fig. {INDEX}:</strong> {caption}\n'
+                             '    <strong>Figure {INDEX}:</strong> {caption}\n'
                              '  </figcaption>\n'
                              '</figure>\n\n',
-                'quotation' :'<blockquote id="cite_{ID}">\n'
+                'quotation' :'<blockquote id="cite_{ID}_{INDEX}">\n'
                              '  {text} -- {author}\n'
                              '</blockquote>\n\n',
-                'definition':'<p id="cite_{ID}" class="definition">\n'
+                'definition':'<p id="cite_{ID}_{INDEX}" class="definition">\n'
                              '  {text}\n'
                              '</p>\n\n',
-                'theorem'   :'<p id="cite_{ID}" class="theorem">\n'
+                'theorem'   :'<p id="cite_{ID}_{INDEX}" class="theorem">\n'
                              '  {text}\n'
                              '</p>\n\n',
             }
         else:
             self.frmt_cite_box = frmt_cite_box
 
+        # errornous inline citation format
+        if frmt_cite_error_inline is None:
+            self.frmt_cite_error_inline = '<strong>[err: {ERROR}]</strong>'
+        else:
+            self.frmt_cite_error_inline = frmt_cite_error_inline
+
+        # errornous box citation format
+        if frmt_cite_error_box is None:
+            self.frmt_cite_error_box = '<p style="text-align:center">'\
+                                       '<strong>[err: {ERROR}]</strong>'\
+                                       '</p>'
+        else:
+            self.frmt_cite_error_box = frmt_cite_error_box
+
+        # bibliography container prefix
+        if frmt_bibliography_prefix is None:
+            self.frmt_bibliography_prefix = '<h4>bibliography</h4>\n'\
+                                            '<ul style="list-style:none;'\
+                                            'padding:0; margin:0;"><small>\n'
+        else:
+            self.frmt_bibliography_prefix = frmt_bibliography_prefix
+
+        # bibliography container suffix
+        if frmt_bibliography_suffix is None:
+            self.frmt_bibliography_suffix = '</small></ul>\n\n'
+        else:
+            self.frmt_bibliography_suffix = frmt_bibliography_suffix
+
         # bibliography items format
         if frmt_bibliography_item is None:
             self.frmt_bibliography_item = {
-                'book'  :'<li id="cite_{ID}">[{INDEX}] {authors}, '
+                'book'  :'<li id="cite_{ID}_{INDEX}">[{INDEX}] {authors}, '
                          '&ldquo;<em>{title}</em>&ldquo;, {publisher}, '
                          '{year}.</li>\n',
             }
         else:
             self.frmt_bibliography_item = frmt_bibliography_item
 
-        # bibliography container format
-        if frmt_bibliography_cnt is None:
-            self.frmt_bibliography_cnt = '<h4>bibliography</h4>\n'\
-                                         '<ul style="list-style:none;'\
-                                         'padding:0; margin:0;">\n'\
-                                         '{TEXT}</ul>\n\n'
+        # errornous bibliography item format
+        if frmt_bibliography_error_item is None:
+            self.frmt_bibliography_error_item = '<li><strong>'\
+                                                'err: {ERROR}'\
+                                                '</strong></li>'
         else:
-            self.frmt_bibliography_cnt = frmt_bibliography_cnt
+            self.frmt_bibliography_error_item = frmt_bibliography_error_item
+
+        # footnote container prefix
+        if frmt_footnote_prefix is None:
+            self.frmt_footnote_prefix = '<hr/>\n <ul style="list-style:none;'\
+                                        'padding:0; margin:0;"><small>'
+        else:
+            self.frmt_footnote_prefix = frmt_footnote_prefix
+
+        # footnote container suffix
+        if frmt_footnote_suffix is None:
+            self.frmt_footnote_suffix = '</small></ul>\n\n'
+        else:
+            self.frmt_footnote_suffix = frmt_footnote_suffix
+
+        # footnote items format
+        if frmt_footnote_item is None:
+            self.frmt_footnote_item = {
+                'footnote'  :'<li id="fn_{ID}_{INDEX}">'\
+                             '{INDEX}. {text}'\
+                             '</li>\n',
+            }
+        else:
+            self.frmt_footnote_item = frmt_footnote_item
+
+        # errornous footnote item format
+        if frmt_footnote_error_item is None:
+            self.frmt_footnote_error_item = '<li><strong>'\
+                                            'err: {ERROR}'\
+                                            '</strong></li>'
+        else:
+            self.frmt_footnote_error_item = frmt_footnote_error_item
 
         # paragraphs format
         if frmt_paragraph_prefix is None:
@@ -193,23 +289,29 @@ class CaveMark:
         else:
             self.frmt_emph_suffix = frmt_emph_suffix
 
-        # ignore format
-        if frmt_ignore is None:
-            self.frmt_ignore = {
-                ('\[', '\]') : '<strong>{OPEN}{TEXT}{CLOSE}</strong>',
-                ('\(', '\)') : '<strong>{OPEN}{TEXT}{CLOSE}</strong>',
-                ('$$', '$$') : '<strong>{OPEN}{TEXT}{CLOSE}</strong>',
+        # code prefix format
+        if frmt_code_prefix is None:
+            self.frmt_code_prefix = {
+                '\['    : '<strong>{OPEN}',
+                '\('    : '<strong>{OPEN}',
+                '$$'    : '<strong>{OPEN}',
+                '`'     : '<code>',
+                '```'   : '<pre><code>',
             }
         else:
-            self.frmt_ignore = frmt_ignore
+            self.frmt_code_prefix = frmt_code_prefix
 
-        # code format
-        if frmt_code_inline is None:
-            frmt_code_inline    = '<code>{TEXT}</code>'
-        if frmt_code_box is None:
-            frmt_code_box       = '<pre><code>{TEXT}</code></pre>'
-        self.frmt_ignore[('`', '`')]     = frmt_code_inline
-        self.frmt_ignore[('```', '```')] = frmt_code_box
+        # code suffix format
+        if frmt_code_suffix is None:
+            self.frmt_code_suffix = {
+                '\['    : '{CLOSE}</strong>',
+                '\('    : '{CLOSE}</strong>',
+                '$$'    : '{CLOSE}</strong>',
+                '`'     : '</code>',
+                '```'   : '</code></pre>',
+            }
+        else:
+            self.frmt_code_suffix = frmt_code_suffix
 
         # ordered lists format
         if frmt_olist_prefix is None:
@@ -251,513 +353,717 @@ class CaveMark:
         else:
             self.frmt_heading_suffix = frmt_heading_suffix
 
-        # states
-        self._state = [S_START]
-        self._html = []
-        self._emph_open = False
-        self._resources_last_index = {}
-        self._resources_pending_boxes = []
-        self._resources_bib_flushed = set()
-        self._footnotes_last_index = 0
-        self._list = [[-1, None]]
+        # states that need to be defined early
+        self._state = [_S_START]
+        self._html = [[]]
+
+        self._resource_cur_entry_key = None
+
+        self._citations_last_index = {}
+        self._citations_pending_boxes = []
+        self._citation_cur_id = None
         self.resources_cited = {}
-        self.resources_new = {}
-        self.footnotes = []
 
-        # compile all regular expressions
-        self.compile_re()
+        self._footnote_items = []
 
-    def compile_re(self):
-        re_ignore_pattern = r'(?:{})'.format(
-            r'|'.join(
-                r'(?<!{0})({1})(.*?)((?<!{0}){2})'.format(
-                    re.escape(self.escape),
-                    re.escape(o),
-                    re.escape(c),
+        self._bibliography_items = []
 
-                )
-                for o, c in self.ignore
+        self._list = [[-1, None]]
+
+        # compile re and other stuff
+        self.update()
+
+    def update(self):
+        """Run this when you modify self.code or add/remove resource types.
+        """
+        # open tag any
+        tags_open_code = list(self.code)
+        tags_open_code.sort(key=len, reverse=True)
+        resource_types = list(self.resource_counters)
+        self._re_tag_open_any = re.compile(
+            r'(?<!{0})(?:{1})'.format(
+                re.escape(self.escape),
+                r'|'.join([
+                    r'(^\s*\n|\n\s*\n)',            # unit separator
+                    r'(_)',                         # emphasize open
+                    r'(\[)',                        # cite open
+                    r'^ *(#+)',                     # heading open
+                    r'^( *)(\*|\+)',                # list open
+                    r'^ *({}) *: *(\S+)'.format(    # resource definition open
+                        r'|'.join(resource_types)
+                    ), 
+                    r'({})'.format(                 # code open
+                        r'|'.join(re.escape(o) for o in tags_open_code)
+                    ),
+                    r'\Z',
+                ])
             )
         )
-        self._re_unesc = re.compile(r'{}(.)'.format(re.escape(self.escape)))
-        self._re_ignore = re.compile(re_ignore_pattern, flags=re.DOTALL)
-        self._re_ignore_unescs = {
-            (o, c) : re.compile(
-                r'{}({})'.format(
+
+        # close tag heading
+        self._re_tag_close_heading = re.compile(
+            r'(?<!{0})(?:{1})'.format(
+                re.escape(self.escape),
+                r'|'.join([
+                    r'(\n\s*\n)',           # heading close
+                    r'(_)',                 # emphasize open
+                    r'(\[)',                # cite open
+                    r'({})'.format(         # code open
+                        r'|'.join(re.escape(o) for o in tags_open_code)
+                    ),
+                    r'\Z',
+                ])
+            )
+        )
+
+        # close tag list
+        self._re_tag_close_list = re.compile(
+            r'(?<!{0})(?:{1})'.format(
+                re.escape(self.escape),
+                r'|'.join([
+                    r'(\n\s*\n +)(?=[^\*\+\s])',# open paragraph
+                    r'(\n\s*\n)(?=[^\*\+\s])',  # list close
+                    r'(_)',                     # emphasize open
+                    r'(\[)',                    # cite open
+                    r'(?:^|\n)( *)(\*|\+)',     # list open
+                    r'({})'.format(             # code open
+                        r'|'.join(re.escape(o) for o in tags_open_code)
+                    ),
+                    r'\Z',
+                ])
+            )
+        )
+
+        # close tag listparagraph
+        self._re_tag_close_listparagraph = re.compile(
+            r'(?<!{0})(?:{1})'.format(
+                re.escape(self.escape),
+                r'|'.join([
+                    r'^( +)(?=[^\*\+\s])',  # open paragraph
+                    r'^()(?=[^\*\+\s])',    # list close
+                    r'^( *)(\*|\+)',        # list open
+                    r'\Z',
+                ])
+            )
+        )
+
+        # close tag paragraph
+        self._re_tag_close_paragraph = re.compile(
+            r'(?<!{0})(?:{1})'.format(
+                re.escape(self.escape),
+                r'|'.join([
+                    r'(\n\s*\n)',           # paragraph close
+                    r'(_)',                 # emphasize open
+                    r'(\[)',                # cite open
+                    r'({})'.format(         # code open
+                        r'|'.join(re.escape(o) for o in tags_open_code)
+                    ),
+                    r'\Z',
+                ])
+            )
+        )
+
+        # close tag resource
+        self._re_tag_close_resource = re.compile(
+            r'(?<!{0})(?:{1})'.format(
+                re.escape(self.escape),
+                r'|'.join([
+                    r'(\n\s*\n)',           # resource close
+                    r'\n *(\S+) *: *',      # resource entry key
+                    r'(_)',                 # emphasize open
+                    r'(\[)',                # cite open
+                    r'({})'.format(         # code open
+                        r'|'.join(re.escape(o) for o in tags_open_code)
+                    ),
+                    r'\Z',
+                ])
+            )
+        )
+
+        # close tag resource ignored key
+        self._re_tag_close_resource_ignored_key = re.compile(
+            r'(?<!{0})(?:{1})'.format(
+                re.escape(self.escape),
+                r'|'.join([
+                    r'(\n\s*\n)',           # resource close
+                    r'\n *(\S+) *: *',      # resource entry key
+                    r'\Z',
+                ])
+            )
+        )
+
+        # close tag emphasize
+        self._re_tag_close_emphasize = re.compile(
+            r'(?<!{0})(?:{1})'.format(
+                re.escape(self.escape),
+                r'|'.join([
+                    r'(_)',                 # emphasize close
+                    r'(\[)',                # cite open
+                    r'({})'.format(         # code open
+                        r'|'.join(re.escape(o) for o in tags_open_code)
+                    ),
+                    r'\Z',
+                ])
+            )
+        )
+
+        # close tag citation
+        self._re_tag_close_citation = re.compile(
+            r'(?<!{0})(?:{1})'.format(
+                re.escape(self.escape),
+                r'|'.join([
+                    r'(\])',                # cite close
+                    r'\Z',
+                ])
+            )
+        )
+
+        # close tag code
+        self._re_tag_close_code = {
+            o : re.compile(
+                r'(?<!{0})(?:{1})'.format(
                     re.escape(self.escape),
-                    re.escape(c)
+                    r'|'.join([
+                        r'({})'.format(re.escape(self.code[o])), # code close
+                        r'\Z',
+                    ])
                 )
-            ) for o, c in self.ignore if (o, c) in self.ignore_unescape
+            )
+            for o in tags_open_code
         }
-        self._re_unit_sep   = re.compile(r'\n\s*\n')
-        self._re_heading    = re.compile(
-            r'^\s*?(?<!{})(#+)\s+(.*)'.format(re.escape(self.escape)),
-            flags=re.DOTALL
-        )
-        self._re_emph       = re.compile(
-            r'(?<!{0})_'.format(re.escape(self.escape)),
-            flags=re.DOTALL
-        )
-        self._re_cite       = re.compile(
-            r'(?<!{0})\[\s*(\S+?)\s*(?<!{0})\]'.format(
-                re.escape(self.escape)
-            )
-        )
-        self._re_list       = re.compile(
-            r' *(?<!{0})(?:\*|\+)'.format(
-                re.escape(self.escape)
-            ),
-            flags=re.DOTALL
-        )
-        self._re_list_items = re.compile(
-            r'( *)(?<!{})(\*|\+)\s*(\S.*?)(?=(?:\n *\*|\n *\+|$))'.format(
-                re.escape(self.escape)
-            ),
-            flags=re.DOTALL
-        )
-        self._re_resource_id = re.compile(r'^\s*(\S+):(\S+)')
-        self._re_resource_items = re.compile(
-            r'\s+(\S+)\s+(?<!{0})\=\s+(.*?)(?=\s+\S+\s*(?<!{0})\=|$)'.format(
-                re.escape(self.escape)
-            ),
-            flags=re.DOTALL
+
+        # unescape
+        self._re_unescape = re.compile(
+            r'{}(.)'.format(re.escape(self.escape))
         )
 
     def parse(self, text):
-        """Parse a string text, as per the semantics of CaveMark.
+        """Parse input CaveMark string.
         """
+        text = self._replace_unsafe(text)
+        while True:
+            if len(text) == 0:
+                break
 
-        # remove unsafe things
-        text = text.replace('<', '&lt;')
-        text = text.replace('>', '&gt;')
-        text = text.replace('&', '&amp;')
-         
-        # parse text into html chunks
-        prev_endo = 0
-        for m in self._re_ignore.finditer(text):
-            start, endo = m.span()
-            self._parse_units(text[prev_endo:start])
-            matched         = [i for i in m.groups() if i is not None]
-            ignr_o          = matched[0]
-            ignr_text       = matched[1]
-            ignr_c          = matched[2]
-            if (ignr_o, ignr_c) in self.ignore_unescape:
-                ignr_text   = self._re_ignore_unescs[(ignr_o, ignr_c)].sub(
-                    r'\1',
-                    ignr_text
+            # parse new unit
+            elif self._state[-1] == _S_START:
+                m = self._re_tag_open_any.search(text)
+                start, endo = m.span()
+                text_behind = self._unescape(text[0:start])
+                text = text[endo:]
+
+                if len(self._citations_pending_boxes):
+                    self._html[-1] += self._citations_pending_boxes
+                    self._citations_pending_boxes = []
+
+                if len(text_behind.strip()):
+                    self._paragraph_open()
+                    self._html[-1].append(text_behind)
+                    if m.group(_I_OPEN_ANY_SEP) is not None:
+                        self._paragraph_close()
+                        continue
+
+                if m.group(_I_OPEN_ANY_EMPHASIZE) is not None:
+                    if self._state[-1] == _S_START:
+                        self._paragraph_open()
+                    self._emphasize_open()
+
+                elif m.group(_I_OPEN_ANY_CODE) is not None:
+                    if self._state[-1] == _S_START:
+                        self._paragraph_open()
+                    self._code_open(m.group(_I_OPEN_ANY_CODE))
+
+                elif m.group(_I_OPEN_ANY_CITATION) is not None:
+                    if self._state[-1] == _S_START:
+                        self._paragraph_open()
+                    self._citation_open()
+
+                elif self._state[-1] == _S_START:
+                    if m.group(_I_OPEN_ANY_HEADING) is not None:
+                        self._heading_open(m.group(_I_OPEN_ANY_HEADING))
+
+                    elif m.group(_I_OPEN_ANY_LIST_LEVEL) is not None:
+                        self._list_open(
+                            len(m.group(_I_OPEN_ANY_LIST_LEVEL)),
+                            m.group(_I_OPEN_ANY_LIST_TYPE)
+                        )
+
+                    elif m.group(_I_OPEN_ANY_RESOURCE_TYPE) is not None:
+                        self._resource_open(
+                            m.group(_I_OPEN_ANY_RESOURCE_TYPE),
+                            m.group(_I_OPEN_ANY_RESOURCE_ID),
+                        )
+
+            # resume parsing paragraph
+            elif self._state[-1] == _S_PARAGRAPH_IN:
+                m = self._re_tag_close_paragraph.search(text)
+                start, endo = m.span()
+                text_behind = self._unescape(text[0:start])
+                text = text[endo:]
+                self._html[-1].append(text_behind)
+                if m.group(_I_CLOSE_PARAGRAPH) is not None:
+                    self._paragraph_close()
+                elif m.group(_I_CLOSE_PARAGRAPH_EMPHASIZE) is not None:
+                    self._emphasize_open()
+                elif m.group(_I_CLOSE_PARAGRAPH_CODE) is not None:
+                    self._code_open(m.group(_I_CLOSE_PARAGRAPH_CODE))
+                elif m.group(_I_CLOSE_PARAGRAPH_CITATION) is not None:
+                    self._citation_open()
+
+            # resume parsing emphasized text
+            elif self._state[-1] == _S_EMPHASIZE_IN:
+                m = self._re_tag_close_emphasize.search(text)
+                start, endo = m.span()
+                text_behind = self._unescape(text[0:start])
+                text = text[endo:]
+                self._html[-1].append(text_behind)
+                if m.group(_I_CLOSE_EMPHASIZE) is not None:
+                    self._emphasize_close()
+                elif m.group(_I_CLOSE_EMPHASIZE_CODE) is not None:
+                    self._code_open(m.group(_I_CLOSE_EMPHASIZE_CODE))
+                elif m.group(_I_CLOSE_EMPHASIZE_CITATION) is not None:
+                    self._citation_open()
+
+            # resume parsing code
+            elif self._state[-1] == _S_CODE_IN:
+                m = self._re_tag_close_code[self._code_tag_open].search(text)
+                start, endo = m.span()
+                text_behind = self._unescape(
+                    text[0:start], tag=self.code[self._code_tag_open]
                 )
-            if ignr_o == '^{':
-                self._parse_footnote(ignr_text)
-            elif ignr_o == '{':
-                self._parse_resource(ignr_text)
-            else:
-                if (ignr_o, ignr_c) in self.frmt_ignore:
-                    ignr_text = self.frmt_ignore[(ignr_o, ignr_c)].format(
-                        **{
-                            'OPEN'  : ignr_o,
-                            'TEXT'  : ignr_text,
-                            'CLOSE' : ignr_c,
-                        }
+                text = text[endo:]
+                self._html[-1].append(text_behind)
+                if m.group(_I_CLOSE_CODE) is not None:
+                    self._code_close()
+
+            # resume parsing list
+            elif self._state[-1] == _S_LIST_IN:
+                m = self._re_tag_close_list.search(text)
+                start, endo = m.span()
+                text_behind = self._unescape(text[0:start])
+                text = text[endo:]
+                self._html[-1].append(text_behind)
+                if m.group(_I_CLOSE_LIST) is not None:
+                    while len(self._list) > 1:
+                        self._list_close()
+                elif m.group(_I_CLOSE_LIST_PARAGRAPH) is not None:
+                    self._listparagraph_open()
+                    self._paragraph_open()
+                elif m.group(_I_CLOSE_LIST_EMPHASIZE) is not None:
+                    self._emphasize_open()
+                elif m.group(_I_CLOSE_LIST_CODE) is not None:
+                    self._code_open(m.group(_I_CLOSE_LIST_CODE))
+                elif m.group(_I_CLOSE_LIST_CITATION) is not None:
+                    self._citation_open()
+                elif m.group(_I_CLOSE_LIST_LIST_LEVEL) is not None:
+                    self._list_item_new(
+                        len(m.group(_I_CLOSE_LIST_LIST_LEVEL)),
+                        m.group(_I_CLOSE_LIST_LIST_TYPE)
                     )
-                self._html.append(ignr_text)
-            prev_endo = endo
-        self._parse_units(text[prev_endo:])
+
+            # resume parsing pararagraphs in list
+            elif self._state[-1] == _S_LISTPARAGRAPH_IN:
+                m = self._re_tag_close_listparagraph.search(text)
+                start, endo = m.span()
+                text = text[endo:]
+                if m.group(_I_CLOSE_LISTPARAGRAPH) is not None:
+                    while len(self._list) > 1:
+                        self._list_close()
+                elif m.group(_I_CLOSE_LISTPARAGRAPH_PARAGRAPH) is not None:
+                    self._paragraph_open()
+                elif m.group(_I_CLOSE_LISTPARAGRAPH_LIST_LEVEL) is not None:
+                    self._list_item_new(
+                        len(m.group(_I_CLOSE_LISTPARAGRAPH_LIST_LEVEL)),
+                        m.group(_I_CLOSE_LISTPARAGRAPH_LIST_TYPE)
+                    )
+                    self._listparagraph_close()
+
+            # resume parsing heading
+            elif self._state[-1] == _S_HEADING_IN:
+                m = self._re_tag_close_heading.search(text)
+                start, endo = m.span()
+                text_behind = self._unescape(text[0:start])
+                text = text[endo:]
+                self._html[-1].append(text_behind)
+                if m.group(_I_CLOSE_HEADING) is not None:
+                    self._heading_close()
+                elif m.group(_I_CLOSE_HEADING_EMPHASIZE) is not None:
+                    self._emphasize_open()
+                elif m.group(_I_CLOSE_HEADING_CODE) is not None:
+                    self._code_open(m.group(_I_CLOSE_HEADING_CODE))
+                elif m.group(_I_CLOSE_HEADING_CITATION) is not None:
+                    self._citation_open()
+
+            # resume parsing resource
+            elif self._state[-1] == _S_RESOURCE_IN:
+                m = self._re_tag_close_resource.search(text)
+                start, endo = m.span()
+                text_behind = self._unescape(text[0:start])
+                text = text[endo:]
+                if self._resource_cur_entry_key is not None:
+                    self._html[-1].append(text_behind)
+                if m.group(_I_CLOSE_RESOURCE) is not None:
+                    self._resource_close()
+                elif m.group(_I_CLOSE_RESOURCE_ENTRY_KEY) is not None:
+                    self._resource_close_entry()
+                    self._resource_cur_entry_key = m.group(
+                        _I_CLOSE_RESOURCE_ENTRY_KEY
+                    )
+                    if (
+                        self._resource_cur_entry_key
+                        in self.resource_keys_ignored
+                    ):
+                        self._resource_ignored_key_open()
+                elif m.group(_I_CLOSE_RESOURCE_EMPHASIZE) is not None:
+                    self._emphasize_open()
+                elif m.group(_I_CLOSE_RESOURCE_CODE) is not None:
+                    self._code_open(m.group(_I_CLOSE_RESOURCE_CODE))
+                elif m.group(_I_CLOSE_RESOURCE_CITATION) is not None:
+                    self._citation_open()
+
+            # resume parsing resource ignored key
+            elif self._state[-1] == _S_RESOURCE_IGNORED_KEY_IN:
+                m = self._re_tag_close_resource_ignored_key.search(text)
+                start, endo = m.span()
+                text_behind = self._unescape(text[0:start])
+                text = text[endo:]
+                self._html[-1].append(text_behind)
+                self._resource_ignored_key_close()
+                if m.group(_I_CLOSE_RESOURCEIGNK) is not None:
+                    self._resource_close()
+                elif m.group(_I_CLOSE_RESOURCEIGNK_ENTRY_KEY) is not None:
+                    self._resource_close_entry()
+                    self._resource_cur_entry_key = m.group(
+                        _I_CLOSE_RESOURCEIGNK_ENTRY_KEY
+                    )
+                    if (
+                        self._resource_cur_entry_key
+                        in self.resource_keys_ignored
+                    ):
+                        self._resource_ignored_key_open()
+
+            # resume parsing citation
+            elif self._state[-1] == _S_CITATION_IN:
+                m = self._re_tag_close_citation.search(text)
+                start, endo = m.span()
+                text_behind = text[0:start]
+                text = text[endo:]
+                resource_id = text_behind.strip()
+                if len(resource_id):
+                    self._citation_cur_id = resource_id
+                if m.group(_I_CLOSE_CITATION) is not None:
+                    self._citation_close()
 
     def flush(self, footnotes=True, bibliography=True):
         """Flush all pending objects: cited box resources such as figures,
         footnotes, bibliographies.
         """
         while len(self._state) > 1:
-            self._close_pending()
-        self._flush_boxes()
+            state = self._state[-1]
+            if   state == _S_PARAGRAPH_IN: self._paragraph_close()
+            elif state == _S_EMPHASIZE_IN: self._emphasize_close()
+            elif state == _S_CODE_IN     : self._code_close()
+            elif state == _S_LIST_IN     : self._list_close()
+            elif state == _S_LISTPARAGRAPH_IN : self._listparagraph_close()
+            elif state == _S_HEADING_IN  : self._heading_close()
+            elif state == _S_RESOURCE_IN : self._resource_close()
+            elif state == _S_CITATION_IN : self._citation_close()
+
+        if len(self._citations_pending_boxes):
+            self._html[-1] += self._citations_pending_boxes
+            self._citations_pending_boxes = []
 
         if footnotes:
-            self._html.append(
-                self.frmt_footnote_cnt.format(
-                    **{
-                        'TEXT':''.join(
-                            self.frmt_footnote_item.format(
-                                **{
-                                    'TEXT' :fn[1],
-                                    'INDEX':fn[0]
-                                }
-                            )
-                            for fn in self.footnotes
-                        )
-                    }
-                )
-            )
-            self.footnotes = []
+            if len(self._footnote_items):
+                self._html[-1].append(self.frmt_footnote_prefix)
+                for bib_item in self._footnote_items:
+                    self._html[-1].append(bib_item)
+                self._html[-1].append(self.frmt_footnote_suffix)
+                self._footnote_items = []
 
         if bibliography:
-            resources_all = {**self.resources,**self.resources_new}
-            bib_ids = [
-                k for k in self.resources_cited if (
-                    resources_all[k]['TYPE'] in self.frmt_bibliography_item
-                    and k not in self._resources_bib_flushed
-                )
-            ]
-            if len(bib_ids):
-                sorted_bib_ids = sorted(
-                    bib_ids, 
-                    key=lambda k: self.resources_cited[k]
-                )
-                html_bib_items = []
-                for bib_id in sorted_bib_ids:
-                    html_bib_items.append(
-                        self.frmt_bibliography_item[
-                            resources_all[bib_id]['TYPE']
-                        ].format(
-                            **{
-                                'ID'   :bib_id,
-                                'INDEX':self.resources_cited[bib_id],
-                            },
-                            **resources_all[bib_id]
-                        )
-                    )
-                self._html.append(
-                    self.frmt_bibliography_cnt.format(
-                        **{
-                            'TEXT':''.join(html_bib_items)
-                        }
-                    )
-                )
-                self._resources_bib_flushed.update(bib_ids)
+            if len(self._bibliography_items):
+                self._html[-1].append(self.frmt_bibliography_prefix)
+                for bib_item in self._bibliography_items:
+                    self._html[-1].append(bib_item)
+                self._html[-1].append(self.frmt_bibliography_suffix)
+                self._bibliography_items = []
 
-    def reset(self, html=False, footnotes=False, bibliography=False):
-        if html:
-            self._state = [S_START]
-            self._html = []
-        if footnotes:
-            self._footnotes_last_index= 0
-            self.footnotes = []
-        if bibliography:
-            self._resources_last_index = {}
-            self._resources_pending_boxes = []
-            self._resources_bib_flushed = set()
+    def forget_cited(self, resource_type=None):
+        """Forget whether resources of given type were cited previously.
+        """
+        if resource_type is None:
             self.resources_cited = {}
-            self.resources_new = {}
+        else:
+            for res_id in list(self.resources_cited):
+                if resource_type == self.resources[res_id]['TYPE']:
+                    del self.resources_cited[res_id]
+
+    def forget_counter(self, resource_type=None):
+        """Reset the resource's counter of the given type.
+        """
+        if resource_type is None:
+            self._citations_last_index = {}
+        else:
+            counter = self.resource_counters[resource_type]
+            if counter in self._citations_last_index:
+                del self._citations_last_index[counter]
 
     def get_html(self):
         """Get the HTML representation of parsed texts.
         """
-        html = ''.join(self._html)
-        self._html = []
+        html = ''.join(self._html[-1])
+        self._html[-1] = []
         return html
 
-    def _parse_emph(self, m):
-        if self._emph_open:
-            self._emph_open = False
-            return self.frmt_emph_suffix
+    def _unescape(self, text, tag=None):
+        if tag is None:
+            return self._re_unescape.sub(r'\1', text)
         else:
-            self._emph_open = True
-            return self.frmt_emph_prefix
+            return text.replace(self.escape + tag, tag)
 
-    def _parse_footnote(self, text):
-        # add formatted footnote index
-        self._footnotes_last_index += 1
-        self._html.append(
-            self.frmt_footnote_ss.format(
-                **{
-                    'INDEX':self._footnotes_last_index,
-                    'TEXT' :text,
-                }
+    def _replace_unsafe(self, text):
+        text = text.replace('&', '&amp;')
+        text = text.replace('<', '&lt;')
+        text = text.replace('>', '&gt;')
+        return text
+
+    def _paragraph_open(self):
+        self._state.append(_S_PARAGRAPH_IN)
+        self._html[-1].append(self.frmt_paragraph_prefix)
+
+    def _paragraph_close(self):
+        del self._state[-1]
+        self._html[-1].append(self.frmt_paragraph_suffix)
+
+    def _emphasize_open(self):
+        self._state.append(_S_EMPHASIZE_IN)
+        self._html[-1].append(self.frmt_emph_prefix)
+
+    def _emphasize_close(self):
+        del self._state[-1]
+        self._html[-1].append(self.frmt_emph_suffix)
+
+    def _code_open(self, tag_open):
+        self._state.append(_S_CODE_IN)
+        self._code_tag_open = tag_open
+        self._html[-1].append(
+            self.frmt_code_prefix[tag_open].format(**{'OPEN':tag_open})
+        )
+
+    def _code_close(self):
+        del self._state[-1]
+        tag_close = self.code[self._code_tag_open]
+        self._html[-1].append(
+            self.frmt_code_suffix[self._code_tag_open].format(
+                **{'CLOSE':tag_close}
             )
         )
 
-        # format the footnote text into a temporary list
-        footnote_text_temp = []
-        prev_endo = 0
-        for m in self._re_ignore.finditer(text):
-            start, endo = m.span()
-            matched         = [i for i in m.groups() if i is not None]
-            ignr_o          = matched[0]
-            ignr_text       = matched[1]
-            ignr_c          = matched[2]
-            footnote_text_temp.append(
-                self._parse_sentence(text[prev_endo:start])
-            )
-            if (ignr_o, ignr_c) in self.ignore_unescape:
-                ignr_text   = self._re_ignore_unescs[(ignr_o, ignr_c)].sub(
-                    r'\1',
-                    ignr_text
-                )
-            if (ignr_o, ignr_c) in self.frmt_ignore:
-                ignr_text = self.frmt_ignore[(ignr_o, ignr_c)].format(
-                    **{
-                        'OPEN'  : ignr_o,
-                        'TEXT'  : ignr_text,
-                        'CLOSE' : ignr_c,
-                    }
-                )
-            footnote_text_temp.append(ignr_text)
-            prev_endo = endo
-        footnote_text_temp.append(
-            self._parse_sentence(text[prev_endo:])
-        )
-
-        # finalize temporary list into a more usable list
-        self.footnotes.append(
-            (
-                self._footnotes_last_index,
-                ''.join(footnote_text_temp)
-            )
-        )
-
-    def _parse_resource(self, text):
-        m_res_id = self._re_resource_id.match(text)
-        if m_res_id:
-            res_type = m_res_id.group(1)
-            res_id = m_res_id.group(2)
-            resource_tmp = {'TYPE':res_type}
-            for m_res_item in self._re_resource_items.finditer(text):
-                res_key, res_value = m_res_item.groups()
-                resource_tmp[res_key] = res_value
-            self.resources_new[res_id] = resource_tmp
-
-    def _parse_resource_fields(self, resource):
-        resource_parsed = {}
-        for key in resource:
-            if key in self.resources_ignore:
-                resource_parsed[key] = resource[key]
-                continue
-            text = resource[key]
-            text_parsed = []
-            prev_endo = 0
-            for m in self._re_ignore.finditer(text):
-                start, endo = m.span()
-                matched     = [i for i in m.groups() if i is not None]
-                ignr_o      = matched[0]
-                ignr_text   = matched[1]
-                ignr_c      = matched[2]
-                text_parsed.append(
-                    self._parse_sentence(text[prev_endo:start])
-                )
-                if (ignr_o, ignr_c) in self.ignore_unescape:
-                    ignr_text = self._re_ignore_unescs[(ignr_o, ignr_c)].sub(
-                        r'\1',
-                        ignr_text
-                    )
-                if (ignr_o, ignr_c) in self.frmt_ignore:
-                    ignr_text = self.frmt_ignore[(ignr_o, ignr_c)].format(
-                        **{
-                            'OPEN'  : ignr_o,
-                            'TEXT'  : ignr_text,
-                            'CLOSE' : ignr_c,
-                        }
-                    )
-                text_parsed.append(ignr_text)
-                prev_endo = endo
-            text_parsed.append(
-                self._parse_sentence(text[prev_endo:])
-            )
-            resource_parsed[key] = ''.join(text_parsed)
-        return resource_parsed
-
-    def _parse_cite(self, m):
-        res_id = m.group(1)
-
-        if res_id in self.resources_new:
-            resources_chosen = self.resources_new
-        elif res_id in self.resources:
-            resources_chosen = self.resources
+    def _list_open(self, level, list_type):
+        self._state.append(_S_LIST_IN)
+        ordered = True if list_type == '+' else False
+        self._list.append([level, ordered])
+        if ordered:
+            self._html[-1].append(self.frmt_olist_prefix)
         else:
-            resources_chosen = None
+            self._html[-1].append(self.frmt_ulist_prefix)
+        self._html[-1].append(self.frmt_list_item_prefix)
 
-        if resources_chosen:
-            if 'TYPE' in resources_chosen[res_id]:
-                res_type = resources_chosen[res_id]['TYPE']
+    def _list_close(self):
+        del self._state[-1]
+        _, ordered = self._list[-1]
+        del self._list[-1]
+        self._html[-1].append(self.frmt_list_item_suffix)
+        if ordered:
+            self._html[-1].append(self.frmt_olist_suffix)
+        else:
+            self._html[-1].append(self.frmt_ulist_suffix)
 
-                # find resource's index
-                if res_id in self.resources_cited:
-                    res_index = self.resources_cited[res_id]
-                else:
-                    if res_type in self._resources_last_index:
-                        self._resources_last_index[res_type] += 1
-                    else:
-                        self._resources_last_index[res_type] = 1
-                    res_index = self._resources_last_index[res_type]
+    def _list_item_new(self, cur_level, cur_type):
+        while True:
+            prev_level, _ = self._list[-1]
+            if cur_level == prev_level:
+                self._html[-1].append(self.frmt_list_item_suffix)
+                self._html[-1].append(self.frmt_list_item_prefix)
+                break
+            elif cur_level > prev_level:
+                self._list_open(
+                    cur_level,
+                    cur_type
+                )
+                break
+            elif cur_level < prev_level:
+                self._list_close()
 
-                # inline resource expansion
-                if res_type in self.frmt_cite_inline:
-                    res_html = self.frmt_cite_inline[res_type].format(
-                        **resources_chosen[res_id],
-                        **{'ID':res_id, 'INDEX':res_index}
-                    )
+    def _listparagraph_open(self):
+        self._state.append(_S_LISTPARAGRAPH_IN)
 
-                # in-box resource expansion
-                if (
-                    res_id not in self.resources_cited
-                    and res_type in self.frmt_cite_box
-                ):
-                    resource_chosen_parsed = self._parse_resource_fields(
-                        resources_chosen[res_id]
-                    )
-                    try:
-                        res_html_box = self.frmt_cite_box[res_type].format(
-                            **resource_chosen_parsed,
-                            **{'ID':res_id, 'INDEX':res_index}
-                        )
-                        self._resources_pending_boxes.append(res_html_box)
-                    except KeyError as err:
-                        res_html = self.frmt_cite_inline_error.format(
-                            **{'ERROR':"resource '{}' lacks {}".format(
-                                res_id,
-                                err
-                            )}
-                        )
+    def _listparagraph_close(self):
+        del self._state[-1]
 
-                self.resources_cited[res_id] = res_index
+    def _heading_open(self, level):
+        self._state.append(_S_HEADING_IN)
+        level = len(level) + self.heading_offset
+        if level > 6: level = 6 
+        self._heading_level = level
+        self._html[-1].append(
+            self.frmt_heading_prefix.format(
+                **{'LEVEL':level}
+            )
+        )
+
+    def _heading_close(self):
+        del self._state[-1]
+        self._html[-1].append(
+            self.frmt_heading_suffix.format(
+                **{'LEVEL':self._heading_level}
+            )
+        )
+
+    def _resource_open(self, res_type, res_id):
+        self._state.append(_S_RESOURCE_IN)
+        self._resource_cur_id = res_id
+        self.resources[res_id] = {'TYPE':res_type}
+        self._html.append([])
+
+    def _resource_close_entry(self):
+        if self._resource_cur_entry_key is not None:
+            resource = self.resources[self._resource_cur_id]
+            resource[self._resource_cur_entry_key] = ''.join(self._html[-1])
+            self._html[-1] = []
+            self._resource_cur_entry_key = None
+
+    def _resource_close(self):
+        del self._state[-1]
+        self._resource_close_entry()
+        del self._html[-1]
+
+    def _resource_ignored_key_open(self):
+        self._state.append(_S_RESOURCE_IGNORED_KEY_IN)
+
+    def _resource_ignored_key_close(self):
+        del self._state[-1]
+
+    def _citation_open(self):
+        self._state.append(_S_CITATION_IN)
+
+    def _citation_close(self):
+        del self._state[-1]
+        res_id = self._citation_cur_id
+        self._citation_cur_id = None
+
+        # missing resource identifier?
+        if res_id is None:
+            self._html[-1].append(self.frmt_cite_error_inline.format(
+                **{'ERROR':'no resource identifier'}
+            ))
+            return
+
+        # get cited resource
+        if res_id in self.resources:
+            resource = self.resources[res_id]
+        else:
+            self._html[-1].append(self.frmt_cite_error_inline.format(
+                **{'ERROR':"undefined resource '{}'".format(res_id)}
+            ))
+            return
+
+        # get resource's type
+        try:
+            res_type = resource['TYPE']
+        except KeyError as k:
+            self._html[-1].append(self.frmt_cite_error_inline.format(
+                **{'ERROR':"resource '{}' lacks {}".format(res_id, k)}
+            ))
+            return 
+
+        # get resource's counter
+        try:
+            res_counter = self.resource_counters[res_type]
+        except KeyError:
+            self._html[-1].append(self.frmt_cite_error_inline.format(
+                **{'ERROR':"resource '{}' lacks counter".format(res_id)}
+            ))
+            return 
+
+        # get cited resource's index
+        if res_id in self.resources_cited:
+            res_index = self.resources_cited[res_id]
+        else:
+            if res_counter in self._citations_last_index:
+                self._citations_last_index[res_counter] += 1
             else:
-                res_html = self.frmt_cite_inline_error.format(
-                    **{'ERROR':"resource '{}' lacks 'TYPE'".format(res_id)}
-                )
-        else:
-            res_html = self.frmt_cite_inline_error.format(
-                **{'ERROR':"resource '{}' not found".format(res_id)}
-            )
+                self._citations_last_index[res_counter] = 1
+            res_index = self._citations_last_index[res_counter]
 
-        return res_html
-
-    def _parse_sentence(self, sentence):
-        # parse emphasized texts
-        sentence = self._re_emph.sub(
-            self._parse_emph,
-            sentence
-        )
-
-        # parse cited resources
-        sentence = self._re_cite.sub(
-            self._parse_cite,
-            sentence
-        )
-
-        # unescape
-        sentence = self._re_unesc.sub(r'\1', sentence)
-
-        return sentence
-
-    def _parse_list(self, text):
-        prev_endo = 0
-        for item in self._re_list_items.finditer(text):
-            start, endo = item.span()
-            pending_text = text[prev_endo:start].strip()
-            if len(pending_text):
-                self._html.append(' ' + pending_text.strip())
-            item_level = len(item.group(1))
-            item_text = item.group(3)
-            if item.group(2) == '+':
-                item_ordered = True
-            elif item.group(2) == '*':
-                item_ordered = False 
-            while True:
-                prev_item_level, prev_item_ordered = self._list[-1]
-                if item_level == prev_item_level:
-                    self._html.append(self.frmt_list_item_suffix)
-                    self._html.append(self.frmt_list_item_prefix)
-                    self._html.append(item_text)
-                    break
-                elif item_level > prev_item_level:
-                    self._list.append([item_level, item_ordered])
-                    if item_ordered:
-                        self._html.append(self.frmt_olist_prefix)
-                    else:
-                        self._html.append(self.frmt_ulist_prefix)
-                    self._html.append(self.frmt_list_item_prefix)
-                    self._html.append(item_text)
-                    break
-                else:
-                    del self._list[-1]
-                    pprev_item_level, pprev_item_ordered = self._list[-1]
-                    if item_level > pprev_item_level:
-                        item_level = pprev_item_level
-                    self._html.append(self.frmt_list_item_suffix)
-                    if prev_item_ordered:
-                        self._html.append(self.frmt_olist_suffix)
-                    else:
-                        self._html.append(self.frmt_ulist_suffix)
-            prev_endo = endo
-
-    def _parse_unit(self, text):
-        # resume heading text insertion
-        if self._state[-1] == S_HEADING_IN:
-            self._html.append(self._parse_sentence(text))
-
-        # resume paragraph text insertion
-        elif self._state[-1] == S_PARAGRAPH_IN:
-            self._html.append(self._parse_sentence(text))
-
-        # resume list text insertion
-        elif self._state[-1] == S_LIST_IN:
-            self._parse_list(self._parse_sentence(text))
-
-        elif self._state[-1] == S_START:
-            # format basic stuff
-            text = self._parse_sentence(text)
-
-            # add new heading
-            m = self._re_heading.match(text)
-            if m:
-                self._heading_level = len(m.group(1)) + self.heading_offset
-                if self._heading_level > 6:
-                    self._heading_level = 6
-                heading = m.group(2)
-                self._html.append(
-                    self.frmt_heading_prefix.format(
-                        **{'LEVEL':self._heading_level}
+        # build footnote items
+        if (
+            res_id not in self.resources_cited
+            and res_type in self.frmt_footnote_item
+        ):
+            try:
+                self._footnote_items.append(
+                    self.frmt_footnote_item[res_type].format(
+                        **{'ID':res_id, 'INDEX':res_index},
+                        **resource
                     )
                 )
-                self._html.append(heading)
-                self._state.append(S_HEADING_IN)
-
-            else:
-                # add new list
-                m = self._re_list.match(text)
-                if m:
-                    self._parse_list(text)
-                    self._state.append(S_LIST_IN)
-
-                # add new paragraph
-                else:
-                    self._html.append(self.frmt_paragraph_prefix)
-                    self._html.append(text)
-                    self._state.append(S_PARAGRAPH_IN)
-
-    def _close_pending(self):
-        state = self._state.pop()
-        if self._emph_open:
-            self._html.append(self.frmt_emph_suffix)
-            self._emph_open = False
-        if state == S_HEADING_IN:
-            self._html.append(
-                self.frmt_heading_suffix.format(
-                    **{'LEVEL':self._heading_level}
+            except KeyError as k:
+                self._footnote_items.append(
+                    self.frmt_cite_error_inline.format(
+                        **{'ERROR':"resource '{}' lacks {}".format(res_id,k)}
+                    )
                 )
-            )
-        elif state == S_PARAGRAPH_IN:
-            self._html.append(self.frmt_paragraph_suffix)
-        elif state == S_LIST_IN:
-            while len(self._list) > 1:
-                item_level, item_ordered = self._list[-1]
-                self._html.append(self.frmt_list_item_suffix)
-                if item_ordered:
-                    self._html.append(self.frmt_olist_suffix)
-                else:
-                    self._html.append(self.frmt_ulist_suffix)
-                del self._list[-1]
 
-    def _flush_boxes(self):
-        if len(self._resources_pending_boxes):
-            self._html += self._resources_pending_boxes
-            self._resources_pending_boxes = []
+        # build bibliography items
+        if (
+            res_id not in self.resources_cited
+            and res_type in self.frmt_bibliography_item
+        ):
+            try:
+                self._bibliography_items.append(
+                    self.frmt_bibliography_item[res_type].format(
+                        **{'ID':res_id, 'INDEX':res_index},
+                        **resource
+                    )
+                )
+            except KeyError as k:
+                self._bibliography_items.append(
+                    self.frmt_cite_error_inline.format(
+                        **{'ERROR':"resource '{}' lacks {}".format(res_id,k)}
+                    )
+                )
 
-    def _parse_units(self, text):
-        prev_endo = 0
-        for match_unit_border in self._re_unit_sep.finditer(text):
-            start, endo = match_unit_border.span()
-            text_unit = text[prev_endo:start]
-            self._parse_unit(text_unit)
-            self._close_pending()
-            self._flush_boxes()
-            prev_endo = endo
-        self._parse_unit(text[prev_endo:])
+        # inline resource citation
+        if res_type in self.frmt_cite_inline:
+            try:
+                self._html[-1].append(self.frmt_cite_inline[res_type].format(
+                    **{'INDEX':res_index, 'ID':res_id}, **resource
+                ))
+            except KeyError as k:
+                self._html[-1].append(self.frmt_cite_error_inline.format(
+                    **{'ERROR':"resource '{}' lacks {}".format(res_id, k)}
+                ))
+
+        # box resource citation
+        if res_id not in self.resources_cited:
+            if res_type in self.frmt_cite_box:
+                try:
+                    self._citations_pending_boxes.append(
+                        self.frmt_cite_box[res_type].format(
+                            **{'INDEX':res_index, 'ID':res_id}, **resource
+                        )
+                    )
+                except KeyError as k:
+                    self._citations_pending_boxes.append(
+                        self.frmt_cite_error_box.format(
+                            **{
+                                'ERROR':"resource '{}' lacks '{}'".format(
+                                    res_id, k
+                                )
+                            }
+                        )
+                    )
+
+        self.resources_cited[res_id] = res_index
