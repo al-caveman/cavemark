@@ -159,12 +159,12 @@ class CaveMark:
         if frmt_cite_inline is None:
             self.frmt_cite_inline = {
             'link'      :' <a href="{url}">[{INDEX}]</a>',
-            'book'      :' <a href="#cite_{ID}_{INDEX}">[{INDEX}]</a>',
-            'image'     :' <a href="#cite_{ID}_{INDEX}">Figure {INDEX}</a>',
-            'quotation' :' <a href="#cite_{ID}_{INDEX}">Quote {INDEX}</a>',
-            'definition':' <a href="#cite_{ID}_{INDEX}">Definition {INDEX}</a>',
-            'theorem'   :' <a href="#cite_{ID}_{INDEX}">Theorem {INDEX}</a>',
-            'footnote'  :'<sup><a href="#fn_{ID}_{INDEX}">{INDEX}</a></sup>',
+            'book'      :' <a href="#cite_{ID}{INDEX}">[{INDEX}]</a>',
+            'image'     :' <a href="#cite_{ID}{INDEX}">Figure {INDEX}</a>',
+            'quotation' :' <a href="#cite_{ID}{INDEX}">Quote {INDEX}</a>',
+            'definition':' <a href="#cite_{ID}{INDEX}">Definition {INDEX}</a>',
+            'theorem'   :' <a href="#cite_{ID}{INDEX}">Theorem {INDEX}</a>',
+            'footnote'  :'<sup><a href="#fn_{ID}{INDEX}">{INDEX}</a></sup>',
             }
         else:
             self.frmt_cite_inline = frmt_cite_inline
@@ -172,20 +172,20 @@ class CaveMark:
         # box citation format.
         if frmt_cite_box is None:
             self.frmt_cite_box = {
-                'image'     :'<figure id="cite_{ID}_{INDEX}" '
+                'image'     :'<figure id="cite_{ID}{INDEX}" '
                              'style="text-align:center;">\n'
                              '  <img alt="{alt}" src="{url}" />\n'
                              '  <figcaption>\n'
                              '    <strong>Figure {INDEX}:</strong> {caption}\n'
                              '  </figcaption>\n'
                              '</figure>\n\n',
-                'quotation' :'<blockquote id="cite_{ID}_{INDEX}">\n'
+                'quotation' :'<blockquote id="cite_{ID}{INDEX}">\n'
                              '  {text} -- {author}\n'
                              '</blockquote>\n\n',
-                'definition':'<p id="cite_{ID}_{INDEX}" class="definition">\n'
+                'definition':'<p id="cite_{ID}{INDEX}" class="definition">\n'
                              '  {text}\n'
                              '</p>\n\n',
-                'theorem'   :'<p id="cite_{ID}_{INDEX}" class="theorem">\n'
+                'theorem'   :'<p id="cite_{ID}{INDEX}" class="theorem">\n'
                              '  {text}\n'
                              '</p>\n\n',
             }
@@ -223,7 +223,7 @@ class CaveMark:
         # bibliography items format
         if frmt_bibliography_item is None:
             self.frmt_bibliography_item = {
-                'book'  :'<li id="cite_{ID}_{INDEX}">[{INDEX}] {authors}, '
+                'book'  :'<li id="cite_{ID}{INDEX}">[{INDEX}] {authors}, '
                          '&ldquo;<em>{title}</em>&ldquo;, {publisher}, '
                          '{year}.</li>\n',
             }
@@ -254,7 +254,7 @@ class CaveMark:
         # footnote items format
         if frmt_footnote_item is None:
             self.frmt_footnote_item = {
-                'footnote'  :'<li id="fn_{ID}_{INDEX}">'\
+                'footnote'  :'<li id="fn_{ID}{INDEX}">'\
                              '{INDEX}. {text}'\
                              '</li>\n',
             }
