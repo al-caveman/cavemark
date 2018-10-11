@@ -85,6 +85,8 @@ resource we defined earlier.
 # Basic Example
 
 ```python
+import cavemark
+
 text_input = '''
 # this is a _heading_
 
