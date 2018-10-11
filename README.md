@@ -9,12 +9,15 @@ markdown parser for Python.  So maybe CaveMark is the only one.  I know about
 [Madoko](https://www.madoko.net/), but its syntax sucks and I guess it's not a
 python module (JavaScript).  I never used Madoko.
 
+This typesetting aspect makes authoring pretty documents significantly easier
+with CaveMark than, say, mistune.
+
 
 # Benchmark
 
-[mistune](https://github.com/lepture/mistune) ~~is~~ was the fastest
-pure-Python markdown parser.  CaveMark does more (typesetting) and is also
-notably faster.
+[mistune](https://github.com/lepture/mistune) used to be the fastest
+pure-Python markdown parser (now CaveMark is).  CaveMark also does more since
+it follow typesetting principles.
 
 
 Results with CPython (repeated 3 times):
