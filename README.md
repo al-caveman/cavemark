@@ -27,14 +27,14 @@ free to change it to be, say, `lol This is a heading rofl`, or whatever.
 
 # Benchmark
 
-Speed is certainly not the main reason I made CaveMark, but I think the speed
-benchmark is a nice way to show you how honestly I made CaveMark.  E.g. I
-wasn't a lazy sucker that just hoped hardware to become faster.
+Speed is not the main reason I made CaveMark. But I think it's interesting that
+CaveMark is also the fastest pure-Python markdown parser!  I think this
+suggests that I didn't take sloppy shortcuts while coding CaveMark.
 
 Before CaveMark was born, [mistune](https://github.com/lepture/mistune) used to
-be the fastest pure-Python markdown parser.  So I am comparing against mistune
-in this benchmark.  I tested against other pure-Python markdown parsers, and
-they were too slow, so I am not even bothering with the others.
+be the fastest pure-Python markdown parser.  So I am benchmarking CaveMark
+against mistune.  I tested against other pure-Python markdown parsers, and they
+were too slow, so I am not even bothering with the others here.
 
 Results with CPython (repeated 3 times):
 
@@ -61,6 +61,8 @@ cavemark: 1.7137211739999998 seconds (5.7 times faster!)
 mistune : 9.077121615 seconds
 cavemark: 1.703783539 seconds (5.3 times faster!)
 ```
+
+You can find the full benchmark code in the `benchmark` directory.
 
 # Syntax
 
