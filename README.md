@@ -152,9 +152,9 @@ If you open `test.html` using your browser, you will see something neat:
 
 # CaveMark's Syntax Philosophy
 
-Another aspect is that CaveMark tries avoid needless features as much as I
-could.  E.g. most markdown parsers have several ways of doing the same thing.
-For example a heading could be defined by `# This is a heading` or:
+I tried to avoid needless formatting features in CaveMark.  E.g. most markdown
+parsers have several ways of doing the same thing.  For example a heading could
+be defined by `# This is a heading` or:
 
 ```
 This is a heading
