@@ -144,7 +144,7 @@ with open('test.html', 'w') as f:
 
 If you open `test.html` using your browser, you will see something neat:
 
-![rendered output](https://raw.githubusercontent.com/Al-Caveman/cavemark/master/test001.png)
+![rendered output](https://raw.githubusercontent.com/Al-Caveman/cavemark/master/test/test001.png)
 
 # Todo
 
