@@ -208,7 +208,7 @@ class CaveMark:
 
         # bibliography container prefix
         if frmt_bibliography_prefix is None:
-            self.frmt_bibliography_prefix = '<h4>bibliography</h4>\n'\
+            self.frmt_bibliography_prefix = '<h4>Bibliography</h4>\n'\
                                             '<ul style="list-style:none;'\
                                             'padding:0; margin:0;"><small>\n'
         else:
