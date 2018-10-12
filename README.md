@@ -13,9 +13,16 @@ This typesetting aspect makes CaveMark the easiest way to allow you write
 pretty documents for your blog/website/whatever, than, say, mistune or any
 other conventional markdown parser around.
 
-E.g. by simply typing `[myimage] shows a happy cat[mynote].` (assuming
-resources `myimage` and `mynote` are defined), you will conveniently get this
-beautifully formatted page:
+E.g. by simply typing:
+
+```
+# this is a _heading_
+
+[myimage] shows a happy cat[mynote].
+```
+
+Then, xassuming resources `myimage` and `mynote` are defined, you will
+conveniently get this beautifully formatted page:
 
 ![rendered output](https://raw.githubusercontent.com/Al-Caveman/cavemark/master/test001.png)
 
