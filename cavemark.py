@@ -884,15 +884,17 @@ class CaveMark:
     def _list_item_new(self, cur_level, cur_type):
         while True:
             prev_level, _ = self._list[-1]
+            prev2_level, _ = self._list[-2]
             if cur_level == prev_level:
                 self._html[-1].append(self.frmt_list_item_suffix)
                 self._html[-1].append(self.frmt_list_item_prefix)
                 break
             elif cur_level > prev_level:
-                self._list_open(
-                    cur_level,
-                    cur_type
-                )
+                self._list_open(cur_level, cur_type)
+                break
+            elif cur_level > prev2_level:
+                self._html[-1].append(self.frmt_list_item_suffix)
+                self._html[-1].append(self.frmt_list_item_prefix)
                 break
             elif cur_level < prev_level:
                 self._list_close()
