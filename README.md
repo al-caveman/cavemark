@@ -21,7 +21,7 @@ E.g. by simply typing:
 [myimage] shows a happy cat[mynote].
 ```
 
-Then, xassuming resources `myimage` and `mynote` are defined, you will
+Then, assuming resources `myimage` and `mynote` are defined, you will
 conveniently get this beautifully formatted page:
 
 ![rendered output](https://raw.githubusercontent.com/Al-Caveman/cavemark/master/test001.png)
