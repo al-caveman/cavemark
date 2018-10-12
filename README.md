@@ -170,11 +170,11 @@ I don't see a good reason to do it.  Specially that text editors, such as
 
 Another example of avoiding needless features is that there is only one way to
 define emphasized texts.  I don't see any reason to allow to offer several ways
-to emphasize emphasize texts.  E.g. some markdown implementations offer `*`,
-`**`, `_`, `__` to denote that a text is emphasized.  I think this is needless.
-CaveMark only offers `_` emphasize texts. E.g. `_this_` becomes `<em>this</em>`
-in HTML by default.  You can then style the `em` tags as you want, or
-completely replace the `em` tags by whatever you want.
+to emphasize texts.  E.g. some markdown implementations offer `*`, `**`, `_`,
+`__` to denote that a text is emphasized.  I think this is needless.  CaveMark
+only offers `_` emphasize texts. E.g. `_this_` becomes `<em>this</em>` in HTML
+by default.  You can then style the `em` tags as you want, or completely
+replace the `em` tags by whatever you want.
 
 # Todo
 
