@@ -19,6 +19,10 @@ beautifully formatted page:
 
 ![rendered output](https://raw.githubusercontent.com/Al-Caveman/cavemark/master/demo.png)
 
+Every single HTML code that CaveMark generates is configurable via
+`self.frmt_*` variables.  There is no hard-coded HTML strings.  E.g. while by
+default `# This is a heading` becomes `<h1>This is a heading</h1>`, you are
+free to change it to be, say, `lol This is a heading rofl`, or whatever.
 
 # Benchmark
 
@@ -147,11 +151,6 @@ If you open `test.html` using your browser, you will see something neat:
 ![rendered output](https://raw.githubusercontent.com/Al-Caveman/cavemark/master/test/test001.png)
 
 # CaveMark's Syntax Philosophy
-
-Every single HTML code that CaveMark generates is configurable via
-`self.frmt_*` variables.  There is no hard-coded HTML strings.  E.g. while by
-default `# This is a heading` becomes `<h1>This is a heading</h1>`, you are
-free to change it to be, say, `lol This is a heading rofl`, or whatever.
 
 Another aspect is that CaveMark tries avoid needless features as much as I
 could.  E.g. most markdown parsers have several ways of doing the same thing.
