@@ -149,10 +149,14 @@ If you open `test.html` using your browser, you will see something neat:
 # Todo
 
   - [ ] Tables.
-  - [ ] Add referenceable heading indices.
   - [ ] Documentation.
 
-Note:  CaveMark will remain faster than
+**Note 1:**  I currently don't need these features.  My plan is to wait, until
+I happen to need them.  when I need them, I will implement them.  You are more
+than welcome to submit patches/pull requests.  Alternatively, you can try to
+motivate me enough so that I implement them for you.
+
+**Note 2:**  CaveMark will remain faster than
 [mistune](https://github.com/lepture/mistune) after adding those features.
 Design-wise, nothing in CaveMark's architecture indicates any notable slowdown
 when those missing features are added.
