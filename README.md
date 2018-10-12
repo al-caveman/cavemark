@@ -176,6 +176,18 @@ only offers `_` emphasize texts. E.g. `_this_` becomes `<em>this</em>` in HTML
 by default.  You can then style the `em` tags as you want, or completely
 replace the `em` tags by whatever you want.
 
+I basically think that emphasization of texts is a semantic unit, and it is of
+one type.  I see no case where it is good to emphasize texts by underlines in
+some paragraph, and then emphasize by bold in another paragraph.  To me this
+makes no sense.  IMO, if you wish to denote that a text is emphasized, then
+stick to the standard format for such a thing.  In other words, varying the
+emphasization format across your paragraphs is like changing the font and color
+used in your section headings.
+
+If you can convince me that more features are needed, I will change my mind.
+But so far I have not seen any reason to justify having multiple ways of
+defining section headings or emphasized texts.
+
 # Todo
 
   - [ ] Tables.
