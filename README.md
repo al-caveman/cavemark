@@ -15,7 +15,8 @@ other conventional markdown parser around.
 
 E.g. by simply typing `[myimage] shows a happy cat[mynote].` (assuming
 resources `myimage` and `mynote` are defined) you will conveniently get this
-beautifully formatted page:
+beautifully formatted page, where figures, captions, footnotes, links, etc are
+all done automatically:
 
 ![rendered output](https://raw.githubusercontent.com/Al-Caveman/cavemark/master/demo.png)
 
