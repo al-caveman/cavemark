@@ -146,15 +146,47 @@ If you open `test.html` using your browser, you will see something neat:
 
 ![rendered output](https://raw.githubusercontent.com/Al-Caveman/cavemark/master/test/test001.png)
 
+# CaveMark's Syntax Philosophy
+
+Every single HTML code that CaveMark generates is configurable via
+`self.frmt_*` variables.  There is no hard-coded HTML strings.  E.g. while by
+default `# This is a heading` becomes `<h1>This is a heading</h1>`, you are
+free to change it to be, say, `lol This is a heading rofl`, or whatever.
+
+Another aspect is that CaveMark tries avoid needless features as much as I
+could.  E.g. most markdown parsers have several ways of doing the same thing.
+For example a heading could be defined by `# This is a heading` or:
+
+```
+This is a heading
+-----------------
+```
+
+The `#` method is superior, since it allows you to also specify heading's level
+by repeating `#`.  E.g. `###### This is a heading` defines a level 6 heading.
+
+Therefore, CaveMark only supports the `#` method, and not the under-dashed one.
+I don't see a good reason to do it.  Specially that text editors, such as
+`vim`, highlight headings texts accordingly either way.
+
+Another example of avoiding needless features is that there is only one way to
+define emphasized texts.  I don't see any reason to allow to offer several ways
+to emphasize emphasize texts.  E.g. some markdown implementations offer `*`,
+`**`, `_`, `__` to denote that a text is emphasized.  I think this is needless.
+CaveMark only offers `_` emphasize texts. E.g. `_this_` becomes `<em>this</em>`
+in HTML by default.  You can then style the `em` tags as you want, or
+completely replace the `em` tags by whatever you want.
+
 # Todo
 
   - [ ] Tables.
+  - [ ] Strike-trough.
   - [ ] Documentation.
 
 **Note 1:**  I currently don't need these features.  My plan is to wait, until
-I happen to need them.  when I need them, I will implement them.  You are more
-than welcome to submit patches/pull requests.  Alternatively, you can try to
-motivate me enough so that I implement them for you.
+I happen to need them, then implement them.  You are more than welcome to
+submit patches/pull requests.  Alternatively, you can try to motivate me enough
+so that I implement them for you.
 
 **Note 2:**  CaveMark will remain faster than
 [mistune](https://github.com/lepture/mistune) after adding those features.
