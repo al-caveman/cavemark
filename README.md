@@ -83,9 +83,10 @@ Ordered lists are defined by `+`, and the unordered by `*`.  E.g.:
     + another ordered item.
 ```
 
-The most interesting part of CaveMark is how it defines _resources_.  Below is
-an example where a figure is defined.  This figure can then be cited later in
-the document (as shown later in this section).
+The most interesting part of CaveMark is how it defines _resources_, and uses
+them to achieve typesetting.  Below is an example where a figure is defined.
+This figure can then be cited later in the document (as shown later in this
+section).
 
 ```
 image  : myimage
