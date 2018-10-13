@@ -25,6 +25,9 @@ Every single HTML code that CaveMark generates is configurable via
 default `# This is a heading` becomes `<h1>This is a heading</h1>`, you are
 free to change it to be, say, `lol This is a heading rofl`, or whatever.
 
+For a production demonstration of what CaveMark can do, checkout [this
+website](https://cave.mn); all its articles are written in CaveMark!
+
 # Benchmark
 
 Speed is not the main reason I made CaveMark. But I think it's interesting that
