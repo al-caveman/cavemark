@@ -101,7 +101,11 @@ Aside from `image`, many other resource types are defined, e.g. book, footnote,
 quote, theorem, etc.  You can also easily add your own custom ones.
 
 Citing a resource is by using `[]`.  E.g. `[myimage]` will cite the `myimage`
-resource we defined earlier.
+resource we defined earlier.  When a resource identifier, e.g. `myimage` is
+prefixed by `!`, in a citation box, e.g. `[!myimage], then the resource
+`myimage` will not expand into its inline citation format. Using `[!myimage]`
+is useful when you want to only place the box/bibliography/footnote expansion
+of the resource, without actually citing the resource.
 
 # Basic Example
 
