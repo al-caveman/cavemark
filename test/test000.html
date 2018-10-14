@@ -68,26 +68,16 @@ int main(){
 <li> 2nd item in same list</li>
 </ul>
 <p>look  <a href="#cite_myimage1">Figure 1</a> is pretty.  no?  how about  <a href="#cite_newimage2">Figure 2</a>? i just added it myself!
-also <em>this link  <a href="https://cave.mn">[1]</a> is also niceee</em>.  agree right<sup><a href="#fn_code14">4</a></sup>.  also <code>this [not resource] is some code</code>.  this resource is
+also <em>this link  <a href="https://cave.mn">caveman's theories</a> is also niceee</em>.  agree right<sup><a href="#fn_code14">4</a></sup>.  also <code>this [not resource] is some code</code>.  this resource is
 errornous <strong>[err: undefined resource 'lolimadethisup']</strong>.</p>
 
-<figure id="cite_myimage1" style="text-align:center;">
-  <img alt="mug" src="https://cave.mn/pics/caveman.png" />
-  <figcaption>
-    <strong>Figure 1:</strong> this is <em>the</em> caveman!
-  </figcaption>
-</figure>
+<figure id="cite_myimage1" style="text-align:center;"><img alt="mug" src="https://cave.mn/pics/caveman.png" /><figcaption><a href="#cite_myimage1">Figure 1.</a> this is <em>the</em> caveman!</figcaption></figure>
 
-<figure id="cite_newimage2" style="text-align:center;">
-  <img alt="some alt text" src="https://cave.mn/pics/cat.png" />
-  <figcaption>
-    <strong>Figure 2:</strong> a <em>cApTiOn</em><sup><a href="#fn_stupid3">3</a></sup>
-  </figcaption>
-</figure>
+<figure id="cite_newimage2" style="text-align:center;"><img alt="some alt text" src="https://cave.mn/pics/cat.png" /><figcaption><a href="#cite_newimage2">Figure 2.</a> a <em>cApTiOn</em><sup><a href="#fn_stupid3">3</a></sup></figcaption></figure>
 
 <p>this is a citation with an empty resource identifier <strong>[err: no resource identifier]</strong>.</p>
 
-<p><pre><code># this is some code block
+<pre><code># this is some code block
 for i in range(0, 100):
     print('lol')
     # hell yeah!
@@ -96,36 +86,34 @@ int main() {
     printf("lol\n");
     return 0;
 }
-</code></pre></p>
-
-<p>look  <a href="#cite_myimage1">Figure 1</a> is pretty.  no?  also this link  <a href="https://cave.mn">[1]</a> is also niceee.  agree
+</code></pre><p>look  <a href="#cite_myimage1">Figure 1</a> is pretty.  no?  also this link  <a href="https://cave.mn">caveman's theories</a> is also niceee.  agree
 right<sup><a href="#fn_code14">4</a></sup>.  also <code>this^{not footnote} is some
 code</code>.</p>
 
 <p>this is just some innocent paragraphs<sup><a href="#fn_stupid25">5</a></sup>. this is just some
 innocent paragraphs.  this is just some innocent paragraphs. this is just some
-innocent paragraphs.  here  <a href="#cite_mybook2">[2]</a> and  <a href="#cite_mybook2">[2]</a> this is just some innocent
+innocent paragraphs.  here  <a href="#cite_mybook1">[1]</a> and  <a href="#cite_mybook1">[1]</a> this is just some innocent
 paragraphs.</p>
 
 <p>this is some badass footnote<sup><a href="#fn_stupid36">6</a></sup></p>
 
-<p><strong>\[
+<p><span class="ignored">\[
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\], \(not this\), $$not
 this$$, `not this`, ```not this```.
-\]</strong></p>
+\]</span></p>
 
-<p><strong>\(
+<p><span class="ignored">\(
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\] \(not this\), $$not
 this$$, `not this`, ```not this```.
-\)</strong></p>
+\)</span></p>
 
-<p><strong>$$
+<p><span class="ignored">$$
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\] \(not this\), $$not
 this$$, `not this`, ```not this```.
-$$</strong></p>
+$$</span></p>
 
 <p><code>
 this is some ignored text.  nothing should work.  no citations [mybook], and no
@@ -133,30 +121,28 @@ footnotes^{this footnote must not work}, \[not this\] \(not this\), $$not
 this$$, `not this`, ```not this```.
 </code></p>
 
-<p><pre><code>
+<pre><code>
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\] \(not this\), $$not
 this$$, `not this`, ```not this```.
-</code></pre></p>
-
-<p>this is a very long paragraph that contains this code:
-<strong>\[
+</code></pre><p>this is a very long paragraph that contains this code:
+<span class="ignored">\[
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\], \(not this\), $$not
 this$$, `not this`, ```not this```.
-\]</strong>
+\]</span>
 , this:
-<strong>\(
+<span class="ignored">\(
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\] \(not this\), $$not
 this$$, `not this`, ```not this```.
-\)</strong>
+\)</span>
 , this:
-<strong>$$
+<span class="ignored">$$
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\] \(not this\), $$not
 this$$, `not this`, ```not this```.
-$$</strong>
+$$</span>
 , and this:
 <code>
 this is some ignored text.  nothing should work.  no citations [mybook], and no
@@ -164,32 +150,31 @@ footnotes^{this footnote must not work}, \[not this\] \(not this\), $$not
 this$$, `not this`, ```not this```.
 </code></p>
 
-<p><pre><code>
+<pre><code>
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\] \(not this\), $$not
 this$$, `not this`, ```not this```.
-</code></pre>
-  and this  <a href="#cite_lolbook3">[3]</a>.</p>
+</code></pre><p>  and this  <a href="#cite_lolbook2">[2]</a>.</p>
 
 <hr/>
- <ul style="list-style:none;padding:0; margin:0;"><small><li id="fn_badass1">1. main title as in badass. hth.</li>
-<li id="fn_2ndtitlefn2">2. 2nd level title also badass</li>
-<li id="fn_stupid3">3. lol wat?? foot note in caption? OMG!</li>
-<li id="fn_code14">4. nice footnote with <code>print(x);</code> ;)</li>
-<li id="fn_stupid25">5. yep :)  <a href="#cite_mybook2">[2]</a>]</li>
-<li id="fn_stupid36">6. 
-such a badass footnote with ignored text interval in it, like this <strong>\[
+ <ul style="list-style:none;padding:0; margin:0;"><li id="fn_badass1"><small>1. main title as in badass. hth.</small></li>
+<li id="fn_2ndtitlefn2"><small>2. 2nd level title also badass</small></li>
+<li id="fn_stupid3"><small>3. lol wat?? foot note in caption? OMG!</small></li>
+<li id="fn_code14"><small>4. nice footnote with <code>print(x);</code> ;)</small></li>
+<li id="fn_stupid25"><small>5. yep :)  <a href="#cite_mybook1">[1]</a>]</small></li>
+<li id="fn_stupid36"><small>6. 
+such a badass footnote with ignored text interval in it, like this <span class="ignored">\[
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work\}, \[not this\], \(not this\), $$not
 this$$, `not this`, ```not this```
-\]</strong>, <code>this</code> and even code block: 
+\]</span>, <code>this</code> and even code block: 
 <pre><code># this is some code block
 for i in range(0, 100):
     print('lol')
     # hell yeah!
 </code></pre>
-!!</li>
-</small></ul>
+!!</small></li>
+</ul>
 
 <h2> this is some main<sup><a href="#fn_badass7">7</a></sup> title</h2>
 
@@ -261,12 +246,12 @@ int main(){
 <li> 2nd item in same list</li>
 </ul>
 <p>look  <a href="#cite_myimage1">Figure 1</a> is pretty.  no?  how about  <a href="#cite_newimage2">Figure 2</a>? i just added it myself!
-also <em>this link  <a href="https://cave.mn">[1]</a> is also niceee</em>.  agree right<sup><a href="#fn_code110">10</a></sup>.  also <code>this [not resource] is some code</code>.  this resource is
+also <em>this link  <a href="https://cave.mn">caveman's theories</a> is also niceee</em>.  agree right<sup><a href="#fn_code110">10</a></sup>.  also <code>this [not resource] is some code</code>.  this resource is
 errornous <strong>[err: undefined resource 'lolimadethisup']</strong>.</p>
 
 <p>this is a citation with an empty resource identifier <strong>[err: no resource identifier]</strong>.</p>
 
-<p><pre><code># this is some code block
+<pre><code># this is some code block
 for i in range(0, 100):
     print('lol')
     # hell yeah!
@@ -275,36 +260,34 @@ int main() {
     printf("lol\n");
     return 0;
 }
-</code></pre></p>
-
-<p>look  <a href="#cite_myimage1">Figure 1</a> is pretty.  no?  also this link  <a href="https://cave.mn">[1]</a> is also niceee.  agree
+</code></pre><p>look  <a href="#cite_myimage1">Figure 1</a> is pretty.  no?  also this link  <a href="https://cave.mn">caveman's theories</a> is also niceee.  agree
 right<sup><a href="#fn_code110">10</a></sup>.  also <code>this^{not footnote} is some
 code</code>.</p>
 
 <p>this is just some innocent paragraphs<sup><a href="#fn_stupid211">11</a></sup>. this is just some
 innocent paragraphs.  this is just some innocent paragraphs. this is just some
-innocent paragraphs.  here  <a href="#cite_mybook2">[2]</a> and  <a href="#cite_mybook2">[2]</a> this is just some innocent
+innocent paragraphs.  here  <a href="#cite_mybook1">[1]</a> and  <a href="#cite_mybook1">[1]</a> this is just some innocent
 paragraphs.</p>
 
 <p>this is some badass footnote<sup><a href="#fn_stupid312">12</a></sup></p>
 
-<p><strong>\[
+<p><span class="ignored">\[
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\], \(not this\), $$not
 this$$, `not this`, ```not this```.
-\]</strong></p>
+\]</span></p>
 
-<p><strong>\(
+<p><span class="ignored">\(
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\] \(not this\), $$not
 this$$, `not this`, ```not this```.
-\)</strong></p>
+\)</span></p>
 
-<p><strong>$$
+<p><span class="ignored">$$
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\] \(not this\), $$not
 this$$, `not this`, ```not this```.
-$$</strong></p>
+$$</span></p>
 
 <p><code>
 this is some ignored text.  nothing should work.  no citations [mybook], and no
@@ -312,30 +295,28 @@ footnotes^{this footnote must not work}, \[not this\] \(not this\), $$not
 this$$, `not this`, ```not this```.
 </code></p>
 
-<p><pre><code>
+<pre><code>
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\] \(not this\), $$not
 this$$, `not this`, ```not this```.
-</code></pre></p>
-
-<p>this is a very long paragraph that contains this code:
-<strong>\[
+</code></pre><p>this is a very long paragraph that contains this code:
+<span class="ignored">\[
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\], \(not this\), $$not
 this$$, `not this`, ```not this```.
-\]</strong>
+\]</span>
 , this:
-<strong>\(
+<span class="ignored">\(
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\] \(not this\), $$not
 this$$, `not this`, ```not this```.
-\)</strong>
+\)</span>
 , this:
-<strong>$$
+<span class="ignored">$$
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\] \(not this\), $$not
 this$$, `not this`, ```not this```.
-$$</strong>
+$$</span>
 , and this:
 <code>
 this is some ignored text.  nothing should work.  no citations [mybook], and no
@@ -343,37 +324,36 @@ footnotes^{this footnote must not work}, \[not this\] \(not this\), $$not
 this$$, `not this`, ```not this```.
 </code></p>
 
-<p><pre><code>
+<pre><code>
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\] \(not this\), $$not
 this$$, `not this`, ```not this```.
-</code></pre>
-  and this  <a href="#cite_hisbook4">[4]</a>.</p>
+</code></pre><p>  and this  <a href="#cite_hisbook3">[3]</a>.</p>
 
 <hr/>
- <ul style="list-style:none;padding:0; margin:0;"><small><li id="fn_badass7">7. main title as in badass. hth.</li>
-<li id="fn_2ndtitlefn8">8. 2nd level title also badass</li>
-<li id="fn_stupid9">9. lol wat?? foot note in caption? OMG!</li>
-<li id="fn_code110">10. nice footnote with <code>print(x);</code> ;)</li>
-<li id="fn_stupid211">11. yep :)  <a href="#cite_mybook2">[2]</a>]</li>
-<li id="fn_stupid312">12. 
-such a badass footnote with ignored text interval in it, like this <strong>\[
+ <ul style="list-style:none;padding:0; margin:0;"><li id="fn_badass7"><small>7. main title as in badass. hth.</small></li>
+<li id="fn_2ndtitlefn8"><small>8. 2nd level title also badass</small></li>
+<li id="fn_stupid9"><small>9. lol wat?? foot note in caption? OMG!</small></li>
+<li id="fn_code110"><small>10. nice footnote with <code>print(x);</code> ;)</small></li>
+<li id="fn_stupid211"><small>11. yep :)  <a href="#cite_mybook1">[1]</a>]</small></li>
+<li id="fn_stupid312"><small>12. 
+such a badass footnote with ignored text interval in it, like this <span class="ignored">\[
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work\}, \[not this\], \(not this\), $$not
 this$$, `not this`, ```not this```
-\]</strong>, <code>this</code> and even code block: 
+\]</span>, <code>this</code> and even code block: 
 <pre><code># this is some code block
 for i in range(0, 100):
     print('lol')
     # hell yeah!
 </code></pre>
-!!</li>
-</small></ul>
+!!</small></li>
+</ul>
 
-<h4>bibliography</h4>
-<ul style="list-style:none;padding:0; margin:0;"><small>
-<li id="cite_mybook2">[2] Dude McDude and Guy McGuy, &ldquo;<em>the best title ever</em>&ldquo;, cave press, 2018.</li>
-<li id="cite_lolbook3">[3] Xxxx and Yyyy, &ldquo;<em>the 2nd best title ever</em>&ldquo;, some press, 0 BC.</li>
-<li id="cite_hisbook4">[4] guy1, guy2 and guy3, &ldquo;<em>the 2nd best title ever</em>&ldquo;, some press, 100 BC.</li>
-</small></ul>
+<h4>Bibliography</h4>
+<ul style="list-style:none;padding:0; margin:0;">
+<li id="cite_mybook1"><small>[1] Dude McDude and Guy McGuy, &ldquo;<em>the best title ever</em>&ldquo;, cave press, 2018.</small></li>
+<li id="cite_lolbook2"><small>[2] Xxxx and Yyyy, &ldquo;<em>the 2nd best title ever</em>&ldquo;, some press, 0 BC.</small></li>
+<li id="cite_hisbook3"><small>[3] guy1, guy2 and guy3, &ldquo;<em>the 2nd best title ever</em>&ldquo;, some press, 100 BC.</small></li>
+</ul>
 

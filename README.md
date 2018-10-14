@@ -65,7 +65,9 @@ mistune : 9.077121615 seconds
 cavemark: 1.703783539 seconds (5.3 times faster!)
 ```
 
-You can find the full benchmark code in the `benchmark` directory.
+You can find the full benchmark code in the
+[benchmark](https://github.com/Al-Caveman/cavemark/tree/master/benchmark)
+directory.
 
 # Syntax
 

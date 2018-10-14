@@ -3,6 +3,7 @@ import cavemark
 s = '''
 link        : mylink
 url         : https://cave.mn
+text        : caveman's theories
 
 image       : myimage 
 url         : https://cave.mn/pics/caveman.png
