@@ -84,19 +84,20 @@ class CaveMark:
 
     def __init__(
         self, resources=None, resource_keys_ignored=None,
-        resource_counters=None, escape=None, code=None, code_unescape=None,
-        heading_offset=None, frmt_cite_inline=None, frmt_cite_box=None,
-        frmt_cite_error_inline=None, frmt_cite_error_box=None,
-        frmt_bibliography_prefix=None, frmt_bibliography_suffix=None,
-        frmt_bibliography_item=None, frmt_bibliography_error_item=None,
-        frmt_footnote_prefix=None, frmt_footnote_suffix=None,
-        frmt_footnote_item=None, frmt_footnote_error_item=None,
-        frmt_paragraph_prefix=None, frmt_paragraph_suffix=None,
-        frmt_emph_prefix=None, frmt_emph_suffix=None, frmt_code_prefix=None,
-        frmt_code_suffix=None, frmt_olist_prefix=None, frmt_olist_suffix=None,
-        frmt_ulist_prefix=None, frmt_ulist_suffix=None,
-        frmt_list_item_prefix=None, frmt_list_item_suffix=None,
-        frmt_heading_prefix=None, frmt_heading_suffix=None
+        resource_counters=None, escape=None, code=None, code_inline=None,
+        code_unescape=None, heading_offset=None, frmt_cite_inline=None,
+        frmt_cite_box=None, frmt_cite_error_inline=None,
+        frmt_cite_error_box=None, frmt_bibliography_prefix=None,
+        frmt_bibliography_suffix=None, frmt_bibliography_item=None,
+        frmt_bibliography_error_item=None, frmt_footnote_prefix=None,
+        frmt_footnote_suffix=None, frmt_footnote_item=None,
+        frmt_footnote_error_item=None, frmt_paragraph_prefix=None,
+        frmt_paragraph_suffix=None, frmt_emph_prefix=None,
+        frmt_emph_suffix=None, frmt_code_prefix=None, frmt_code_suffix=None,
+        frmt_olist_prefix=None, frmt_olist_suffix=None, frmt_ulist_prefix=None,
+        frmt_ulist_suffix=None, frmt_list_item_prefix=None,
+        frmt_list_item_suffix=None, frmt_heading_prefix=None,
+        frmt_heading_suffix=None
     ):
         # references/resources dictionary
         if resources is None:
@@ -114,12 +115,12 @@ class CaveMark:
         if resource_counters is None:
             self.resource_counters = {
                 'link'      :'counter_a',
-                'book'      :'counter_a',
-                'image'     :'counter_b',
-                'quotation' :'counter_c',
-                'definition':'counter_d',
-                'theorem'   :'counter_e',
-                'footnote'  :'counter_f',
+                'book'      :'counter_b',
+                'image'     :'counter_c',
+                'quotation' :'counter_d',
+                'definition':'counter_e',
+                'theorem'   :'counter_f',
+                'footnote'  :'counter_g',
             }
         else:
             self.resource_counters = resource_counters
@@ -142,6 +143,13 @@ class CaveMark:
         else:
             self.code = code
 
+        # specify which code is inline so that when it appears alone, it gets
+        # encapsulated in a paragraph
+        if code_inline is None:
+            self.code_inline = {'\[', '\(', '$$', '`'}
+        else:
+            self.code_inline = code_inline
+
         # ignored text intervals to unescape
         if code_unescape is None:
             self.code_unescape = {'`', '```'}
@@ -158,7 +166,7 @@ class CaveMark:
         # inline citation format
         if frmt_cite_inline is None:
             self.frmt_cite_inline = {
-            'link'      :' <a href="{url}">[{INDEX}]</a>',
+            'link'      :' <a href="{url}">{text}</a>',
             'book'      :' <a href="#cite_{ID}{INDEX}">[{INDEX}]</a>',
             'image'     :' <a href="#cite_{ID}{INDEX}">Figure {INDEX}</a>',
             'quotation' :' <a href="#cite_{ID}{INDEX}">Quote {INDEX}</a>',
@@ -173,20 +181,36 @@ class CaveMark:
         if frmt_cite_box is None:
             self.frmt_cite_box = {
                 'image'     :'<figure id="cite_{ID}{INDEX}" '
-                             'style="text-align:center;">\n'
-                             '  <img alt="{alt}" src="{url}" />\n'
-                             '  <figcaption>\n'
-                             '    <strong>Figure {INDEX}:</strong> {caption}\n'
-                             '  </figcaption>\n'
+                             'style="text-align:center;">'
+                             '<img alt="{alt}" src="{url}" />'
+                             '<figcaption>'
+                             '<a href="#cite_{ID}{INDEX}">'
+                             'Figure {INDEX}.'
+                             '</a>'
+                             ' {caption}'
+                             '</figcaption>'
                              '</figure>\n\n',
-                'quotation' :'<blockquote id="cite_{ID}{INDEX}">\n'
-                             '  {text} -- {author}\n'
-                             '</blockquote>\n\n',
-                'definition':'<p id="cite_{ID}{INDEX}" class="definition">\n'
-                             '  {text}\n'
+                'quotation' :'<figure id="cite_{ID}{INDEX}">'
+                             '<a href="#cite_{ID}{INDEX}">'
+                             'Quote {INDEX}:'
+                             '</a>'
+                             '<blockquote><em>'
+                             '&ldquo;{text}&rdquo;'
+                             '</em></blockquote>'
+                             '<footer style="text-align:right;">'
+                             '&mdash; <cite>{author}</cite>'
+                             '</footer>'
+                             '</figure>\n\n',
+                'definition':'<p id="cite_{ID}{INDEX}">'
+                             '<a href="#cite_{ID}{INDEX}">'
+                             'Definition {INDEX}.'
+                             '</a>'
+                             ' <em>{text}</em>'
                              '</p>\n\n',
-                'theorem'   :'<p id="cite_{ID}{INDEX}" class="theorem">\n'
-                             '  {text}\n'
+                'theorem'   :'<p id="cite_{ID}{INDEX}">'
+                             '<a href="#cite_{ID}{INDEX}">'
+                             'Theorem {INDEX}.</a>'
+                             ' <em>{text}</em>'
                              '</p>\n\n',
             }
         else:
@@ -210,22 +234,23 @@ class CaveMark:
         if frmt_bibliography_prefix is None:
             self.frmt_bibliography_prefix = '<h4>Bibliography</h4>\n'\
                                             '<ul style="list-style:none;'\
-                                            'padding:0; margin:0;"><small>\n'
+                                            'padding:0; margin:0;">\n'
         else:
             self.frmt_bibliography_prefix = frmt_bibliography_prefix
 
         # bibliography container suffix
         if frmt_bibliography_suffix is None:
-            self.frmt_bibliography_suffix = '</small></ul>\n\n'
+            self.frmt_bibliography_suffix = '</ul>\n\n'
         else:
             self.frmt_bibliography_suffix = frmt_bibliography_suffix
 
         # bibliography items format
         if frmt_bibliography_item is None:
             self.frmt_bibliography_item = {
-                'book'  :'<li id="cite_{ID}{INDEX}">[{INDEX}] {authors}, '
+                'book'  :'<li id="cite_{ID}{INDEX}"><small>'
+                         '[{INDEX}] {authors}, '
                          '&ldquo;<em>{title}</em>&ldquo;, {publisher}, '
-                         '{year}.</li>\n',
+                         '{year}.</small></li>\n',
             }
         else:
             self.frmt_bibliography_item = frmt_bibliography_item
@@ -233,7 +258,7 @@ class CaveMark:
         # errornous bibliography item format
         if frmt_bibliography_error_item is None:
             self.frmt_bibliography_error_item = '<li><strong>'\
-                                                'err: {ERROR}'\
+                                                '<small>err: {ERROR}</small>'\
                                                 '</strong></li>'
         else:
             self.frmt_bibliography_error_item = frmt_bibliography_error_item
@@ -241,13 +266,13 @@ class CaveMark:
         # footnote container prefix
         if frmt_footnote_prefix is None:
             self.frmt_footnote_prefix = '<hr/>\n <ul style="list-style:none;'\
-                                        'padding:0; margin:0;"><small>'
+                                        'padding:0; margin:0;">'
         else:
             self.frmt_footnote_prefix = frmt_footnote_prefix
 
         # footnote container suffix
         if frmt_footnote_suffix is None:
-            self.frmt_footnote_suffix = '</small></ul>\n\n'
+            self.frmt_footnote_suffix = '</ul>\n\n'
         else:
             self.frmt_footnote_suffix = frmt_footnote_suffix
 
@@ -255,7 +280,7 @@ class CaveMark:
         if frmt_footnote_item is None:
             self.frmt_footnote_item = {
                 'footnote'  :'<li id="fn_{ID}{INDEX}">'\
-                             '{INDEX}. {text}'\
+                             '<small>{INDEX}. {text}</small>'\
                              '</li>\n',
             }
         else:
@@ -264,7 +289,7 @@ class CaveMark:
         # errornous footnote item format
         if frmt_footnote_error_item is None:
             self.frmt_footnote_error_item = '<li><strong>'\
-                                            'err: {ERROR}'\
+                                            '<small>err: {ERROR}</small>'\
                                             '</strong></li>'
         else:
             self.frmt_footnote_error_item = frmt_footnote_error_item
@@ -292,9 +317,9 @@ class CaveMark:
         # code prefix format
         if frmt_code_prefix is None:
             self.frmt_code_prefix = {
-                '\['    : '<strong>{OPEN}',
-                '\('    : '<strong>{OPEN}',
-                '$$'    : '<strong>{OPEN}',
+                '\['    : '<span class="ignored">{OPEN}',
+                '\('    : '<span class="ignored">{OPEN}',
+                '$$'    : '<span class="ignored">{OPEN}',
                 '`'     : '<code>',
                 '```'   : '<pre><code>',
             }
@@ -304,9 +329,9 @@ class CaveMark:
         # code suffix format
         if frmt_code_suffix is None:
             self.frmt_code_suffix = {
-                '\['    : '{CLOSE}</strong>',
-                '\('    : '{CLOSE}</strong>',
-                '$$'    : '{CLOSE}</strong>',
+                '\['    : '{CLOSE}</span>',
+                '\('    : '{CLOSE}</span>',
+                '$$'    : '{CLOSE}</span>',
                 '`'     : '</code>',
                 '```'   : '</code></pre>',
             }
@@ -469,7 +494,7 @@ class CaveMark:
                 re.escape(self.escape),
                 r'|'.join([
                     r'(\n\s*\n)',           # resource close
-                    r'\n *(\S+) *: *',      # resource entry key
+                    r'\n *(\S+?) *: *',     # resource entry key
                     r'(_)',                 # emphasize open
                     r'(\[)',                # cite open
                     r'({})'.format(         # code open
@@ -553,8 +578,7 @@ class CaveMark:
                 text = text[endo:]
 
                 if len(self._citations_pending_boxes):
-                    self._html[-1] += self._citations_pending_boxes
-                    self._citations_pending_boxes = []
+                    self._flush_pending_boxes()
 
                 if len(text_behind.strip()):
                     self._paragraph_open()
@@ -564,18 +588,12 @@ class CaveMark:
                         continue
 
                 if m.group(_I_OPEN_ANY_EMPHASIZE) is not None:
-                    if self._state[-1] == _S_START:
-                        self._paragraph_open()
                     self._emphasize_open()
 
                 elif m.group(_I_OPEN_ANY_CODE) is not None:
-                    if self._state[-1] == _S_START:
-                        self._paragraph_open()
                     self._code_open(m.group(_I_OPEN_ANY_CODE))
 
                 elif m.group(_I_OPEN_ANY_CITATION) is not None:
-                    if self._state[-1] == _S_START:
-                        self._paragraph_open()
                     self._citation_open()
 
                 elif self._state[-1] == _S_START:
@@ -771,8 +789,7 @@ class CaveMark:
             elif state == _S_CITATION_IN : self._citation_close()
 
         if len(self._citations_pending_boxes):
-            self._html[-1] += self._citations_pending_boxes
-            self._citations_pending_boxes = []
+            self._flush_pending_boxes()
 
         if footnotes:
             if len(self._footnote_items):
@@ -829,6 +846,10 @@ class CaveMark:
         text = text.replace('>', '&gt;')
         return text
 
+    def _flush_pending_boxes(self):
+        self._html[-1] += self._citations_pending_boxes
+        self._citations_pending_boxes = []
+
     def _paragraph_open(self):
         self._state.append(_S_PARAGRAPH_IN)
         self._html[-1].append(self.frmt_paragraph_prefix)
@@ -838,6 +859,8 @@ class CaveMark:
         self._html[-1].append(self.frmt_paragraph_suffix)
 
     def _emphasize_open(self):
+        if self._state[-1] == _S_START:
+            self._paragraph_open()
         self._state.append(_S_EMPHASIZE_IN)
         self._html[-1].append(self.frmt_emph_prefix)
 
@@ -846,6 +869,8 @@ class CaveMark:
         self._html[-1].append(self.frmt_emph_suffix)
 
     def _code_open(self, tag_open):
+        if self._state[-1] == _S_START and tag_open in self.code_inline:
+            self._paragraph_open()
         self._state.append(_S_CODE_IN)
         self._code_tag_open = tag_open
         self._html[-1].append(
@@ -872,6 +897,7 @@ class CaveMark:
         self._html[-1].append(self.frmt_list_item_prefix)
 
     def _list_close(self):
+        self._flush_pending_boxes()
         del self._state[-1]
         _, ordered = self._list[-1]
         del self._list[-1]
@@ -882,6 +908,7 @@ class CaveMark:
             self._html[-1].append(self.frmt_ulist_suffix)
 
     def _list_item_new(self, cur_level, cur_type):
+        self._flush_pending_boxes()
         while True:
             prev_level, _ = self._list[-1]
             prev2_level, _ = self._list[-2]
@@ -963,6 +990,13 @@ class CaveMark:
             ))
             return
 
+        # should inline citation be disabled?
+        if res_id[0] == '!' and len(res_id) > 1:
+            inline_citation_enabled = False
+            res_id = res_id[1:]
+        else:
+            inline_citation_enabled = True
+
         # get cited resource
         if res_id in self.resources:
             resource = self.resources[res_id]
@@ -1039,8 +1073,10 @@ class CaveMark:
                 )
 
         # inline resource citation
-        if res_type in self.frmt_cite_inline:
+        if res_type in self.frmt_cite_inline and inline_citation_enabled:
             try:
+                if self._state[-1] == _S_START:
+                    self._paragraph_open()
                 self._html[-1].append(self.frmt_cite_inline[res_type].format(
                     **{'INDEX':res_index, 'ID':res_id}, **resource
                 ))
