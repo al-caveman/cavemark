@@ -41,6 +41,9 @@ website](https://cave.mn); all its articles are written in CaveMark!
   definitions, etc).
 * Footnotes.
 * Bibliographies.
+* Simple, user-friendly, syntax (I think simplest among all typesetting
+  parsers).
+* Fast.
 
 # Benchmark
 
