@@ -12,7 +12,7 @@ alt         : mug
 
 book        : mybook
 authors     : Dude McDude and Guy McGuy
-title       : the best title ever
+title       : the best title ever(tm)
 publisher   : cave press
 year        : 2018
 
@@ -31,16 +31,16 @@ year        : 0 BC
 footnote    : badass
 text        : main title as in badass. hth.
 
-# this is some main[badass] title
+# this is some "main''[badass] title
 
 footnote    : 2ndtitlefn
 text        : 2nd level title also badass
 
-## this is some 2nd level[2ndtitlefn] title.
+## this is some ~~1st~~ 2nd level[2ndtitlefn] title(tm)(R)(c)...
 
-###### H6 heading (with offset should be H7; will cavemark make it H6?)
+###### H6 heading (with offset should be H7 -- will cavemark make it H6?)
 
-####### H7 heading (with offset should be H8; will cavemark make it H6?)
+####### H7 heading (with offset should be H8 -- will cavemark make it H6?)
 
     + this.
         + is.

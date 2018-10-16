@@ -74,7 +74,8 @@ directory.
 `#` defines section headings.  E.g. `# heading` becomes `<h1>heading</h1>`, `##
 heading` becomes `<h2>heading</h2>`.
 
-`_` emphasizes texts.  E.g.  `_this_` = _this_.
+`_` emphasizes texts.  E.g.  `_this_` = _this_. `~~` to strike through text.
+E.g. `~~this~~` = ~~this~~.
 
 Ordered lists are defined by `+`, and the unordered by `*`.  E.g.:
 

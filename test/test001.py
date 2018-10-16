@@ -15,6 +15,10 @@ year     : 2018
 footnote: mynote
 text    : She is 1 years old.
 
+quotation: myquote
+text     : Beardless men are entry-level trannis
+author   : Dude McDudeface, 2018
+
 # This is a _heading_
 
 [myimage] shows a happy cat[mynote].
@@ -27,7 +31,7 @@ text    : She is 1 years old.
 
     Yep, another paragraph, with citations [mybook].
 
-    + Another ordered item.
+    + Another ordered item, but this one with ~~some struck-through text~~.
 
 A paragraph could have `inline code like this`, or:
 
@@ -36,6 +40,8 @@ int main(){
     printf("a code block like this!\\n");
     return 0;
 }```
+
+How about citing [myquote]?
 '''
 
 parser = cavemark.CaveMark()
