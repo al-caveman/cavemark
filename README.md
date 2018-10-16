@@ -54,7 +54,12 @@ too sloppy shortcuts while coding it.  I am benchmarking against
 [mistune](https://github.com/lepture/mistune) coz it's the fastest in town.
 Others were too slow to even bother.
 
-Results with CPython (repeated 3 times):
+Since [mistune](https://github.com/lepture/mistune) and CaveMark have different
+syntax, this benchmark only tests things where they agree on their syntax.
+Even though, I think, CaveMark still does more.  E.g. headings in CaveMark are
+more feature-rich.
+
+Results with CPython3 (repeated 3 times):
 
 ```
 mistune : 18.177862088 seconds
@@ -65,6 +70,19 @@ cavemark: 9.601156947 seconds (2.0 times faster!)
 
 mistune : 18.762310276999997 seconds
 cavemark: 9.647228555 seconds (1.9 times faster!)
+```
+
+Results with CPython2 (repeated 3 times):
+
+```
+mistune : 19.7261228561 seconds
+cavemark: 9.48487520218 seconds (2.1 times faster!)
+
+mistune : 19.4376080036 seconds
+cavemark: 9.53958702087 seconds (2.0 times faster!)
+
+mistune : 20.3399410248 seconds
+cavemark: 9.61795091629 seconds (2.1 times faster!)
 ```
 
 Results with PyPy3 (repeated 3 times):
@@ -80,9 +98,29 @@ mistune : 13.637612451999999 seconds
 cavemark: 3.126377384 seconds (4.4 times faster!)
 ```
 
+Results with PyPy2 (repeated 3 times):
+
+```
+mistune : 8.99331712723 seconds
+cavemark: 1.47040700912 seconds (6.1 times faster!)
+
+mistune : 9.01434993744 seconds
+cavemark: 1.45837283134 seconds (6.2 times faster!)
+
+mistune : 9.00144791603 seconds
+cavemark: 1.47606897354 seconds (6.1 times faster!)
+```
+
 You can find the full benchmark code in the
 [benchmark](https://github.com/Al-Caveman/cavemark/tree/master/benchmark)
 directory.
+
+In the future, I may do another benchmark where I test all the overlapping
+features, even when the syntax is not identical accross CaveMark and
+[mistune](https://github.com/lepture/mistune).  I plan to create two separate
+texts, both rendering exactly the same desired HTML document, but one in
+CaveMark's superior typesetting syntax, and another in
+[mistune](https://github.com/lepture/mistune)'s.
 
 # Syntax
 

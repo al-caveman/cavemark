@@ -1,6 +1,6 @@
 import cavemark
 import mistune
-import time
+from time import time
 import sys
 
 common_things = '''
@@ -120,18 +120,18 @@ with open('output_mistune.html', 'w') as f:
     f.write(mt_html)
 
 # benchmarking cavemark 
-cm_start = time.process_time()
+cm_start = time()
 for i in range(0, n):
     cm_parser.parse(bench_text)
     cm_parser.flush()
     cm_html = cm_parser.get_html()
-cm_end = time.process_time()
+cm_end = time()
 
 # benchmarking mistune
-mt_start = time.process_time()
+mt_start = time()
 for i in range(0, n):
     mt_html = mt_parser(bench_text)
-mt_end = time.process_time()
+mt_end = time()
 
 print('mistune : {} seconds'.format(mt_end-mt_start))
 print('cavemark: {} seconds ({:.1f} times faster!)'.format(

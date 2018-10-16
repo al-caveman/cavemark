@@ -113,11 +113,11 @@ class CaveMark:
         frmt_footnote_error_item=None, frmt_paragraph_prefix=None,
         frmt_paragraph_suffix=None, frmt_emph_prefix=None,
         frmt_emph_suffix=None, frmt_strike_prefix=None,
-        frmt_strike_suffix=None, frmt_code_prefix=None,
-        frmt_code_suffix=None, frmt_olist_prefix=None, frmt_olist_suffix=None,
-        frmt_ulist_prefix=None, frmt_ulist_suffix=None,
-        frmt_list_item_prefix=None, frmt_list_item_suffix=None,
-        frmt_heading_prefix=None, frmt_heading_suffix=None
+        frmt_strike_suffix=None, frmt_code_prefix=None, frmt_code_suffix=None,
+        frmt_olist_prefix=None, frmt_olist_suffix=None, frmt_ulist_prefix=None,
+        frmt_ulist_suffix=None, frmt_list_item_prefix=None,
+        frmt_list_item_suffix=None, frmt_heading_prefix=None,
+        frmt_heading_suffix=None
     ):
         # references/resources dictionary
         if resources is None:
@@ -266,7 +266,8 @@ class CaveMark:
 
         # bibliography container prefix
         if frmt_bibliography_prefix is None:
-            self.frmt_bibliography_prefix = '<h4>Bibliography</h4>\n'\
+            self.frmt_bibliography_prefix = '<footer>\n'\
+                                            '<h4>Bibliography</h4>\n'\
                                             '<ul style="list-style:none;'\
                                             'padding:0; margin:0;">\n'
         else:
@@ -274,7 +275,7 @@ class CaveMark:
 
         # bibliography container suffix
         if frmt_bibliography_suffix is None:
-            self.frmt_bibliography_suffix = '</ul>\n\n'
+            self.frmt_bibliography_suffix = '</ul>\n</footer>\n\n'
         else:
             self.frmt_bibliography_suffix = frmt_bibliography_suffix
 
@@ -299,14 +300,15 @@ class CaveMark:
 
         # footnote container prefix
         if frmt_footnote_prefix is None:
-            self.frmt_footnote_prefix = '<hr/>\n <ul style="list-style:none;'\
+            self.frmt_footnote_prefix = '<footer>\n<hr/>\n'\
+                                        '<ul style="list-style:none;'\
                                         'padding:0; margin:0;">'
         else:
             self.frmt_footnote_prefix = frmt_footnote_prefix
 
         # footnote container suffix
         if frmt_footnote_suffix is None:
-            self.frmt_footnote_suffix = '</ul>\n\n'
+            self.frmt_footnote_suffix = '</ul>\n</footer>\n\n'
         else:
             self.frmt_footnote_suffix = frmt_footnote_suffix
 
@@ -1211,16 +1213,15 @@ class CaveMark:
             res_index = self._citations_last_index[res_counter]
 
         # build footnote items
+        values = {'ID':res_id, 'INDEX':res_index}
+        values.update(resource)
         if (
             res_id not in self.resources_cited
             and res_type in self.frmt_footnote_item
         ):
             try:
                 self._footnote_items.append(
-                    self.frmt_footnote_item[res_type].format(
-                        **{'ID':res_id, 'INDEX':res_index},
-                        **resource
-                    )
+                    self.frmt_footnote_item[res_type].format(**values)
                 )
             except KeyError as k:
                 self._footnote_items.append(
@@ -1236,10 +1237,7 @@ class CaveMark:
         ):
             try:
                 self._bibliography_items.append(
-                    self.frmt_bibliography_item[res_type].format(
-                        **{'ID':res_id, 'INDEX':res_index},
-                        **resource
-                    )
+                    self.frmt_bibliography_item[res_type].format(**values)
                 )
             except KeyError as k:
                 self._bibliography_items.append(
@@ -1254,7 +1252,7 @@ class CaveMark:
                 if self._state[-1] == _S_START:
                     self._paragraph_open()
                 self._html[-1].append(self.frmt_cite_inline[res_type].format(
-                    **{'INDEX':res_index, 'ID':res_id}, **resource
+                    **values
                 ))
             except KeyError as k:
                 self._html[-1].append(self.frmt_cite_error_inline.format(
@@ -1266,9 +1264,7 @@ class CaveMark:
             if res_type in self.frmt_cite_box:
                 try:
                     self._citations_pending_boxes.append(
-                        self.frmt_cite_box[res_type].format(
-                            **{'INDEX':res_index, 'ID':res_id}, **resource
-                        )
+                        self.frmt_cite_box[res_type].format(**values)
                     )
                 except KeyError as k:
                     self._citations_pending_boxes.append(
