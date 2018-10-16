@@ -57,8 +57,36 @@ Others were too slow to even bother.
 
 Since [mistune](https://github.com/lepture/mistune) and CaveMark have different
 syntax, this benchmark only tests things where they agree on their syntax.
-Even though, I think, CaveMark still does more.  E.g. headings in CaveMark are
-more feature-rich.
+Even though, I think, CaveMark still does more.  E.g. headings in CaveMark automatically also produce section identifiers.  E.g:
+
+```md
+# Heading
+
+## Subheading
+
+# Another heading
+```
+
+gives in [mistune](https://github.com/lepture/mistune) this:
+
+```html
+<h1>Heading<h2>
+
+<h1>Subheading<h2>
+
+<h1>Another heading<h2>
+```
+
+But this in CaveMark (removed links for brevity):
+
+```html
+<h1>1. Heading<h2>
+
+<h1>1.1. Subheading<h2>
+
+<h1>2. Another heading<h2>
+```
+
 
 Results with CPython3 (repeated 3 times):
 
