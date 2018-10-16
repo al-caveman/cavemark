@@ -242,8 +242,3 @@ defining section headings or emphasized texts.
 I happen to need them, then implement them.  You are more than welcome to
 submit patches/pull requests.  Alternatively, you can try to motivate me enough
 so that I implement them for you.
-
-**Note 2:**  CaveMark will remain faster than
-[mistune](https://github.com/lepture/mistune) after adding those features.
-Design-wise, nothing in CaveMark's architecture indicates any notable slowdown
-when those missing features are added.
