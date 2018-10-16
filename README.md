@@ -28,6 +28,20 @@ free to change it to be, say, `lol This is a heading rofl`, or whatever.
 For a production demonstration of what CaveMark can do, checkout [this
 website](https://cave.mn); all its articles are written in CaveMark!
 
+# Features
+
+* Headings.
+* Paragraphs.
+* Emphasized texts.
+* Strikethrough texts.
+* Lists.
+* Shortcuts.
+* Inline/block codes.
+* Inline/box resources (e.g. books, links, figures, quotes, theorems,
+  definitions, etc).
+* Footnotes.
+* Bibliographies.
+
 # Benchmark
 
 Speed is not the main reason I made CaveMark. But I think it's interesting that
