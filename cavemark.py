@@ -469,7 +469,7 @@ class CaveMark:
                     r'^ *({}) *: *(\S+)'.format(    # resource definition open
                         r'|'.join(resource_types)
                     ), 
-                    r'({})'.format(                 # code open
+                    r'({})\n?'.format(              # code open
                         r'|'.join(re.escape(o) for o in tags_open_code)
                     ),
                     r'({})'.format(                 # shortcuts
@@ -489,7 +489,7 @@ class CaveMark:
                     r'(_)',                 # emphasize open
                     r'(\~\~)',              # strike open
                     r'(\[)',                # cite open
-                    r'({})'.format(         # code open
+                    r'({})\n?'.format(      # code open
                         r'|'.join(re.escape(o) for o in tags_open_code)
                     ),
                     r'({})'.format(         # shortcuts
@@ -511,7 +511,7 @@ class CaveMark:
                     r'(\~\~)',                  # strike open
                     r'(\[)',                    # cite open
                     r'(?:^|\n)( *)(\*|\+)',     # list open
-                    r'({})'.format(             # code open
+                    r'({})\n?'.format(          # code open
                         r'|'.join(re.escape(o) for o in tags_open_code)
                     ),
                     r'({})'.format(             # shortcuts
@@ -544,7 +544,7 @@ class CaveMark:
                     r'(_)',                 # emphasize open
                     r'(\~\~)',              # strike open
                     r'(\[)',                # cite open
-                    r'({})'.format(         # code open
+                    r'({})\n?'.format(      # code open
                         r'|'.join(re.escape(o) for o in tags_open_code)
                     ),
                     r'({})'.format(         # shortcuts
@@ -565,7 +565,7 @@ class CaveMark:
                     r'(_)',                 # emphasize open
                     r'(\~\~)',              # strike open
                     r'(\[)',                # cite open
-                    r'({})'.format(         # code open
+                    r'({})\n?'.format(      # code open
                         r'|'.join(re.escape(o) for o in tags_open_code)
                     ),
                     r'({})'.format(         # shortcuts
@@ -596,7 +596,7 @@ class CaveMark:
                     r'(_)',                 # emphasize close
                     r'(\~\~)',              # strike open
                     r'(\[)',                # cite open
-                    r'({})'.format(         # code open
+                    r'({})\n?'.format(      # code open
                         r'|'.join(re.escape(o) for o in tags_open_code)
                     ),
                     r'({})'.format(         # shortcuts
@@ -615,7 +615,7 @@ class CaveMark:
                     r'(\~\~)',              # strike close
                     r'(_)',                 # emphasize open
                     r'(\[)',                # cite open
-                    r'({})'.format(         # code open
+                    r'({})\n?'.format(      # code open
                         r'|'.join(re.escape(o) for o in tags_open_code)
                     ),
                     r'({})'.format(         # shortcuts
@@ -643,7 +643,9 @@ class CaveMark:
                 r'(?<!{0})(?:{1})'.format(
                     re.escape(self.escape),
                     r'|'.join([
-                        r'({})'.format(re.escape(self.code[o])), # code close
+                        r'\n?({})'.format( # code close
+                            re.escape(self.code[o])
+                        ),
                         r'\Z',
                     ])
                 )
