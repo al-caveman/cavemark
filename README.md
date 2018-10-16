@@ -30,7 +30,7 @@ website](https://cave.mn); all its articles are written in CaveMark!
 
 # Features
 
-* Headings.
+* Headings with automatic indices.
 * Paragraphs.
 * Emphasized texts.
 * Strikethrough texts.
