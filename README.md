@@ -153,6 +153,10 @@ year     : 2018
 footnote: mynote
 text    : She is 1 years old.
 
+quotation: myquote
+text     : Beardless men are entry-level trannis
+author   : Dude McDudeface, 2018
+
 # This is a _heading_
 
 [myimage] shows a happy cat[mynote].
@@ -165,7 +169,7 @@ text    : She is 1 years old.
 
     Yep, another paragraph, with citations [mybook].
 
-    + Another ordered item.
+    + Another ordered item, but this one with ~~some struck-through text~~.
 
 A paragraph could have `inline code like this`, or:
 
@@ -174,6 +178,8 @@ int main(){
     printf("a code block like this!\\n");
     return 0;
 }```
+
+How about citing [myquote]?
 '''
 
 parser = cavemark.CaveMark()
@@ -181,7 +187,7 @@ parser.parse(text_input)
 parser.flush()
 html_output = parser.get_html()
 
-with open('test.html', 'w') as f:
+with open('test001.html', 'w') as f:
     f.write(html_output)
 ```
 
