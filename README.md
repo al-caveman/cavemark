@@ -50,7 +50,7 @@ website](https://cave.mn); all its articles are written in CaveMark!
 # Benchmark
 
 Speed is not the main selling point, but I think it shows that I didn't take
-sloppy shortcuts while coding it.  I am benchmarking against
+too sloppy shortcuts while coding it.  I am benchmarking against
 [mistune](https://github.com/lepture/mistune) coz it's the fastest in town.
 Others were too slow to even bother.
 
