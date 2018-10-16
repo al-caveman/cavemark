@@ -70,21 +70,21 @@ Even though, I think, CaveMark still does more.  E.g. headings in CaveMark autom
 gives in [mistune](https://github.com/lepture/mistune) this:
 
 ```html
-<h1>Heading<h2>
+<h1>Heading<h1>
 
-<h1>Subheading<h2>
+<h2>Subheading<h2>
 
-<h1>Another heading<h2>
+<h1>Another heading<h1>
 ```
 
 But this in CaveMark (removed links for brevity):
 
 ```html
-<h1>1. Heading<h2>
+<h1>1. Heading<h1>
 
-<h1>1.1. Subheading<h2>
+<h2>1.1. Subheading<h2>
 
-<h1>2. Another heading<h2>
+<h1>2. Another heading<h1>
 ```
 
 
