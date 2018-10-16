@@ -44,7 +44,7 @@ website](https://cave.mn); all its articles are written in CaveMark!
 * Bibliographies.
 * Simple, user-friendly, syntax (I think simplest among all typesetting
   parsers).
-* Fast.
+* Fastest in class.
 * Made with beard.
 
 # Benchmark
