@@ -49,14 +49,10 @@ website](https://cave.mn); all its articles are written in CaveMark!
 
 # Benchmark
 
-Speed is not the main reason I made CaveMark. But I think it's interesting that
-CaveMark is also the fastest pure-Python markdown parser!  I think this
-suggests that I didn't take sloppy shortcuts while coding CaveMark.
-
-Before CaveMark was born, [mistune](https://github.com/lepture/mistune) used to
-be the fastest pure-Python markdown parser.  So I am benchmarking CaveMark
-against mistune.  I tested against other pure-Python markdown parsers, and they
-were too slow, so I am not even bothering with the others here.
+Speed is not the main selling point, but I think it shows that I didn't take
+sloppy shortcuts while coding it.  I am benchmarking against
+[mistune](https://github.com/lepture/mistune) coz it's the fastest in town.
+Others were too slow to even bother.
 
 Results with CPython (repeated 3 times):
 
