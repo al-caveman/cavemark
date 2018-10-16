@@ -414,11 +414,12 @@ class CaveMark:
 
         # headings format
         if frmt_heading_prefix is None:
-            self.frmt_heading_prefix = '<h{LEVEL}>'
+            self.frmt_heading_prefix = '<h{LEVEL} id="sec_{INDEX}">'\
+                                       '<a href="#sec_{INDEX}">{INDEX}. '
         else:
             self.frmt_heading_prefix = frmt_heading_prefix
         if frmt_heading_suffix is None:
-            self.frmt_heading_suffix = '</h{LEVEL}>\n\n'
+            self.frmt_heading_suffix = '</a></h{LEVEL}>\n\n'
         else:
             self.frmt_heading_suffix = frmt_heading_suffix
 
@@ -438,6 +439,8 @@ class CaveMark:
         self._bibliography_items = []
 
         self._list = [[-1, None]]
+
+        self._heading_index = [[1+self.heading_offset, 0]]
 
         # compile re and other stuff
         self.update()
@@ -954,7 +957,7 @@ class CaveMark:
         self._html[-1] = []
         return html
 
-    def forget_cited(self, resource_type=None):
+    def forget_citations(self, resource_type=None):
         """Forget whether resources of given type were cited previously.
         """
         if resource_type is None:
@@ -964,7 +967,7 @@ class CaveMark:
                 if resource_type == self.resources[res_id]['TYPE']:
                     del self.resources_cited[res_id]
 
-    def forget_counter(self, resource_type=None):
+    def forget_citation_counters(self, resource_type=None):
         """Reset the resource's counter of the given type.
         """
         if resource_type is None:
@@ -973,6 +976,11 @@ class CaveMark:
             counter = self.resource_counters[resource_type]
             if counter in self._citations_last_index:
                 del self._citations_last_index[counter]
+
+    def forget_section_counters(self):
+        """Reset the section index counters.
+        """
+        self._heading_index = [[1+self.heading_offset, 0]]
 
     def _unescape(self, text, tag=None):
         if tag is None:
@@ -1091,10 +1099,23 @@ class CaveMark:
         self._state.append(_S_HEADING_IN)
         level = len(level) + self.heading_offset
         if level > 6: level = 6 
+        while True:
+            prev_level, prev_depth = self._heading_index[-1]
+            if level < prev_level:
+                del self._heading_index[-1]
+            elif level == prev_level:
+                self._heading_index[-1][1] += 1
+                break
+            elif level > prev_level:
+                self._heading_index.append([level, 1])
+                break
+        index = '.'.join(
+            str(depth) for [_, depth] in self._heading_index
+        )
         self._heading_level = level
         self._html[-1].append(
             self.frmt_heading_prefix.format(
-                **{'LEVEL':level}
+                **{'LEVEL':level, 'INDEX':index}
             )
         )
 
