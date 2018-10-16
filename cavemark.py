@@ -39,12 +39,14 @@ _I_OPEN_ANY_LIST_TYPE               = 7
 _I_OPEN_ANY_RESOURCE_TYPE           = 8
 _I_OPEN_ANY_RESOURCE_ID             = 9
 _I_OPEN_ANY_CODE                    = 10
+_I_OPEN_ANY_SHORTCUT                = 11
 
 _I_CLOSE_HEADING                    = 1
 _I_CLOSE_HEADING_EMPHASIZE          = 2
 _I_CLOSE_HEADING_STRIKE             = 3
 _I_CLOSE_HEADING_CITATION           = 4
 _I_CLOSE_HEADING_CODE               = 5
+_I_CLOSE_HEADING_SHORTCUT           = 6
 
 _I_CLOSE_LIST_PARAGRAPH             = 1
 _I_CLOSE_LIST                       = 2
@@ -54,6 +56,7 @@ _I_CLOSE_LIST_CITATION              = 5
 _I_CLOSE_LIST_LIST_LEVEL            = 6
 _I_CLOSE_LIST_LIST_TYPE             = 7
 _I_CLOSE_LIST_CODE                  = 8
+_I_CLOSE_LIST_SHORTCUT              = 9
 
 _I_CLOSE_LISTPARAGRAPH_PARAGRAPH    = 1
 _I_CLOSE_LISTPARAGRAPH              = 2
@@ -65,6 +68,7 @@ _I_CLOSE_PARAGRAPH_EMPHASIZE        = 2
 _I_CLOSE_PARAGRAPH_STRIKE           = 3
 _I_CLOSE_PARAGRAPH_CITATION         = 4
 _I_CLOSE_PARAGRAPH_CODE             = 5
+_I_CLOSE_PARAGRAPH_SHORTCUT         = 6
 
 _I_CLOSE_RESOURCE                   = 1
 _I_CLOSE_RESOURCE_ENTRY_KEY         = 2
@@ -72,6 +76,7 @@ _I_CLOSE_RESOURCE_EMPHASIZE         = 3
 _I_CLOSE_RESOURCE_STRIKE            = 4
 _I_CLOSE_RESOURCE_CITATION          = 5
 _I_CLOSE_RESOURCE_CODE              = 6
+_I_CLOSE_RESOURCE_SHORTCUT          = 7
 
 _I_CLOSE_RESOURCEIGNK               = 1
 _I_CLOSE_RESOURCEIGNK_ENTRY_KEY     = 2
@@ -80,11 +85,13 @@ _I_CLOSE_EMPHASIZE                  = 1
 _I_CLOSE_EMPHASIZE_STRIKE           = 2
 _I_CLOSE_EMPHASIZE_CITATION         = 3
 _I_CLOSE_EMPHASIZE_CODE             = 4
+_I_CLOSE_EMPHASIZE_SHORTCUT         = 5
 
 _I_CLOSE_STRIKE                     = 1
 _I_CLOSE_STRIKE_EMPHASIZE           = 2
 _I_CLOSE_STRIKE_CITATION            = 3
 _I_CLOSE_STRIKE_CODE                = 4
+_I_CLOSE_STRIKE_SHORTCUT            = 5
 
 _I_CLOSE_CITATION                   = 1
 
@@ -452,6 +459,8 @@ class CaveMark:
         # open tag any
         tags_open_code = list(self.code)
         tags_open_code.sort(key=len, reverse=True)
+        shortcuts_raw = list(self.shortcuts)
+        shortcuts_raw.sort(key=len, reverse=True)
         resource_types = list(self.resource_counters)
         self._re_tag_open_any = re.compile(
             r'(?<!{0})(?:{1})'.format(
@@ -469,6 +478,9 @@ class CaveMark:
                     r'({})'.format(                 # code open
                         r'|'.join(re.escape(o) for o in tags_open_code)
                     ),
+                    r'({})'.format(                 # shortcuts
+                        r'|'.join(re.escape(s) for s in shortcuts_raw)
+                    ),
                     r'\Z',
                 ])
             )
@@ -485,6 +497,9 @@ class CaveMark:
                     r'(\[)',                # cite open
                     r'({})'.format(         # code open
                         r'|'.join(re.escape(o) for o in tags_open_code)
+                    ),
+                    r'({})'.format(         # shortcuts
+                        r'|'.join(re.escape(s) for s in shortcuts_raw)
                     ),
                     r'\Z',
                 ])
@@ -504,6 +519,9 @@ class CaveMark:
                     r'(?:^|\n)( *)(\*|\+)',     # list open
                     r'({})'.format(             # code open
                         r'|'.join(re.escape(o) for o in tags_open_code)
+                    ),
+                    r'({})'.format(             # shortcuts
+                        r'|'.join(re.escape(s) for s in shortcuts_raw)
                     ),
                     r'\Z',
                 ])
@@ -535,6 +553,9 @@ class CaveMark:
                     r'({})'.format(         # code open
                         r'|'.join(re.escape(o) for o in tags_open_code)
                     ),
+                    r'({})'.format(         # shortcuts
+                        r'|'.join(re.escape(s) for s in shortcuts_raw)
+                    ),
                     r'\Z',
                 ])
             )
@@ -552,6 +573,9 @@ class CaveMark:
                     r'(\[)',                # cite open
                     r'({})'.format(         # code open
                         r'|'.join(re.escape(o) for o in tags_open_code)
+                    ),
+                    r'({})'.format(         # shortcuts
+                        r'|'.join(re.escape(s) for s in shortcuts_raw)
                     ),
                     r'\Z',
                 ])
@@ -581,6 +605,9 @@ class CaveMark:
                     r'({})'.format(         # code open
                         r'|'.join(re.escape(o) for o in tags_open_code)
                     ),
+                    r'({})'.format(         # shortcuts
+                        r'|'.join(re.escape(s) for s in shortcuts_raw)
+                    ),
                     r'\Z',
                 ])
             )
@@ -596,6 +623,9 @@ class CaveMark:
                     r'(\[)',                # cite open
                     r'({})'.format(         # code open
                         r'|'.join(re.escape(o) for o in tags_open_code)
+                    ),
+                    r'({})'.format(         # shortcuts
+                        r'|'.join(re.escape(s) for s in shortcuts_raw)
                     ),
                     r'\Z',
                 ])
@@ -645,7 +675,6 @@ class CaveMark:
                 m = self._re_tag_open_any.search(text)
                 start, endo = m.span()
                 text_behind = text[0:start]
-                text_behind = self._shortcuts(text_behind)
                 text_behind = self._unescape(text_behind)
                 text = text[endo:]
 
@@ -667,6 +696,9 @@ class CaveMark:
 
                 elif m.group(_I_OPEN_ANY_CODE) is not None:
                     self._code_open(m.group(_I_OPEN_ANY_CODE))
+
+                elif m.group(_I_OPEN_ANY_SHORTCUT) is not None:
+                    self._shortcut_add(m.group(_I_OPEN_ANY_SHORTCUT))
 
                 elif m.group(_I_OPEN_ANY_CITATION) is not None:
                     self._citation_open()
@@ -692,7 +724,6 @@ class CaveMark:
                 m = self._re_tag_close_paragraph.search(text)
                 start, endo = m.span()
                 text_behind = text[0:start]
-                text_behind = self._shortcuts(text_behind)
                 text_behind = self._unescape(text_behind)
                 text = text[endo:]
                 self._html[-1].append(text_behind)
@@ -704,6 +735,8 @@ class CaveMark:
                     self._strike_open()
                 elif m.group(_I_CLOSE_PARAGRAPH_CODE) is not None:
                     self._code_open(m.group(_I_CLOSE_PARAGRAPH_CODE))
+                elif m.group(_I_CLOSE_PARAGRAPH_SHORTCUT) is not None:
+                    self._shortcut_add(m.group(_I_CLOSE_PARAGRAPH_SHORTCUT))
                 elif m.group(_I_CLOSE_PARAGRAPH_CITATION) is not None:
                     self._citation_open()
 
@@ -712,7 +745,6 @@ class CaveMark:
                 m = self._re_tag_close_emphasize.search(text)
                 start, endo = m.span()
                 text_behind = text[0:start]
-                text_behind = self._shortcuts(text_behind)
                 text_behind = self._unescape(text_behind)
                 text = text[endo:]
                 self._html[-1].append(text_behind)
@@ -720,6 +752,8 @@ class CaveMark:
                     self._emphasize_close()
                 elif m.group(_I_CLOSE_EMPHASIZE_CODE) is not None:
                     self._code_open(m.group(_I_CLOSE_EMPHASIZE_CODE))
+                elif m.group(_I_CLOSE_EMPHASIZE_SHORTCUT) is not None:
+                    self._shortcut_add(m.group(_I_CLOSE_EMPHASIZE_SHORTCUT))
                 elif m.group(_I_CLOSE_EMPHASIZE_CITATION) is not None:
                     self._citation_open()
 
@@ -728,7 +762,6 @@ class CaveMark:
                 m = self._re_tag_close_strike.search(text)
                 start, endo = m.span()
                 text_behind = text[0:start]
-                text_behind = self._shortcuts(text_behind)
                 text_behind = self._unescape(text_behind)
                 text = text[endo:]
                 self._html[-1].append(text_behind)
@@ -738,6 +771,8 @@ class CaveMark:
                     self._emphasize_open()
                 elif m.group(_I_CLOSE_EMPHASIZE_CODE) is not None:
                     self._code_open(m.group(_I_CLOSE_EMPHASIZE_CODE))
+                elif m.group(_I_CLOSE_EMPHASIZE_SHORTCUT) is not None:
+                    self._shortcut_add(m.group(_I_CLOSE_EMPHASIZE_SHORTCUT))
                 elif m.group(_I_CLOSE_EMPHASIZE_CITATION) is not None:
                     self._citation_open()
 
@@ -758,7 +793,6 @@ class CaveMark:
                 m = self._re_tag_close_list.search(text)
                 start, endo = m.span()
                 text_behind = text[0:start]
-                text_behind = self._shortcuts(text_behind)
                 text_behind = self._unescape(text_behind)
                 text = text[endo:]
                 self._html[-1].append(text_behind)
@@ -774,6 +808,8 @@ class CaveMark:
                     self._strike_open()
                 elif m.group(_I_CLOSE_LIST_CODE) is not None:
                     self._code_open(m.group(_I_CLOSE_LIST_CODE))
+                elif m.group(_I_CLOSE_LIST_SHORTCUT) is not None:
+                    self._shortcut_add(m.group(_I_CLOSE_LIST_SHORTCUT))
                 elif m.group(_I_CLOSE_LIST_CITATION) is not None:
                     self._citation_open()
                 elif m.group(_I_CLOSE_LIST_LIST_LEVEL) is not None:
@@ -805,7 +841,6 @@ class CaveMark:
                 m = self._re_tag_close_heading.search(text)
                 start, endo = m.span()
                 text_behind = text[0:start]
-                text_behind = self._shortcuts(text_behind)
                 text_behind = self._unescape(text_behind)
                 text = text[endo:]
                 self._html[-1].append(text_behind)
@@ -817,6 +852,8 @@ class CaveMark:
                     self._strike_open()
                 elif m.group(_I_CLOSE_HEADING_CODE) is not None:
                     self._code_open(m.group(_I_CLOSE_HEADING_CODE))
+                elif m.group(_I_CLOSE_HEADING_SHORTCUT) is not None:
+                    self._shortcut_add(m.group(_I_CLOSE_HEADING_SHORTCUT))
                 elif m.group(_I_CLOSE_HEADING_CITATION) is not None:
                     self._citation_open()
 
@@ -825,7 +862,6 @@ class CaveMark:
                 m = self._re_tag_close_resource.search(text)
                 start, endo = m.span()
                 text_behind = text[0:start]
-                text_behind = self._shortcuts(text_behind)
                 text_behind = self._unescape(text_behind)
                 text = text[endo:]
                 if self._resource_cur_entry_key is not None:
@@ -848,6 +884,8 @@ class CaveMark:
                     self._strike_open()
                 elif m.group(_I_CLOSE_RESOURCE_CODE) is not None:
                     self._code_open(m.group(_I_CLOSE_RESOURCE_CODE))
+                elif m.group(_I_CLOSE_RESOURCE_SHORTCUT) is not None:
+                    self._shortcut_add(m.group(_I_CLOSE_RESOURCE_SHORTCUT))
                 elif m.group(_I_CLOSE_RESOURCE_CITATION) is not None:
                     self._citation_open()
 
@@ -856,7 +894,6 @@ class CaveMark:
                 m = self._re_tag_close_resource_ignored_key.search(text)
                 start, endo = m.span()
                 text_behind = text[0:start]
-                text_behind = self._shortcuts(text_behind)
                 text_behind = self._unescape(text_behind)
                 text = text[endo:]
                 self._html[-1].append(text_behind)
@@ -954,11 +991,10 @@ class CaveMark:
         else:
             return text.replace(self.escape + tag, tag)
 
-    def _shortcuts(self, text):
-        return self._re_shortcuts.sub(
-            lambda m : self.shortcuts[m.group(1)],
-            text
-        )
+    def _shortcut_add(self, s):
+        if self._state[-1] == _S_START:
+            self._paragraph_open()
+        self._html[-1].append(self.shortcuts[s])
 
     def _replace_unsafe(self, text):
         text = text.replace('&', '&amp;')
