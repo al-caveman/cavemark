@@ -947,6 +947,13 @@ class CaveMark:
                 self._html[-1].append(self.frmt_bibliography_suffix)
                 self._bibliography_items = []
 
+    def get_html(self):
+        """Get the HTML representation of parsed texts.
+        """
+        html = ''.join(self._html[-1])
+        self._html[-1] = []
+        return html
+
     def forget_cited(self, resource_type=None):
         """Forget whether resources of given type were cited previously.
         """
@@ -966,13 +973,6 @@ class CaveMark:
             counter = self.resource_counters[resource_type]
             if counter in self._citations_last_index:
                 del self._citations_last_index[counter]
-
-    def get_html(self):
-        """Get the HTML representation of parsed texts.
-        """
-        html = ''.join(self._html[-1])
-        self._html[-1] = []
-        return html
 
     def _unescape(self, text, tag=None):
         if tag is None:
