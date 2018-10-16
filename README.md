@@ -45,6 +45,7 @@ website](https://cave.mn); all its articles are written in CaveMark!
 * Simple, user-friendly, syntax (I think simplest among all typesetting
   parsers).
 * Fastest in class.
+* Supports CPython2, Cpython3, PyPy2, PyPy3.
 * Made with beard.
 
 # Benchmark
