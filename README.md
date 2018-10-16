@@ -18,7 +18,8 @@ resources `myimage` and `mynote` are defined) you will conveniently get this
 beautifully formatted page, where figures, captions, footnotes, links, etc are
 all done automatically:
 
-![rendered output](https://raw.githubusercontent.com/Al-Caveman/cavemark/master/demo.png)
+![rendered output](https://github.com/Al-Caveman/cavemark/blob/master/demo.png)
+
 
 Every single HTML code that CaveMark generates is configurable via
 `self.frmt_*` variables.  There is no hard-coded HTML strings.  E.g. while by
