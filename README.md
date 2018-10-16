@@ -60,27 +60,27 @@ were too slow, so I am not even bothering with the others here.
 Results with CPython (repeated 3 times):
 
 ```
-mistune : 13.928859449 seconds
-cavemark: 5.57010197 seconds (2.5 times faster!)
+mistune : 18.177862088 seconds
+cavemark: 9.386662586 seconds (1.9 times faster!)
 
-mistune : 13.980875624 seconds
-cavemark: 5.646393874 seconds (2.5 times faster!)
+mistune : 18.733004819999998 seconds
+cavemark: 9.601156947 seconds (2.0 times faster!)
 
-mistune : 13.941337609 seconds
-cavemark: 5.608549864 seconds (2.5 times faster!)
+mistune : 18.762310276999997 seconds
+cavemark: 9.647228555 seconds (1.9 times faster!)
 ```
 
 Results with PyPy3 (repeated 3 times):
 
 ```
-mistune : 10.141159687 seconds
-cavemark: 1.728199896 seconds (5.9 times faster!)
+mistune : 12.311563448000001 seconds
+cavemark: 3.1916073270000003 seconds (3.9 times faster!)
 
-mistune : 9.768847644000001 seconds
-cavemark: 1.7137211739999998 seconds (5.7 times faster!)
+mistune : 12.470256598999999 seconds
+cavemark: 3.376128782 seconds (3.7 times faster!)
 
-mistune : 9.077121615 seconds
-cavemark: 1.703783539 seconds (5.3 times faster!)
+mistune : 13.637612451999999 seconds
+cavemark: 3.126377384 seconds (4.4 times faster!)
 ```
 
 You can find the full benchmark code in the
