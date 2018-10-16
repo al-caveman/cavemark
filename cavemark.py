@@ -445,17 +445,6 @@ class CaveMark:
     def update(self):
         """Run this when you modify self.code or add/remove resource types.
         """
-        # shortcuts
-        self._re_shortcuts = re.compile(
-            r'(?<!{0})({1})'.format(
-                re.escape(self.escape),
-                r'|'.join(
-                    re.escape(shortcut)
-                    for shortcut in self.shortcuts
-                )
-            )
-        )
-
         # open tag any
         tags_open_code = list(self.code)
         tags_open_code.sort(key=len, reverse=True)

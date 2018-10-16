@@ -215,7 +215,6 @@ defining section headings or emphasized texts.
 # Todo
 
   - [ ] Tables.
-  - [ ] Strike-trough.
   - [ ] Documentation.
 
 **Note 1:**  I currently don't need these features.  My plan is to wait, until
