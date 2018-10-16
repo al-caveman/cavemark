@@ -188,7 +188,7 @@ resource we defined earlier.  When a resource identifier, e.g. `myimage` is
 prefixed by `!`, in a citation box, e.g. `[!myimage]`, then the resource
 `myimage` will not expand into its inline citation format. Using `[!myimage]`
 is useful when you want to only place the box/bibliography/footnote expansion
-of the resource, without actually citing the resource.
+of the resource, without placing the inline expansion.
 
 CaveMark also supports shortcuts.  By default:
 
