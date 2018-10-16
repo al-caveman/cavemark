@@ -108,6 +108,16 @@ prefixed by `!`, in a citation box, e.g. `[!myimage], then the resource
 is useful when you want to only place the box/bibliography/footnote expansion
 of the resource, without actually citing the resource.
 
+CaveMark also supports shortcuts.  By default: `(tm)`
+
+* `(c)`   = `&copy;`.
+* `(tm)`  = `&trade;`.
+* `(R)`   = `&reg;`.
+* `"`     = `&ldquo;` .
+* `''`    = `&rdquo;` .
+* `--`    = `&mdash;` .
+* `...`   = `&hellip;`.
+
 # Basic Example
 
 ```python
