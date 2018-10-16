@@ -996,7 +996,6 @@ class CaveMark:
         self._html[-1].append(self.shortcuts[s])
 
     def _replace_unsafe(self, text):
-        text = text.replace('&', '&amp;')
         text = text.replace('<', '&lt;')
         text = text.replace('>', '&gt;')
         return text
