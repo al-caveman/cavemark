@@ -148,7 +148,7 @@ In the future, I may do another benchmark where I test all the overlapping
 features, even when the syntax is not identical accross CaveMark and
 [mistune](https://github.com/lepture/mistune).  I plan to create two separate
 texts, both rendering exactly the same desired HTML document, but one in
-CaveMark's superior typesetting syntax, and another in
+CaveMark's superior-yet-simpler typesetting syntax, and another in
 [mistune](https://github.com/lepture/mistune)'s.
 
 # Syntax
