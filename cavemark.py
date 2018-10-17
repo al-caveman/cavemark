@@ -464,7 +464,7 @@ class CaveMark:
                     r'(_)',                         # emphasize open
                     r'(\~\~)',                      # strike open
                     r'(\[)',                        # cite open
-                    r'^ *(#+)',                     # heading open
+                    r'^ *(#+) *',                   # heading open
                     r'^( *)(\*|\+)',                # list open
                     r'^ *({}) *: *(\S+)'.format(    # resource definition open
                         r'|'.join(resource_types)
