@@ -77,14 +77,14 @@ gives in [mistune](https://github.com/lepture/mistune) this:
 <h1>Another heading<h1>
 ```
 
-But this in CaveMark (removed links for brevity):
+But gives in CaveMark:
 
 ```html
-<h1>1. Heading<h1>
+<h1 id="sec_1"><a href="#sec_1">1.  Heading</a></h1>
 
-<h2>1.1. Subheading<h2>
+<h2 id="sec_1.1"><a href="#sec_1.1">1.1.  Subheading</a></h2>
 
-<h1>2. Another heading<h1>
+<h1 id="sec_2"><a href="#sec_2">2.  Another headinng</a></h1>
 ```
 
 
