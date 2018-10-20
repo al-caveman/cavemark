@@ -442,7 +442,7 @@ class CaveMark:
 
         self._list = [[-1, None]]
 
-        self._heading_index = [[1+self.heading_offset, 0]]
+        self._heading_index = [0] * 6
 
         # compile re and other stuff
         self.update()
@@ -984,7 +984,7 @@ class CaveMark:
     def forget_section_counters(self):
         """Reset the section index counters.
         """
-        self._heading_index = [[1+self.heading_offset, 0]]
+        self._heading_index = [0] * 6
 
     def _unescape(self, text, tag=None):
         if tag is None:
@@ -1102,20 +1102,12 @@ class CaveMark:
         self._state.append(_S_HEADING_IN)
         level = len(level) + self.heading_offset
         if level > 6: level = 6 
-        while True:
-            prev_level, prev_depth = self._heading_index[-1]
-            if level < prev_level:
-                del self._heading_index[-1]
-            elif level == prev_level:
-                self._heading_index[-1][1] += 1
-                break
-            elif level > prev_level:
-                self._heading_index.append([level, 1])
-                break
-        index = '.'.join(
-            str(depth) for [_, depth] in self._heading_index
-        )
         self._heading_level = level
+        self._heading_index[level-1] += 1
+        self._heading_index[level:] = [0] * (6 - level)
+        index = '.'.join(
+            str(i) for i in self._heading_index[self.heading_offset:level]
+        )
         self._html[-1].append(
             self.frmt_heading_prefix.format(
                 **{'LEVEL':level, 'INDEX':index}

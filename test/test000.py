@@ -227,7 +227,6 @@ parser = cavemark.CaveMark(
 parser.parse(s + '  and this [lolbook].')
 parser.flush(bibliography=False)
 
-parser.forget_cited(resource_type='footnote')
 parser.parse(s + '  and this [hisbook].')
 parser.flush()
 
