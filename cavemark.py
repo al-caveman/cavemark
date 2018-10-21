@@ -252,14 +252,16 @@ class CaveMark:
 
         # errornous inline citation format
         if frmt_cite_error_inline is None:
-            self.frmt_cite_error_inline = '<strong>[err: {ERROR}]</strong>'
+            self.frmt_cite_error_inline = '<span class="error">'\
+                                          '[err: {ERROR}]</span>'
         else:
             self.frmt_cite_error_inline = frmt_cite_error_inline
 
         # errornous box citation format
         if frmt_cite_error_box is None:
-            self.frmt_cite_error_box = '<p style="text-align:center">'\
-                                       '<strong>[err: {ERROR}]</strong>'\
+            self.frmt_cite_error_box = '<p class="error" '\
+                                       'style="text-align:center">'\
+                                       '[err: {ERROR}]'\
                                        '</p>'
         else:
             self.frmt_cite_error_box = frmt_cite_error_box
@@ -292,9 +294,9 @@ class CaveMark:
 
         # errornous bibliography item format
         if frmt_bibliography_error_item is None:
-            self.frmt_bibliography_error_item = '<li><strong>'\
+            self.frmt_bibliography_error_item = '<li class="error">'\
                                                 '<small>err: {ERROR}</small>'\
-                                                '</strong></li>'
+                                                '</li>'
         else:
             self.frmt_bibliography_error_item = frmt_bibliography_error_item
 
@@ -324,9 +326,9 @@ class CaveMark:
 
         # errornous footnote item format
         if frmt_footnote_error_item is None:
-            self.frmt_footnote_error_item = '<li><strong>'\
+            self.frmt_footnote_error_item = '<li class="error">'\
                                             '<small>err: {ERROR}</small>'\
-                                            '</strong></li>'
+                                            '</li>'
         else:
             self.frmt_footnote_error_item = frmt_footnote_error_item
 
