@@ -191,7 +191,7 @@ class CaveMark:
                 '(R)'   : '&reg;', 
                 '"'     : '&ldquo;', 
                 "''"    : '&rdquo;', 
-                '--'    : '&mdash;', 
+                '---'   : '&mdash;', 
                 '...'   : '&hellip;', 
             }
         else:
