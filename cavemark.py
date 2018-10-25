@@ -155,9 +155,8 @@ class CaveMark:
         # opening/closing tags that define substrings to ignore parsing them
         if code is None:
             self.code = {
-                '\[' : '\]',
-                '\(' : '\)',
                 '$$' : '$$',
+                '$'  : '$',
                 '`'  : '`',
                 '```': '```',
             }
@@ -167,7 +166,7 @@ class CaveMark:
         # specify which code is inline so that when it appears alone, it gets
         # encapsulated in a paragraph
         if code_inline is None:
-            self.code_inline = {'\[', '\(', '$$', '`'}
+            self.code_inline = {'$$', '$', '`'}
         else:
             self.code_inline = code_inline
 
@@ -372,9 +371,8 @@ class CaveMark:
         # code prefix format
         if frmt_code_prefix is None:
             self.frmt_code_prefix = {
-                '\['    : '<span class="ignored">{OPEN}',
-                '\('    : '<span class="ignored">{OPEN}',
                 '$$'    : '<span class="ignored">{OPEN}',
+                '$'     : '<span class="ignored">{OPEN}',
                 '`'     : '<code>',
                 '```'   : '<pre><code>',
             }
@@ -384,9 +382,8 @@ class CaveMark:
         # code suffix format
         if frmt_code_suffix is None:
             self.frmt_code_suffix = {
-                '\['    : '{CLOSE}</span>',
-                '\('    : '{CLOSE}</span>',
                 '$$'    : '{CLOSE}</span>',
+                '$'     : '{CLOSE}</span>',
                 '`'     : '</code>',
                 '```'   : '</code></pre>',
             }
@@ -426,11 +423,11 @@ class CaveMark:
         # headings format
         if frmt_heading_prefix is None:
             self.frmt_heading_prefix = '<h{LEVEL} id="sec_{INDEX}">'\
-                                       '<a href="#sec_{INDEX}">{INDEX}. '
+                                       '<a href="#sec_{INDEX}">{INDEX}.</a> '
         else:
             self.frmt_heading_prefix = frmt_heading_prefix
         if frmt_heading_suffix is None:
-            self.frmt_heading_suffix = '</a></h{LEVEL}>\n\n'
+            self.frmt_heading_suffix = '</h{LEVEL}>\n\n'
         else:
             self.frmt_heading_suffix = frmt_heading_suffix
 
