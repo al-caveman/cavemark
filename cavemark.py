@@ -140,7 +140,8 @@ class CaveMark:
                 'quotation' :'counter_d',
                 'definition':'counter_e',
                 'theorem'   :'counter_f',
-                'footnote'  :'counter_g',
+                'conjecture':'counter_g',
+                'footnote'  :'counter_h',
             }
         else:
             self.resource_counters = resource_counters
@@ -206,6 +207,7 @@ class CaveMark:
             'quotation' :' <a href="#cite_{ID}{INDEX}">Quote {INDEX}</a>',
             'definition':' <a href="#cite_{ID}{INDEX}">Definition {INDEX}</a>',
             'theorem'   :' <a href="#cite_{ID}{INDEX}">Theorem {INDEX}</a>',
+            'conjecture':' <a href="#cite_{ID}{INDEX}">Conjecture {INDEX}</a>',
             'footnote'  :'<sup><a href="#fn_{ID}{INDEX}">{INDEX}</a></sup>',
             }
         else:
@@ -244,6 +246,11 @@ class CaveMark:
                 'theorem'   :'<p id="cite_{ID}{INDEX}">'
                              '<a href="#cite_{ID}{INDEX}">'
                              'Theorem {INDEX}.</a>'
+                             ' <em>{text}</em>'
+                             '</p>\n\n',
+                'conjecture':'<p id="cite_{ID}{INDEX}">'
+                             '<a href="#cite_{ID}{INDEX}">'
+                             'Conjecture {INDEX}.</a>'
                              ' <em>{text}</em>'
                              '</p>\n\n',
             }
