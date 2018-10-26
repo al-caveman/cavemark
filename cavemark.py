@@ -985,6 +985,15 @@ class CaveMark:
         self._html[-1] = []
         return html
 
+    def forget_resources(self, resource=None):
+        """Forget whether resources of given type were cited previously.
+        """
+        if resource is None:
+            self.resources = {}
+        else:
+            if res_id in self.resources:
+                del self.resources[res_id]
+
     def forget_citations(self, resource_type=None):
         """Forget whether resources of given type were cited previously.
         """
@@ -992,6 +1001,9 @@ class CaveMark:
             self.resources_cited = {}
         else:
             for res_id in list(self.resources_cited):
+                # i must remove need on self.resources.  currently this is
+                # causing an inconvenience, since it forces user to never call
+                # forget_citations() after forget_resources
                 if resource_type == self.resources[res_id]['TYPE']:
                     del self.resources_cited[res_id]
 
