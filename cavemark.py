@@ -139,9 +139,11 @@ class CaveMark:
                 'image'     :'counter_c',
                 'quotation' :'counter_d',
                 'definition':'counter_e',
-                'theorem'   :'counter_f',
-                'conjecture':'counter_g',
-                'footnote'  :'counter_h',
+                'axiom'     :'counter_f',
+                'theorem'   :'counter_g',
+                'corollary' :'counter_h',
+                'conjecture':'counter_i',
+                'footnote'  :'counter_j',
             }
         else:
             self.resource_counters = resource_counters
@@ -205,7 +207,9 @@ class CaveMark:
             'image'     :' <a href="#cite_{ID}">Figure {INDEX}</a>',
             'quotation' :' <a href="#cite_{ID}">Quote {INDEX}</a>',
             'definition':' <a href="#cite_{ID}">Definition {INDEX}</a>',
+            'axiom'     :' <a href="#cite_{ID}">Axiom {INDEX}</a>',
             'theorem'   :' <a href="#cite_{ID}">Theorem {INDEX}</a>',
+            'corollary' :' <a href="#cite_{ID}">Corollary {INDEX}</a>',
             'conjecture':' <a href="#cite_{ID}">Conjecture {INDEX}</a>',
             'footnote'  :'<sup><a href="#fn_{ID}">{INDEX}</a></sup>',
             }
@@ -219,16 +223,16 @@ class CaveMark:
                              'style="text-align:center;">'
                              '<img alt="{alt}" src="{url}" />'
                              '<figcaption>'
-                             '<a href="#cite_{ID}">'
+                             '<strong><a href="#cite_{ID}">'
                              'Figure {INDEX}.'
-                             '</a>'
+                             '</a></strong>'
                              ' {caption}'
                              '</figcaption>'
                              '</figure>\n\n',
                 'quotation' :'<figure id="cite_{ID}">'
-                             '<a href="#cite_{ID}">'
+                             '<strong><a href="#cite_{ID}">'
                              'Quote {INDEX}:'
-                             '</a>'
+                             '</a></strong>'
                              '<blockquote><em>'
                              '&ldquo;{text}&rdquo;'
                              '</em></blockquote>'
@@ -237,19 +241,33 @@ class CaveMark:
                              '</footer>'
                              '</figure>\n\n',
                 'definition':'<p id="cite_{ID}">'
-                             '<a href="#cite_{ID}">'
+                             '<strong><a href="#cite_{ID}">'
                              'Definition {INDEX}.'
-                             '</a>'
+                             '</a></strong>'
+                             ' <em>{text}</em>'
+                             '</p>\n\n',
+                'axiom'     :'<p id="cite_{ID}">'
+                             '<strong><a href="#cite_{ID}">'
+                             'Axiom {INDEX}.'
+                             '</a></strong>'
                              ' <em>{text}</em>'
                              '</p>\n\n',
                 'theorem'   :'<p id="cite_{ID}">'
-                             '<a href="#cite_{ID}">'
-                             'Theorem {INDEX}.</a>'
+                             '<strong><a href="#cite_{ID}">'
+                             'Theorem {INDEX}.'
+                             '</a></strong>'
+                             ' <em>{text}</em>'
+                             '</p>\n\n',
+                'corollary' :'<p id="cite_{ID}">'
+                             '<strong><a href="#cite_{ID}">'
+                             'Corollary {INDEX}.'
+                             '</a></strong>'
                              ' <em>{text}</em>'
                              '</p>\n\n',
                 'conjecture':'<p id="cite_{ID}">'
-                             '<a href="#cite_{ID}">'
-                             'Conjecture {INDEX}.</a>'
+                             '<strong><a href="#cite_{ID}">'
+                             'Conjecture {INDEX}.'
+                             '</a></strong>'
                              ' <em>{text}</em>'
                              '</p>\n\n',
             }
