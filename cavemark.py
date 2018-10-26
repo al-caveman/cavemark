@@ -137,13 +137,14 @@ class CaveMark:
                 'link'      :'counter_a',
                 'book'      :'counter_b',
                 'image'     :'counter_c',
-                'quotation' :'counter_d',
-                'definition':'counter_e',
-                'axiom'     :'counter_f',
-                'theorem'   :'counter_g',
-                'corollary' :'counter_h',
-                'conjecture':'counter_i',
-                'footnote'  :'counter_j',
+                'note'      :'counter_d',
+                'quotation' :'counter_e',
+                'definition':'counter_f',
+                'axiom'     :'counter_g',
+                'theorem'   :'counter_h',
+                'corollary' :'counter_i',
+                'conjecture':'counter_j',
+                'footnote'  :'counter_k',
             }
         else:
             self.resource_counters = resource_counters
@@ -205,6 +206,7 @@ class CaveMark:
             'link'      :' <a href="{url}">{text}</a>',
             'book'      :' <a href="#cite_{ID}">[{INDEX}]</a>',
             'image'     :' <a href="#cite_{ID}">Figure {INDEX}</a>',
+            'note'      :' <a href="#cite_{ID}">Note {INDEX}</a>',
             'quotation' :' <a href="#cite_{ID}">Quote {INDEX}</a>',
             'definition':' <a href="#cite_{ID}">Definition {INDEX}</a>',
             'axiom'     :' <a href="#cite_{ID}">Axiom {INDEX}</a>',
@@ -229,6 +231,12 @@ class CaveMark:
                              ' {caption}'
                              '</figcaption>'
                              '</figure>\n\n',
+                'note'      :'<p id="cite_{ID}">'
+                             '<strong><a href="#cite_{ID}">'
+                             'Note {INDEX}.'
+                             '</a></strong>'
+                             ' <em>{text}</em>'
+                             '</p>\n\n',
                 'quotation' :'<figure id="cite_{ID}">'
                              '<strong><a href="#cite_{ID}">'
                              'Quote {INDEX}:'
