@@ -449,7 +449,8 @@ class CaveMark:
         # headings format
         if frmt_heading_prefix is None:
             self.frmt_heading_prefix = '<h{LEVEL} id="sec_{INDEX}">'\
-                                       '<a href="#sec_{INDEX}">{INDEX}.</a> '
+                                       '<a class="hindex"'\
+                                       ' href="#sec_{INDEX}">{INDEX}.</a> '
         else:
             self.frmt_heading_prefix = frmt_heading_prefix
         if frmt_heading_suffix is None:
