@@ -33,13 +33,14 @@ _I_OPEN_ANY_SEP                     = 1
 _I_OPEN_ANY_EMPHASIZE               = 2
 _I_OPEN_ANY_STRIKE                  = 3
 _I_OPEN_ANY_CITATION                = 4
-_I_OPEN_ANY_HEADING                 = 5
-_I_OPEN_ANY_LIST_LEVEL              = 6
-_I_OPEN_ANY_LIST_TYPE               = 7
-_I_OPEN_ANY_RESOURCE_TYPE           = 8
-_I_OPEN_ANY_RESOURCE_ID             = 9
-_I_OPEN_ANY_CODE                    = 10
-_I_OPEN_ANY_SHORTCUT                = 11
+_I_OPEN_ANY_HEADING_LEVEL           = 5
+_I_OPEN_ANY_HEADING_BOOKMARK        = 6
+_I_OPEN_ANY_LIST_LEVEL              = 7
+_I_OPEN_ANY_LIST_TYPE               = 8
+_I_OPEN_ANY_RESOURCE_TYPE           = 9
+_I_OPEN_ANY_RESOURCE_ID             = 10
+_I_OPEN_ANY_CODE                    = 11
+_I_OPEN_ANY_SHORTCUT                = 12
 
 _I_CLOSE_HEADING                    = 1
 _I_CLOSE_HEADING_EMPHASIZE          = 2
@@ -448,9 +449,9 @@ class CaveMark:
 
         # headings format
         if frmt_heading_prefix is None:
-            self.frmt_heading_prefix = '<h{LEVEL} id="sec_{INDEX}">'\
+            self.frmt_heading_prefix = '<h{LEVEL} id="{BOOKMARK}">'\
                                        '<a class="hindex"'\
-                                       ' href="#sec_{INDEX}">{INDEX}.</a> '
+                                       ' href="#{BOOKMARK}">{INDEX}.</a> '
         else:
             self.frmt_heading_prefix = frmt_heading_prefix
         if frmt_heading_suffix is None:
@@ -497,7 +498,7 @@ class CaveMark:
                     r'(_)',                         # emphasize open
                     r'(\~\~)',                      # strike open
                     r'(\[)',                        # cite open
-                    r'^ *(#+) *',                   # heading open
+                    r'^ *(#+)(?:(\S+)|)(?: +| *\n)(?=\S)',  # heading open
                     r'^( *)(\*|\+)',                # list open
                     r'^ *({}) *: *(\S+)'.format(    # resource definition open
                         r'|'.join(resource_types)
@@ -733,8 +734,11 @@ class CaveMark:
                     self._citation_open()
 
                 elif self._state[-1] == _S_START:
-                    if m.group(_I_OPEN_ANY_HEADING) is not None:
-                        self._heading_open(m.group(_I_OPEN_ANY_HEADING))
+                    if m.group(_I_OPEN_ANY_HEADING_LEVEL) is not None:
+                        self._heading_open(
+                            m.group(_I_OPEN_ANY_HEADING_LEVEL),
+                            m.group(_I_OPEN_ANY_HEADING_BOOKMARK)
+                        )
 
                     elif m.group(_I_OPEN_ANY_LIST_LEVEL) is not None:
                         self._list_open(
@@ -1143,7 +1147,7 @@ class CaveMark:
     def _listparagraph_close(self):
         del self._state[-1]
 
-    def _heading_open(self, level):
+    def _heading_open(self, level, bookmark):
         self._state.append(_S_HEADING_IN)
         level = len(level) + self.heading_offset
         if level > 6: level = 6 
@@ -1153,9 +1157,12 @@ class CaveMark:
         index = '.'.join(
             str(i) for i in self._heading_index[self.heading_offset:level]
         )
+        if bookmark is None:
+            bookmark = index
+        self._heading_bookmark = bookmark
         self._html[-1].append(
             self.frmt_heading_prefix.format(
-                **{'LEVEL':level, 'INDEX':index}
+                **{'LEVEL':level, 'INDEX':index, 'BOOKMARK':bookmark}
             )
         )
 
@@ -1163,7 +1170,11 @@ class CaveMark:
         del self._state[-1]
         self._html[-1].append(
             self.frmt_heading_suffix.format(
-                **{'LEVEL':self._heading_level}
+                **{
+                    'LEVEL':self._heading_level,
+                    'INDEX':self._heading_index,
+                    'BOOKMARK':self._heading_bookmark
+                }
             )
         )
 

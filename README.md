@@ -153,8 +153,10 @@ CaveMark's superior-yet-simpler typesetting syntax, and another in
 
 # Syntax
 
-`#` defines section headings.  E.g. `# heading` becomes `<h1>heading</h1>`, `##
-heading` becomes `<h2>heading</h2>`.
+`#[BOOKMARK] HEADING` defines section headings, alongside its optional
+BOOKMARK.  E.g. `# heading` becomes `<h1 id='1'><a href='#1'>1.</a>
+heading</h1>`, `##testing_heading heading` becomes `<h2 id='testing_heading'><a
+href='#testing_heading'>1.</a>heading</h2>`.
 
 `_` emphasizes texts.  E.g.  `_this_` = _this_. `~~` to strike through text.
 E.g. `~~this~~` = ~~this~~.
