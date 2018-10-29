@@ -196,8 +196,7 @@ of the resource, without placing the inline expansion.
 
 You can also pass an optional data string to the citation procedure, when
 citing something.  E.g. `Recently, it was shown that [mylink:chickens can
-fly!]`.  It will then work similar to `[chickens can fly!](https://...)`.  But
-CaveMark's syntax is superior because:
+fly!]`.  It will then work similar to `[chickens can fly!](https://...)`, except better and prettier.
 
 * It allows you to define link's URL elsewhere, so that ugly URLs won't clutter
   your paragraphs when you cite them.
@@ -315,6 +314,34 @@ makes no sense.  IMO, if you wish to denote that a text is emphasized, then
 stick to the standard format for such a thing.  In other words, varying the
 emphasization format across your paragraphs is like changing the font and color
 used in your section headings.
+
+Yet another aspect is that, in markdown, commonly, you cite a link by putting
+`[some text](https://...)` in your paragraphs.  I believe this is inconvenient
+for two reasons:
+
+* Citing ugly URLs will clutter your paragraphs.
+* Too many keywords are reserved for the parser, namely `[...]` and `(...)`.
+  Do we really need to do this?
+
+CaveMark solves those inconveniences by using the syntax `[mylink:some text]`
+instead, where `mylink` is a link resource defined elsewhere:
+
+```
+link:mylink
+url :https://...
+```
+
+CaveMark's approach is superior because:
+
+* It keeps the ugly URLs away from your paragraphs.  You can cite as many ugly
+  URLs as you want, without being disturbed by damaging the readability of your
+  markdown text.
+
+* It reserves fewer keywords in practice.  I.e. it only reserves `[... : ...]`,
+  so you can use `(...)` in your text without worrying to escape them.  The
+  fact that `:` is reserved inside a `[...]` block is not worrying, because a
+  resource ID is just an identifier (e.g. you don't need to use `:` in an
+  identifier).
 
 If you can convince me that more features are needed, I will change my mind.
 But so far I have not seen any reason to justify having multiple ways of
