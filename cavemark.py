@@ -114,6 +114,7 @@ class CaveMark:
         self, resources=None, resource_keys_ignored=None,
         resource_counters=None, escape=None, code=None, code_inline=None,
         code_unescape=None, heading_offset=None, shortcuts=None,
+        cite_id_default=None, cite_type_default=None, cite_field_default=None,
         frmt_cite_inline=None, frmt_cite_box=None, frmt_cite_data_default=None,
         frmt_cite_error_inline=None, frmt_cite_error_box=None,
         frmt_bibliography_prefix=None, frmt_bibliography_suffix=None,
@@ -208,6 +209,24 @@ class CaveMark:
             }
         else:
             self.shortcuts = shortcuts
+
+        # default id for citations that lack an identifier
+        if cite_id_default is None:
+            self.cite_id_default = '__'
+        else:
+            self.cite_id_default = cite_id_default
+
+        # default type for citations that lack an identifier
+        if cite_type_default is None:
+            self.cite_type_default = 'footnote'
+        else:
+            self.cite_type_default = cite_type_default
+
+        # default DATA field for citations that lack an identifier
+        if cite_field_default is None:
+            self.cite_field_default = 'text'
+        else:
+            self.cite_field_default = cite_field_default
 
         # inline citation format
         if frmt_cite_inline is None:
@@ -483,6 +502,7 @@ class CaveMark:
         self._resource_cur_entry_key = None
 
         self._citations_last_index = {}
+        self._citations_last_default_id_prefix = 0
         self._citations_pending_boxes = []
         self._citation_cur_id = None
         self._citation_cur_data = None
@@ -1272,6 +1292,17 @@ class CaveMark:
         self._citation_cur_id = None
         self._citation_cur_data = None
 
+        if res_id is None and res_data is not None:
+            self._citations_last_default_id_prefix += 1
+            res_id = '{}{}'.format(
+                self.cite_id_default,
+                self._citations_last_default_id_prefix
+            )
+            self.resources[res_id] = {
+                'TYPE'                 : self.cite_type_default,
+                self.cite_field_default: res_data
+            }
+
         # missing resource identifier?
         if res_id is None:
             self._html[-1].append(self.frmt_cite_error_inline.format(
@@ -1280,7 +1311,7 @@ class CaveMark:
             return
 
         # should inline citation be disabled?
-        if res_id[0] == '!' and len(res_id) > 1:
+        if len(res_id) > 1 and res_id[0] == '!':
             inline_citation_enabled = False
             res_id = res_id[1:]
         else:

@@ -196,15 +196,20 @@ of the resource, without placing the inline expansion.
 
 You can also pass an optional data string to the citation procedure, when
 citing something.  E.g. `Recently, it was shown that [mylink:chickens can
-fly!]`, where `mylink` is a `link` resource:
-
-```
-link:mylink
-url :https://domain.com/the/ugly/url?goes=here%20away%20from%20paragraphs
-```
-
-It will then work similar to `[chickens can fly!](https://...)`, except better
+fly!]`, where `mylink` is a `link` resource that was defined earlier.
+This will then work similar to `[chickens can fly!](https://...)`, except better
 and prettier.
+
+Finally, a default resource type is implied if no specific resource identifier
+is specified in a citation.  E.g.  by default, `[:some text]` will be
+interpreted as a citation of the footnote with the automatically-generated
+identifier `__1` (this ID is also configurable, where `1` keeps incrementing to
+keep each default identifiers unique):
+
+```
+footnote: __1
+text    : some text
+```
 
 CaveMark also supports shortcuts.  By default:
 
@@ -312,27 +317,32 @@ stick to the standard format for such a thing.  In other words, varying the
 emphasization format across your paragraphs is like changing the font and color
 used in your section headings.
 
-Yet another aspect is that, in markdown, commonly, you cite a link by putting
-`[some text](https://...)` in your paragraphs.  I believe this is inconvenient
-for two reasons:
+An example of where CaveMark reduces space of reserved keywords is that, in
+markdown, commonly, you cite a link by putting `[some text](https://...)` in
+your paragraphs.  IMO this is inconvenient for two reasons:
 
 * Citing ugly URLs will clutter your paragraphs.
 * Too many keywords are reserved for the parser, namely `[...]` and `(...)`.
   Do we really need to do this?
 
 CaveMark solves those inconveniences by using the syntax `[mylink:some text]`
-instead, where `mylink` is a link resource defined elsewhere.  CaveMark's
-approach is superior because:
+instead, where `mylink` is a link resource defined elsewhere, e.g.:
 
-* It keeps the ugly URLs away from your paragraphs.  You can cite as many ugly
-  URLs as you want, without being disturbed by damaging the readability of your
-  markdown text.
+```
+link:mylink
+url :https://domain.com/the/ugly/url?goes=here%20away%20from%20paragraphs
+```
+
+CaveMark's approach is superior because:
 
 * It reserves fewer keywords in practice.  I.e. it only reserves `[... : ...]`,
   so you can use `(...)` in your text without worrying about escaping them.
   The fact that `:` is reserved inside a `[...]` block is not worrying, because
   a resource ID is just an identifier (e.g. you don't need to use `:` in an
   identifier).
+* It keeps the ugly URLs away from your paragraphs.  You can cite as many ugly
+  URLs as you want, without being disturbed by damaging the readability of your
+  markdown text.
 
 If you can convince me that more features are needed, I will change my mind.
 But so far I have not seen any reason to justify having multiple ways of
