@@ -200,7 +200,7 @@ fly!]`, where `mylink` is a `link` resource:
 
 ```
 link:mylink
-url :https://domain.com/the/ugly/url?goes=here
+url :https://domain.com/the/ugly/url?goes=here%20away%20from%20paragraphs
 ```
 
 It will then work similar to `[chickens can fly!](https://...)`, except better
