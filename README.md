@@ -196,10 +196,19 @@ of the resource, without placing the inline expansion.
 
 You can also pass an optional data string to the citation procedure, when
 citing something.  E.g. `Recently, it was shown that [mylink:chickens can
-fly!]`.  That optional data is then applied to your formatting strings (i.e.
-`self.frmt_cite_*`) by specifying `{DATA}` in the formatting strings.  By
-default, `link` resources, when cited, their inline expansion is `<a
-href="{url}">{DATA}</a>`.
+fly!]`.  It will then work similar to `[chickens can fly!](https://...)`.  But
+CaveMark's syntax is superior because:
+
+* It allows you to define link's URL elsewhere, so that ugly URLs won't clutter
+  your paragraphs when you cite them.
+* Another advantage is that CaveMark's syntax does not reserve `(` and `)` as
+  special citation keywords, since all of the citation elements are confined
+  between `[` and `]` _only_.  This means, you can type things like `stuff
+  [mylink:other stuff](some note here)` without needing to _escape_ `(`.
+
+  IMO it is a nice to reduce a markdown's space of special letters as
+  much as conveniently possible, so that the user does not need to escape too
+  many of characters in his own writings.
 
 CaveMark also supports shortcuts.  By default:
 
