@@ -21,12 +21,13 @@ _S_PARAGRAPH_IN                     = 1
 _S_EMPHASIZE_IN                     = 2
 _S_STRIKE_IN                        = 3
 _S_CITATION_IN                      = 4
-_S_HEADING_IN                       = 5
-_S_LIST_IN                          = 6
-_S_LISTPARAGRAPH_IN                 = 7
-_S_RESOURCE_IN                      = 8
-_S_RESOURCE_IGNORED_KEY_IN          = 9
-_S_CODE_IN                          = 10
+_S_CITATIONDATA_IN                  = 5
+_S_HEADING_IN                       = 6
+_S_LIST_IN                          = 7
+_S_LISTPARAGRAPH_IN                 = 8
+_S_RESOURCE_IN                      = 9
+_S_RESOURCE_IGNORED_KEY_IN          = 10
+_S_CODE_IN                          = 11
 
 # tag indices
 _I_OPEN_ANY_SEP                     = 1
@@ -95,6 +96,13 @@ _I_CLOSE_STRIKE_CODE                = 4
 _I_CLOSE_STRIKE_SHORTCUT            = 5
 
 _I_CLOSE_CITATION                   = 1
+_I_CLOSE_CITATION_DATA              = 2
+
+_I_CLOSE_CITATIONDATA               = 1
+_I_CLOSE_CITATIONDATA_EMPHASIZE     = 2
+_I_CLOSE_CITATIONDATA_STRIKE        = 3
+_I_CLOSE_CITATIONDATA_CODE          = 4
+_I_CLOSE_CITATIONDATA_SHORTCUT      = 5
 
 _I_CLOSE_CODE                       = 1
 
@@ -106,14 +114,14 @@ class CaveMark:
         self, resources=None, resource_keys_ignored=None,
         resource_counters=None, escape=None, code=None, code_inline=None,
         code_unescape=None, heading_offset=None, shortcuts=None,
-        frmt_cite_inline=None, frmt_cite_box=None, frmt_cite_error_inline=None,
-        frmt_cite_error_box=None, frmt_bibliography_prefix=None,
-        frmt_bibliography_suffix=None, frmt_bibliography_item=None,
-        frmt_bibliography_error_item=None, frmt_footnote_prefix=None,
-        frmt_footnote_suffix=None, frmt_footnote_item=None,
-        frmt_footnote_error_item=None, frmt_paragraph_prefix=None,
-        frmt_paragraph_suffix=None, frmt_emph_prefix=None,
-        frmt_emph_suffix=None, frmt_strike_prefix=None,
+        frmt_cite_inline=None, frmt_cite_box=None, frmt_cite_data_default=None,
+        frmt_cite_error_inline=None, frmt_cite_error_box=None,
+        frmt_bibliography_prefix=None, frmt_bibliography_suffix=None,
+        frmt_bibliography_item=None, frmt_bibliography_error_item=None,
+        frmt_footnote_prefix=None, frmt_footnote_suffix=None,
+        frmt_footnote_item=None, frmt_footnote_error_item=None,
+        frmt_paragraph_prefix=None, frmt_paragraph_suffix=None,
+        frmt_emph_prefix=None, frmt_emph_suffix=None, frmt_strike_prefix=None,
         frmt_strike_suffix=None, frmt_code_prefix=None, frmt_code_suffix=None,
         frmt_olist_prefix=None, frmt_olist_suffix=None, frmt_ulist_prefix=None,
         frmt_ulist_suffix=None, frmt_list_item_prefix=None,
@@ -204,7 +212,7 @@ class CaveMark:
         # inline citation format
         if frmt_cite_inline is None:
             self.frmt_cite_inline = {
-            'link'      :' <a href="{url}">{text}</a>',
+            'link'      :' <a href="{url}">{DATA}</a>',
             'book'      :' <a href="#cite_{ID}">[{INDEX}]</a>',
             'image'     :' <a href="#cite_{ID}">Figure {INDEX}</a>',
             'note'      :' <a href="#cite_{ID}">Note {INDEX}</a>',
@@ -282,6 +290,12 @@ class CaveMark:
             }
         else:
             self.frmt_cite_box = frmt_cite_box
+
+        # default resource data when data is not supplied
+        if frmt_cite_data_default is None:
+            self.frmt_cite_data_default = '[{INDEX}]'
+        else:
+            self.frmt_cite_data_default = frmt_cite_data_default
 
         # errornous inline citation format
         if frmt_cite_error_inline is None:
@@ -468,6 +482,7 @@ class CaveMark:
         self._citations_last_index = {}
         self._citations_pending_boxes = []
         self._citation_cur_id = None
+        self._citation_cur_data = None
         self.resources_cited = {}
 
         self._footnote_items = []
@@ -666,6 +681,26 @@ class CaveMark:
                 re.escape(self.escape),
                 r'|'.join([
                     r'(\])',                # cite close
+                    r'(:)',                 # data open
+                    r'\Z',
+                ])
+            )
+        )
+
+        # close tag citationdata
+        self._re_tag_close_citationdata = re.compile(
+            r'(?<!{0})(?:{1})'.format(
+                re.escape(self.escape),
+                r'|'.join([
+                    r'(\])',                # citationdata close
+                    r'(_)',                 # emphasize open
+                    r'(\~\~)',              # strike open
+                    r'({})\n?'.format(      # code open
+                        r'|'.join(re.escape(o) for o in tags_open_code)
+                    ),
+                    r'({})'.format(         # shortcuts
+                        r'|'.join(re.escape(s) for s in shortcuts_raw)
+                    ),
                     r'\Z',
                 ])
             )
@@ -955,6 +990,27 @@ class CaveMark:
                     self._citation_cur_id = resource_id
                 if m.group(_I_CLOSE_CITATION) is not None:
                     self._citation_close()
+                if m.group(_I_CLOSE_CITATION_DATA) is not None:
+                    self._citationdata_open()
+
+            # parsing citationdata
+            elif self._state[-1] == _S_CITATIONDATA_IN:
+                m = self._re_tag_close_citationdata.search(text)
+                start, endo = m.span()
+                text_behind = text[0:start]
+                text_behind = self._unescape(text_behind)
+                text = text[endo:]
+                self._html[-1].append(text_behind)
+                if m.group(_I_CLOSE_CITATIONDATA) is not None:
+                    self._citationdata_close()
+                elif m.group(_I_CLOSE_CITATIONDATA_EMPHASIZE) is not None:
+                    self._emphasize_open()
+                elif m.group(_I_CLOSE_CITATIONDATA_STRIKE) is not None:
+                    self._strike_open()
+                elif m.group(_I_CLOSE_CITATIONDATA_CODE) is not None:
+                    self._code_open(m.group(_I_CLOSE_CITATIONDATA_CODE))
+                elif m.group(_I_CLOSE_CITATIONDATA_SHORTCUT) is not None:
+                    self._shortcut_add(m.group(_I_CLOSE_CITATIONDATA_SHORTCUT))
 
     def flush(self, footnotes=True, bibliography=True):
         """Flush all pending objects: cited box resources such as figures,
@@ -971,6 +1027,7 @@ class CaveMark:
             elif state == _S_HEADING_IN  : self._heading_close()
             elif state == _S_RESOURCE_IN : self._resource_close()
             elif state == _S_CITATION_IN : self._citation_close()
+            elif state == _S_CITATIONDATA_IN : self._citationdata_close()
 
         if len(self._citations_pending_boxes):
             self._flush_pending_boxes()
@@ -1208,7 +1265,9 @@ class CaveMark:
     def _citation_close(self):
         del self._state[-1]
         res_id = self._citation_cur_id
+        res_data = self._citation_cur_data
         self._citation_cur_id = None
+        self._citation_cur_data = None
 
         # missing resource identifier?
         if res_id is None:
@@ -1261,9 +1320,20 @@ class CaveMark:
                 self._citations_last_index[res_counter] = 1
             res_index = self._citations_last_index[res_counter]
 
-        # build footnote items
-        values = {'ID':res_id, 'INDEX':res_index}
+        # format data
+        values = {
+            'ID':res_id,
+            'INDEX':res_index,
+            'DATA':res_data
+        }
         values.update(resource)
+        print(res_data)
+        if res_data is None:
+            res_data = self.frmt_cite_data_default.format(**values)
+        print(res_data)
+        print('---------------')
+
+        # build footnote items
         if (
             res_id not in self.resources_cited
             and res_type in self.frmt_footnote_item
@@ -1327,3 +1397,13 @@ class CaveMark:
                     )
 
         self.resources_cited[res_id] = res_index
+
+    def _citationdata_open(self):
+        self._state.append(_S_CITATIONDATA_IN)
+        self._html.append([])
+
+    def _citationdata_close(self):
+        self._citation_cur_data = ''.join(self._html[-1])
+        del self._html[-1]
+        del self._state[-1]
+        self._citation_close()
