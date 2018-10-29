@@ -196,18 +196,8 @@ of the resource, without placing the inline expansion.
 
 You can also pass an optional data string to the citation procedure, when
 citing something.  E.g. `Recently, it was shown that [mylink:chickens can
-fly!]`.  It will then work similar to `[chickens can fly!](https://...)`, except better and prettier.
-
-* It allows you to define link's URL elsewhere, so that ugly URLs won't clutter
-  your paragraphs when you cite them.
-* Another advantage is that CaveMark's syntax does not reserve `(` and `)` as
-  special citation keywords, since all of the citation elements are confined
-  between `[` and `]` _only_.  This means, you can type things like `stuff
-  [mylink:other stuff](some note here)` without needing to _escape_ `(`.
-
-  IMO it is a nice to reduce a markdown's space of special letters as
-  much as conveniently possible, so that the user does not need to escape too
-  many of characters in his own writings.
+fly!]`.  It will then work similar to `[chickens can fly!](https://...)`,
+except better and prettier.
 
 CaveMark also supports shortcuts.  By default:
 
@@ -338,9 +328,9 @@ CaveMark's approach is superior because:
   markdown text.
 
 * It reserves fewer keywords in practice.  I.e. it only reserves `[... : ...]`,
-  so you can use `(...)` in your text without worrying to escape them.  The
-  fact that `:` is reserved inside a `[...]` block is not worrying, because a
-  resource ID is just an identifier (e.g. you don't need to use `:` in an
+  so you can use `(...)` in your text without worrying about escaping them.
+  The fact that `:` is reserved inside a `[...]` block is not worrying, because
+  a resource ID is just an identifier (e.g. you don't need to use `:` in an
   identifier).
 
 If you can convince me that more features are needed, I will change my mind.
