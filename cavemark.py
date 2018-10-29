@@ -144,7 +144,7 @@ class CaveMark:
         if resource_counters is None:
             self.resource_counters = {
                 'link'      :'counter_a',
-                'book'      :'counter_b',
+                'book'      :'counter_a',
                 'image'     :'counter_c',
                 'note'      :'counter_d',
                 'quotation' :'counter_e',
@@ -293,7 +293,10 @@ class CaveMark:
 
         # default resource data when data is not supplied
         if frmt_cite_data_default is None:
-            self.frmt_cite_data_default = '[{INDEX}]'
+            self.frmt_cite_data_default = {
+                'link'      :'[{INDEX}]',
+                'book'      :' <a href="#cite_{ID}">[{INDEX}]</a>',
+            }
         else:
             self.frmt_cite_data_default = frmt_cite_data_default
 
@@ -1327,11 +1330,11 @@ class CaveMark:
             'DATA':res_data
         }
         values.update(resource)
-        print(res_data)
         if res_data is None:
-            res_data = self.frmt_cite_data_default.format(**values)
-        print(res_data)
-        print('---------------')
+            if res_type in self.frmt_cite_data_default:
+                res_data = self.frmt_cite_data_default[res_type].format(
+                    **values
+                )
 
         # build footnote items
         if (

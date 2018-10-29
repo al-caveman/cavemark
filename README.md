@@ -194,6 +194,13 @@ prefixed by `!`, in a citation box, e.g. `[!myimage]`, then the resource
 is useful when you want to only place the box/bibliography/footnote expansion
 of the resource, without placing the inline expansion.
 
+You can also pass an optional data string to the citation procedure, when
+citing something.  E.g. `Recently, it was shown that [mylink:chickens can
+fly!]`.  That optional data is then applied to your formatting strings (i.e.
+`self.frmt_cite_*`) by specifying `{DATA}` in the formatting strings.  By
+default, `link` resources, when cited, their inline expansion is `<a
+href="{url}">{DATA}</a>`.
+
 CaveMark also supports shortcuts.  By default:
 
 * `(c)`   = `&copy;`.
