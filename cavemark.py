@@ -104,6 +104,8 @@ _I_CLOSE_CITATIONDATA_STRIKE        = 3
 _I_CLOSE_CITATIONDATA_CODE          = 4
 _I_CLOSE_CITATIONDATA_SHORTCUT      = 5
 
+_I_CLOSE_CITATIONDATAIGNORED        = 1
+
 _I_CLOSE_CODE                       = 1
 
 class CaveMark:
@@ -114,7 +116,7 @@ class CaveMark:
         self, resources=None, resource_keys_ignored=None,
         resource_counters=None, escape=None, code=None, code_inline=None,
         code_unescape=None, heading_offset=None, shortcuts=None,
-        cite_id_default=None, cite_type_default=None, cite_field_default=None,
+        cite_id_default=None, cite_type_default=None, cite_key_default=None,
         frmt_cite_inline=None, frmt_cite_box=None, frmt_cite_data_default=None,
         frmt_cite_error_inline=None, frmt_cite_error_box=None,
         frmt_bibliography_prefix=None, frmt_bibliography_suffix=None,
@@ -222,16 +224,19 @@ class CaveMark:
         else:
             self.cite_type_default = cite_type_default
 
-        # default DATA field for citations that lack an identifier
-        if cite_field_default is None:
-            self.cite_field_default = 'text'
+        # default data key for citations that lack an identifier
+        if cite_key_default is None:
+            self.cite_key_default = {
+                'link'      : 'text',
+                'footnote'  : 'text',
+            }
         else:
-            self.cite_field_default = cite_field_default
+            self.cite_key_default = cite_key_default
 
         # inline citation format
         if frmt_cite_inline is None:
             self.frmt_cite_inline = {
-            'link'      :' <a href="{url}">{DATA}</a>',
+            'link'      :' <a href="{url}">{text}</a>',
             'book'      :' <a href="#cite_{ID}">[{INDEX}]</a>',
             'image'     :' <a href="#cite_{ID}">Figure {INDEX}</a>',
             'note'      :' <a href="#cite_{ID}">Note {INDEX}</a>',
@@ -729,6 +734,17 @@ class CaveMark:
             )
         )
 
+        # close tag citationdata when the data key is to be ignored
+        self._re_tag_close_citationdata_ignored = re.compile(
+            r'(?<!{0})(?:{1})'.format(
+                re.escape(self.escape),
+                r'|'.join([
+                    r'(\])',                # citationdata close
+                    r'\Z',
+                ])
+            )
+        )
+
         # close tag code
         self._re_tag_close_code = {
             o : re.compile(
@@ -871,8 +887,10 @@ class CaveMark:
             elif self._state[-1] == _S_CODE_IN:
                 m = self._re_tag_close_code[self._code_tag_open].search(text)
                 start, endo = m.span()
+                text_behind = text[0:start]
                 text_behind = self._unescape(
-                    text[0:start], tag=self.code[self._code_tag_open]
+                    text_behind,
+                    tag=self.code[self._code_tag_open]
                 )
                 text = text[endo:]
                 self._html[-1].append(text_behind)
@@ -1018,22 +1036,42 @@ class CaveMark:
 
             # parsing citationdata
             elif self._state[-1] == _S_CITATIONDATA_IN:
-                m = self._re_tag_close_citationdata.search(text)
-                start, endo = m.span()
-                text_behind = text[0:start]
-                text_behind = self._unescape(text_behind)
-                text = text[endo:]
-                self._html[-1].append(text_behind)
-                if m.group(_I_CLOSE_CITATIONDATA) is not None:
-                    self._citationdata_close()
-                elif m.group(_I_CLOSE_CITATIONDATA_EMPHASIZE) is not None:
-                    self._emphasize_open()
-                elif m.group(_I_CLOSE_CITATIONDATA_STRIKE) is not None:
-                    self._strike_open()
-                elif m.group(_I_CLOSE_CITATIONDATA_CODE) is not None:
-                    self._code_open(m.group(_I_CLOSE_CITATIONDATA_CODE))
-                elif m.group(_I_CLOSE_CITATIONDATA_SHORTCUT) is not None:
-                    self._shortcut_add(m.group(_I_CLOSE_CITATIONDATA_SHORTCUT))
+                if self._citation_cur_id is None:
+                    res_type = self.cite_type_default
+                else:
+                    res_type = self.resources[self._citation_cur_id]['TYPE']
+                res_key = self.cite_key_default[res_type]
+
+                # ignore formatting the data if it is destined to an ignored
+                # resource key
+                if res_key in self.resource_keys_ignored:
+                    m = self._re_tag_close_citationdata_ignored.search(text)
+                    start, endo = m.span()
+                    text_behind = text[0:start]
+                    text_behind = self._unescape(text_behind, tag=']')
+                    text = text[endo:]
+                    self._html[-1].append(text_behind)
+                    if m.group(_I_CLOSE_CITATIONDATAIGNORED) is not None:
+                        self._citationdata_close()
+                else:
+                    m = self._re_tag_close_citationdata.search(text)
+                    start, endo = m.span()
+                    text_behind = text[0:start]
+                    text_behind = self._unescape(text_behind)
+                    text = text[endo:]
+                    self._html[-1].append(text_behind)
+                    if m.group(_I_CLOSE_CITATIONDATA) is not None:
+                        self._citationdata_close()
+                    elif m.group(_I_CLOSE_CITATIONDATA_EMPHASIZE) is not None:
+                        self._emphasize_open()
+                    elif m.group(_I_CLOSE_CITATIONDATA_STRIKE) is not None:
+                        self._strike_open()
+                    elif m.group(_I_CLOSE_CITATIONDATA_CODE) is not None:
+                        self._code_open(m.group(_I_CLOSE_CITATIONDATA_CODE))
+                    elif m.group(_I_CLOSE_CITATIONDATA_SHORTCUT) is not None:
+                        self._shortcut_add(m.group(
+                            _I_CLOSE_CITATIONDATA_SHORTCUT)
+                        )
 
     def flush(self, footnotes=True, bibliography=True):
         """Flush all pending objects: cited box resources such as figures,
@@ -1292,16 +1330,14 @@ class CaveMark:
         self._citation_cur_id = None
         self._citation_cur_data = None
 
+        # assume a default resource identifier and type if appropriate
         if res_id is None and res_data is not None:
             self._citations_last_default_id_prefix += 1
             res_id = '{}{}'.format(
                 self.cite_id_default,
                 self._citations_last_default_id_prefix
             )
-            self.resources[res_id] = {
-                'TYPE'                 : self.cite_type_default,
-                self.cite_field_default: res_data
-            }
+            self.resources[res_id] = {'TYPE': self.cite_type_default}
 
         # missing resource identifier?
         if res_id is None:
@@ -1354,20 +1390,13 @@ class CaveMark:
                 self._citations_last_index[res_counter] = 1
             res_index = self._citations_last_index[res_counter]
 
-        # format data
-        values = {
-            'ID':res_id,
-            'INDEX':res_index,
-            'DATA':res_data
-        }
-        values.update(resource)
-        if res_data is None:
-            if res_type in self.frmt_cite_data_default:
-                res_data = self.frmt_cite_data_default[res_type].format(
-                    **values
-                )
+        # add resource data into the resource if appropriate
+        if res_type in self.cite_key_default and res_data is not None:
+            resource[self.cite_key_default[res_type]] = res_data
 
         # build footnote items
+        values = {'ID':res_id, 'INDEX':res_index}
+        values.update(resource)
         if (
             res_id not in self.resources_cited
             and res_type in self.frmt_footnote_item
