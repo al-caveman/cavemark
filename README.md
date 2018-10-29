@@ -196,8 +196,15 @@ of the resource, without placing the inline expansion.
 
 You can also pass an optional data string to the citation procedure, when
 citing something.  E.g. `Recently, it was shown that [mylink:chickens can
-fly!]`.  It will then work similar to `[chickens can fly!](https://...)`,
-except better and prettier.
+fly!]`, where `mylink` is a `link` resource:
+
+```
+link:mylink
+url :https://domain.com/the/ugly/url?goes=here
+```
+
+It will then work similar to `[chickens can fly!](https://...)`, except better
+and prettier.
 
 CaveMark also supports shortcuts.  By default:
 
@@ -314,14 +321,8 @@ for two reasons:
   Do we really need to do this?
 
 CaveMark solves those inconveniences by using the syntax `[mylink:some text]`
-instead, where `mylink` is a link resource defined elsewhere:
-
-```
-link:mylink
-url :https://...
-```
-
-CaveMark's approach is superior because:
+instead, where `mylink` is a link resource defined elsewhere.  CaveMark's
+approach is superior because:
 
 * It keeps the ugly URLs away from your paragraphs.  You can cite as many ugly
   URLs as you want, without being disturbed by damaging the readability of your
