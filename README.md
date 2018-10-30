@@ -1,3 +1,21 @@
+# Table of Contents
+
+* [Overview](#overview)
+* [Features](#features)
+* [Benchmark](#benchmark)
+* [Benchmark](#benchmark)
+* [Syntax](#syntax)
+* [Basic Example](#basic-example)
+* [CaveMark's Syntax Philosophy](#cavemarks-syntax-philosophy)
+* [Documentation](#documentation)
+  * [General Use](#general-use)
+  * [General Use](#general-use)
+  * [Making CaveMark Forget Stuff](#making-cavemark-forget-stuff)
+  * [Customizing CaveMark](#customizing-cavemark)
+  * [Customizing CaveMark](#customizing-cavemark)
+    * [List of Options](#list-of-options)
+* [Todo](#todo)
+
 # Overview
 
 CaveMark is a typesetting markdown parser.  It is also the fastest pure-Python
