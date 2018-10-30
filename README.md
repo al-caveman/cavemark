@@ -384,14 +384,14 @@ To use CaveMark:
   achieve this flexibility, you can pass the following arguments to
   `parser.flush()`:
 
-    * `footnotes`:  Set it to `True` (default) to flush footnotes, or `False`
-      to not flush footnotes yet (gather footnotes for a later flush).
-    * `bibliography`:  Set it to `True` (default) to flush the bibliography, or
-      `False` to not flush the bibliography yet (gather bibliography items for
-      a later flush).
-
-    E.g. if `parser.flush(footnotes=False, bibliography=False)`, then only the
-    HTML body is flushed.
+  * `footnotes`:  Set it to `True` (default) to flush footnotes, or `False`
+    to not flush footnotes yet (gather footnotes for a later flush).
+  * `bibliography`:  Set it to `True` (default) to flush the bibliography, or
+    `False` to not flush the bibliography yet (gather bibliography items for
+    a later flush).
+  
+  E.g. if `parser.flush(footnotes=False, bibliography=False)`, then only the
+  HTML body is flushed.
 
 5. Use HTML `html` in your website however you please.
 
@@ -403,41 +403,42 @@ heading indices, citation indices, etc.  Why initialize a whole new CaveMark
 parser object, right?  
 
 Here is what you have:
-    * `parser.forget_resources()`
 
-        Forgets all resources that were found in `text`, unless
-        `resource=RESID` is given then only that specific resource, RESID, will
-        be forgotten.  
+* `parser.forget_resources()`
 
-    * `parser.forget_citations()`
+    Forgets all resources that were found in `text`, unless
+    `resource=RESID` is given then only that specific resource, RESID, will
+    be forgotten.  
 
-        For any resource in `text`, forgets the that fact a resource was cited,
-        unless `resource=RESID` is given, then only that specific resource,
-        RESID, will have its citation forgotten.
+* `parser.forget_citations()`
 
-        `parser.forget_citations()` differs against `parser.forget_resources()`
-        in that the former forgets the fact that a resource was cited, while
-        the latter forgets resource's existance/definition.
+    For any resource in `text`, forgets the that fact a resource was cited,
+    unless `resource=RESID` is given, then only that specific resource,
+    RESID, will have its citation forgotten.
 
-    * `parser.forget_citation_counters()`
+    `parser.forget_citations()` differs against `parser.forget_resources()`
+    in that the former forgets the fact that a resource was cited, while
+    the latter forgets resource's existance/definition.
 
-        Reset counters of all cited resources, unless `resource_type=RESTYPE`
-        is given then only resource indecies of that type RESTYPE will be
-        reset.
+* `parser.forget_citation_counters()`
 
-        This is useful so when you wish to parse a new page, you don't need to
-        kcontinue your citation indices from the previous page.  E.g. if the
-        last citation index was `[100]`, and you start parsing a new page, you
-        want to reset it so that your first cited resource is `[1]` instead of
-        `[101]`.
+    Reset counters of all cited resources, unless `resource_type=RESTYPE`
+    is given then only resource indecies of that type RESTYPE will be
+    reset.
 
-    * `parser.forget_section_counters()`
+    This is useful so when you wish to parse a new page, you don't need to
+    kcontinue your citation indices from the previous page.  E.g. if the
+    last citation index was `[100]`, and you start parsing a new page, you
+    want to reset it so that your first cited resource is `[1]` instead of
+    `[101]`.
 
-        Forgets the section heading ineces.  E.g. if the last section was, say,
-        `10.3.3.5`, then calling this method will forget this fact, so that
-        subsequently parsed section headings will start from the beginning,
-        e.g. `1.`.  This is useful when you are about to parse a new unrelated
-        page to what you were parsing previously.
+* `parser.forget_section_counters()`
+
+    Forgets the section heading ineces.  E.g. if the last section was, say,
+    `10.3.3.5`, then calling this method will forget this fact, so that
+    subsequently parsed section headings will start from the beginning,
+    e.g. `1.`.  This is useful when you are about to parse a new unrelated
+    page to what you were parsing previously.
 
 ## Customizing CaveMark
 
@@ -464,165 +465,165 @@ Two ways:
 
 ### List of Options
 
-    * `resources`
+* `resources`
 
-        Contains parsed resources in HTML form, as found in your passed text.
-        This can be a convenient way for you to see all the resources that were
-        parsed in the gtext that you have given to `parser.parse(text)`.
+    Contains parsed resources in HTML form, as found in your passed text.
+    This can be a convenient way for you to see all the resources that were
+    parsed in the gtext that you have given to `parser.parse(text)`.
 
-        This can also be useful as a caching mechanism.  E.g. for resources
-        that you frequently use, you don't need to parse them each time into
-        HTML.  Instead, you can simply store `parser.resources` somewhere, and
-        reload it `parser.resources=old_parser_resources` before
-        `parser.parse(text)`.  This way, you won't need to include resources in
-        raw format in `text` as the HTML-cached one is already supplied in
-        `parser.resources`.
+    This can also be useful as a caching mechanism.  E.g. for resources
+    that you frequently use, you don't need to parse them each time into
+    HTML.  Instead, you can simply store `parser.resources` somewhere, and
+    reload it `parser.resources=old_parser_resources` before
+    `parser.parse(text)`.  This way, you won't need to include resources in
+    raw format in `text` as the HTML-cached one is already supplied in
+    `parser.resources`.
 
-    * `resource_keys_ignored`
+* `resource_keys_ignored`
 
-        A set containing resource keys that their corresponding value must not
-        be parsed.  E.g. `url` is one.
+    A set containing resource keys that their corresponding value must not
+    be parsed.  E.g. `url` is one.
 
-    * `resource_counters`
+* `resource_counters`
 
-        A dictionary specifying counter names of various resources.  If two
-        entries have the same counter name, it means that they will share they
-        same counter.  E.g. by default `link` and `book` share the same counter:
+    A dictionary specifying counter names of various resources.  If two
+    entries have the same counter name, it means that they will share they
+    same counter.  E.g. by default `link` and `book` share the same counter:
 
-        ```python
-        resource_counters = {
-            'link'      :'counter_a', # sharing same counters
-            'book'      :'counter_a', # sharing same counters
-            'image'     :'counter_c',
-            'note'      :'counter_d',
-            'quotation' :'counter_e',
-            'definition':'counter_f',
-            'axiom'     :'counter_g',
-            'theorem'   :'counter_h',
-            'corollary' :'counter_i',
-            'conjecture':'counter_j',
-            'footnote'  :'counter_k',
-        }
-        ```
+    ```python
+    resource_counters = {
+        'link'      :'counter_a', # sharing same counters
+        'book'      :'counter_a', # sharing same counters
+        'image'     :'counter_c',
+        'note'      :'counter_d',
+        'quotation' :'counter_e',
+        'definition':'counter_f',
+        'axiom'     :'counter_g',
+        'theorem'   :'counter_h',
+        'corollary' :'counter_i',
+        'conjecture':'counter_j',
+        'footnote'  :'counter_k',
+    }
+    ```
 
-    * `escape`
+* `escape`
 
-        Specifies the escaping sequence.  By default, it's the backward slash.
+    Specifies the escaping sequence.  By default, it's the backward slash.
 
-    * `code`
+* `code`
 
-        Defines opening/closing tags for code substrings, or any substring that
-        you wish to ignore parsing on.  By default:
+    Defines opening/closing tags for code substrings, or any substring that
+    you wish to ignore parsing on.  By default:
 
-        ```python
-        code = {
-            '$$' : '$$',
-            '$'  : '$',
-            '`'  : '`',
-            '```': '```',
-        }
-        ```
+    ```python
+    code = {
+        '$$' : '$$',
+        '$'  : '$',
+        '`'  : '`',
+        '```': '```',
+    }
+    ```
 
-    * `code_inline`
+* `code_inline`
 
-        Specifies whether a specific code substring (identified by its opening
-        tag) should be always in a paragraph.  By default:
+    Specifies whether a specific code substring (identified by its opening
+    tag) should be always in a paragraph.  By default:
 
-        ```python
-        code_inline= {'$$', '$', '`'}
-        ```
+    ```python
+    code_inline= {'$$', '$', '`'}
+    ```
 
-    * `code_unescape`
+* `code_unescape`
 
-        Code substrings that unescapping should be enabled in them.  By
-        default:
+    Code substrings that unescapping should be enabled in them.  By
+    default:
 
-        ```python
-        code_unescape = {'`', '```'}
-        ```
+    ```python
+    code_unescape = {'`', '```'}
+    ```
 
-        **Note:** the only unescapping that's enabled for them, which is the
-        only one that makes sense, is unescapping strings that match their
-        closing tag.
+    **Note:** the only unescapping that's enabled for them, which is the
+    only one that makes sense, is unescapping strings that match their
+    closing tag.
 
-    * `heading_offset`
+* `heading_offset`
 
-        Specifies an offset for all heading levels.  By default:
+    Specifies an offset for all heading levels.  By default:
 
-        ```python
-        heading_offset=1
-        ```
+    ```python
+    heading_offset=1
+    ```
 
-        E.g. with the default offset of `1`, if `# heading` is seen, then its
-        level will be `2` instead of `1`.  E.g. if `## heading` is seen, then
-        its level will be `3` instead of `2`.
+    E.g. with the default offset of `1`, if `# heading` is seen, then its
+    level will be `2` instead of `1`.  E.g. if `## heading` is seen, then
+    its level will be `3` instead of `2`.
 
-    * `shortcuts`
+* `shortcuts`
 
-        A dictionary for simple replacement of some characters by other
-        charactters.  By default:
+    A dictionary for simple replacement of some characters by other
+    charactters.  By default:
 
-        ```python
-        shortcuts = {
-            '(c)'   : '&copy;', 
-            '(tm)'  : '&trade;', 
-            '(R)'   : '&reg;', 
-            '"'     : '&ldquo;', 
-            "''"    : '&rdquo;', 
-            '---'   : '&mdash;', 
-            '...'   : '&hellip;', 
-        }
-        ```
+    ```python
+    shortcuts = {
+        '(c)'   : '&copy;', 
+        '(tm)'  : '&trade;', 
+        '(R)'   : '&reg;', 
+        '"'     : '&ldquo;', 
+        "''"    : '&rdquo;', 
+        '---'   : '&mdash;', 
+        '...'   : '&hellip;', 
+    }
+    ```
 
-    * `cite_id_default`
+* `cite_id_default`
 
-        If a resource citation lacks an identifier, then that `cite_id_default`
-        will be used as its identifier prefix (the suffix is a counter to keep
-        dthe identifiers unique).  E.g. `[:some text]` lacks an identifier. By
-        default:
+    If a resource citation lacks an identifier, then that `cite_id_default`
+    will be used as its identifier prefix (the suffix is a counter to keep
+    dthe identifiers unique).  E.g. `[:some text]` lacks an identifier. By
+    default:
 
-        ```python
-        cite_id_default = '__'
-        ```
-    * `cite_type_default`
+    ```python
+    cite_id_default = '__'
+    ```
+* `cite_type_default`
 
-        The resource type for the cited resource that lacked a resource
-        identifier.  I.e. the resource type of resource ID `__N`. where N is
-        some unique number, as set by `cite_id_default`. By default:
+    The resource type for the cited resource that lacked a resource
+    identifier.  I.e. the resource type of resource ID `__N`. where N is
+    some unique number, as set by `cite_id_default`. By default:
 
-        ```python
-        cite_type_default = 'footnote'
-        ```
+    ```python
+    cite_type_default = 'footnote'
+    ```
 
-    * `cite_key_default`
+* `cite_key_default`
 
-        The resource key for the cited resource that had optional data
-        supplied.  E.g. `[RESID:some optional data]`.  This key depends on the
-        resource type that the RESID belongs to.  So, this is a dictionary that
-        maps resource type against its default key that the optional data will
-        be assigned to, By default:
+    The resource key for the cited resource that had optional data
+    supplied.  E.g. `[RESID:some optional data]`.  This key depends on the
+    resource type that the RESID belongs to.  So, this is a dictionary that
+    maps resource type against its default key that the optional data will
+    be assigned to, By default:
 
-        ```python
-        cite_key_default = {
-            'link'      : 'text',
-            'footnote'  : 'text',
-        }
-        ```
+    ```python
+    cite_key_default = {
+        'link'      : 'text',
+        'footnote'  : 'text',
+    }
+    ```
 
-    * `frmt_cite_inline`, `frmt_cite_box`, `frmt_cite_data_default`,
-      `frmt_cite_error_inline`, `frmt_cite_error_box`,
-      `frmt_bibliography_prefix`, `frmt_bibliography_suffix`,
-      `frmt_bibliography_item`, `frmt_bibliography_error_item`,
-      `frmt_footnote_prefix`, `frmt_footnote_suffix`, `frmt_footnote_item`,
-      `frmt_footnote_error_item`, `frmt_paragraph_prefix`,
-      `frmt_paragraph_suffix`, `frmt_emph_prefix`, `frmt_emph_suffix`,
-      `frmt_strike_prefix`, `frmt_strike_suffix`, `frmt_code_prefix`,
-      `frmt_code_suffix`, `frmt_olist_prefix`, `frmt_olist_suffix`,
-      `frmt_ulist_prefix`, `frmt_ulist_suffix`, `frmt_list_item_prefix`,
-      `frmt_list_item_suffix`, `frmt_heading_prefix`, `frmt_heading_suffix`.
+* `frmt_cite_inline`, `frmt_cite_box`, `frmt_cite_data_default`,
+  `frmt_cite_error_inline`, `frmt_cite_error_box`,
+  `frmt_bibliography_prefix`, `frmt_bibliography_suffix`,
+  `frmt_bibliography_item`, `frmt_bibliography_error_item`,
+  `frmt_footnote_prefix`, `frmt_footnote_suffix`, `frmt_footnote_item`,
+  `frmt_footnote_error_item`, `frmt_paragraph_prefix`,
+  `frmt_paragraph_suffix`, `frmt_emph_prefix`, `frmt_emph_suffix`,
+  `frmt_strike_prefix`, `frmt_strike_suffix`, `frmt_code_prefix`,
+  `frmt_code_suffix`, `frmt_olist_prefix`, `frmt_olist_suffix`,
+  `frmt_ulist_prefix`, `frmt_ulist_suffix`, `frmt_list_item_prefix`,
+  `frmt_list_item_suffix`, `frmt_heading_prefix`, `frmt_heading_suffix`.
 
-      All these are HTML formatting variables.  They allow you to change every
-      HTML code is generated by CaveMark.
+  All these are HTML formatting variables.  They allow you to change every
+  HTML code is generated by CaveMark.
 
 # Todo
 
