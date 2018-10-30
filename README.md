@@ -3,7 +3,6 @@
 * [Overview](#overview)
 * [Features](#features)
 * [Benchmark](#benchmark)
-* [Benchmark](#benchmark)
 * [Syntax](#syntax)
 * [Basic Example](#basic-example)
 * [CaveMark's Syntax Philosophy](#cavemarks-syntax-philosophy)
