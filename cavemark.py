@@ -529,6 +529,7 @@ class CaveMark:
         self._list = [[-1, None]]
 
         self._heading_index = [0] * 6
+        self._heading_bookmark = [''] * 6
 
         # compile re and other stuff
         self.update()
@@ -1164,6 +1165,7 @@ class CaveMark:
         """Reset the section index counters.
         """
         self._heading_index = [0] * 6
+        self._heading_bookmark = [''] * 6
 
     def _unescape(self, text, tag=None):
         if tag is None:
@@ -1284,15 +1286,21 @@ class CaveMark:
         self._heading_level = level
         self._heading_index[level-1] += 1
         self._heading_index[level:] = [0] * (6 - level)
-        index = '.'.join(
+        if bookmark is None:
+            self._heading_bookmark[level-1] = str(self._heading_index[level-1])
+        else:
+            self._heading_bookmark[level-1] = bookmark
+        fullindex = '.'.join(
             str(i) for i in self._heading_index[self.heading_offset:level]
         )
-        if bookmark is None:
-            bookmark = index
-        self._heading_bookmark = bookmark
+        self._heading_fullindex = fullindex
+        fullbookmark = '.'.join(
+            i for i in self._heading_bookmark[self.heading_offset:level]
+        )
+        self._heading_fullbookmark = fullbookmark
         self._html[-1].append(
             self.frmt_heading_prefix.format(
-                **{'LEVEL':level, 'INDEX':index, 'BOOKMARK':bookmark}
+                **{'LEVEL':level, 'INDEX':fullindex, 'BOOKMARK':fullbookmark}
             )
         )
 
@@ -1302,8 +1310,8 @@ class CaveMark:
             self.frmt_heading_suffix.format(
                 **{
                     'LEVEL':self._heading_level,
-                    'INDEX':self._heading_index,
-                    'BOOKMARK':self._heading_bookmark
+                    'INDEX':self._heading_fullindex,
+                    'BOOKMARK':self._heading_fullbookmark
                 }
             )
         )
