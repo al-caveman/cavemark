@@ -101,8 +101,9 @@ _I_CLOSE_CITATION_DATA              = 2
 _I_CLOSE_CITATIONDATA               = 1
 _I_CLOSE_CITATIONDATA_EMPHASIZE     = 2
 _I_CLOSE_CITATIONDATA_STRIKE        = 3
-_I_CLOSE_CITATIONDATA_CODE          = 4
-_I_CLOSE_CITATIONDATA_SHORTCUT      = 5
+_I_CLOSE_CITATIONDATA_CITATION      = 4
+_I_CLOSE_CITATIONDATA_CODE          = 5
+_I_CLOSE_CITATIONDATA_SHORTCUT      = 6
 
 _I_CLOSE_CITATIONDATAIGNORED        = 1
 
@@ -731,6 +732,7 @@ class CaveMark:
                     r'(\])',                # citationdata close
                     r'(_)',                 # emphasize open
                     r'(\~\~)',              # strike open
+                    r'(\[)',                # cite open
                     r'({})\n?'.format(      # code open
                         r'|'.join(re.escape(o) for o in tags_open_code)
                     ),
@@ -1080,6 +1082,8 @@ class CaveMark:
                         self._shortcut_add(m.group(
                             _I_CLOSE_CITATIONDATA_SHORTCUT)
                         )
+                    elif m.group(_I_CLOSE_CITATIONDATA_CITATION) is not None:
+                        self._citation_open()
 
     def flush(self, footnotes=True, bibliography=True):
         """Flush all pending objects: cited box resources such as figures,
