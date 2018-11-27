@@ -875,7 +875,7 @@ class CaveMark:
                 elif m.group(_I_CLOSE_EMPHASIZE_CITATION) is not None:
                     self._citation_open()
 
-            # resume parsing emphasized text
+            # resume parsing struck-through text
             elif self._state[-1] == _S_STRIKE_IN:
                 m = self._re_tag_close_strike.search(text)
                 start, endo = m.span()
@@ -887,11 +887,11 @@ class CaveMark:
                     self._strike_close()
                 elif m.group(_I_CLOSE_STRIKE_EMPHASIZE) is not None:
                     self._emphasize_open()
-                elif m.group(_I_CLOSE_EMPHASIZE_CODE) is not None:
-                    self._code_open(m.group(_I_CLOSE_EMPHASIZE_CODE))
-                elif m.group(_I_CLOSE_EMPHASIZE_SHORTCUT) is not None:
-                    self._shortcut_add(m.group(_I_CLOSE_EMPHASIZE_SHORTCUT))
-                elif m.group(_I_CLOSE_EMPHASIZE_CITATION) is not None:
+                elif m.group(_I_CLOSE_STRIKE_CODE) is not None:
+                    self._code_open(m.group(_I_CLOSE_STRIKE_CODE))
+                elif m.group(_I_CLOSE_STRIKE_SHORTCUT) is not None:
+                    self._shortcut_add(m.group(_I_CLOSE_STRIKE_SHORTCUT))
+                elif m.group(_I_CLOSE_STRIKE_CITATION) is not None:
                     self._citation_open()
 
             # resume parsing code

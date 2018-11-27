@@ -36,7 +36,7 @@ text        : main title as in badass. hth.
 footnote    : 2ndtitlefn
 text        : 2nd level title also badass
 
-## this is some ~~1st~~ 2nd level[2ndtitlefn] title(tm)(R)(c)...
+##bookmark this is some ~~1`st`[hisbook]~~ 2nd level[2ndtitlefn] title(tm)(R)(c)...
 
 ### this is some ~~1st~~ 2nd level[2ndtitlefn] title(tm)(R)(c)...
 
@@ -74,6 +74,7 @@ text        : 2nd level title also badass
 int main(){
     return 0;
 }```.
+
   * some.
     * some.
         + some.
@@ -158,18 +159,6 @@ for i in range(0, 100):
 
 this is some badass footnote[stupid3]
 
-\[
-this is some ignored text.  nothing should work.  no citations [mybook], and no
-footnotes^{this footnote must not work}, \[not this\\\\], \(not this\), $$not
-this$$, `not this`, ```not this```.
-\]
-
-\(
-this is some ignored text.  nothing should work.  no citations [mybook], and no
-footnotes^{this footnote must not work}, \[not this\] \(not this\\\\), $$not
-this$$, `not this`, ```not this```.
-\)
-
 $$
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\] \(not this\), \$$not
@@ -189,18 +178,6 @@ this$$, `not this`, \```not this\```.
 ```
 
 this is a very long paragraph that contains this code:
-\[
-this is some ignored text.  nothing should work.  no citations [mybook], and no
-footnotes^{this footnote must not work}, \[not this\\\\], \(not this\), $$not
-this$$, `not this`, ```not this```.
-\]
-, this:
-\(
-this is some ignored text.  nothing should work.  no citations [mybook], and no
-footnotes^{this footnote must not work}, \[not this\] \(not this\\\\), $$not
-this$$, `not this`, ```not this```.
-\)
-, this:
 $$
 this is some ignored text.  nothing should work.  no citations [mybook], and no
 footnotes^{this footnote must not work}, \[not this\] \(not this\), \$$not
