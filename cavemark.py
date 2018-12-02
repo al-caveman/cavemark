@@ -158,7 +158,11 @@ class CaveMark:
                 'theorem'   :'counter_i',
                 'corollary' :'counter_j',
                 'conjecture':'counter_k',
-                'footnote'  :'counter_l',
+                'hypothesis':'counter_l',
+                'SECTION'   :'counter_m',
+                'question'  :'counter_n',
+                'answer'    :'counter_o',
+                'footnote'  :'counter_p',
             }
         else:
             self.resource_counters = resource_counters
@@ -249,6 +253,10 @@ class CaveMark:
             'theorem'   :' <a href="#cite_{ID}">Theorem {INDEX}</a>',
             'corollary' :' <a href="#cite_{ID}">Corollary {INDEX}</a>',
             'conjecture':' <a href="#cite_{ID}">Conjecture {INDEX}</a>',
+            'hypothesis':' <a href="#cite_{ID}">Hypothesis {INDEX}</a>',
+            'SECTION'   :' <a href="#{BOOKMARK}">Section {INDEX}</a>',
+            'question'  :' <a href="#cite_{ID}">Question {INDEX}</a>',
+            'answer'    :' <a href="#cite_{ID}">Answer {INDEX}</a>',
             'footnote'  :'<sup><a href="#fn_{ID}">{INDEX}</a></sup>',
             }
         else:
@@ -317,6 +325,24 @@ class CaveMark:
                 'conjecture':'<p id="cite_{ID}">'
                              '<strong><a href="#cite_{ID}">'
                              'Conjecture {INDEX}.'
+                             '</a></strong>'
+                             ' <em>{text}</em>'
+                             '</p>\n\n',
+                'hypothesis':'<p id="cite_{ID}">'
+                             '<strong><a href="#cite_{ID}">'
+                             'Hypothesis {INDEX}.'
+                             '</a></strong>'
+                             ' <em>{text}</em>'
+                             '</p>\n\n',
+                'question'  :'<p id="cite_{ID}">'
+                             '<strong><a href="#cite_{ID}">'
+                             'Question {INDEX}.'
+                             '</a></strong>'
+                             ' <em>{text}</em>'
+                             '</p>\n\n',
+                'answer'    :'<p id="cite_{ID}">'
+                             '<strong><a href="#cite_{ID}">'
+                             'Answer {INDEX}.'
                              '</a></strong>'
                              ' <em>{text}</em>'
                              '</p>\n\n',
@@ -648,7 +674,7 @@ class CaveMark:
                 re.escape(self.escape),
                 r'|'.join([
                     r'(\n\s*\n)',           # resource close
-                    r'\n *(\S+?) *: *',     # resource entry key
+                    r'\n *([^\[\s]\S*?) *: *',# resource entry key
                     r'(_)',                 # emphasize open
                     r'(\~\~)',              # strike open
                     r'(\[)',                # cite open
@@ -1303,6 +1329,11 @@ class CaveMark:
                 **{'LEVEL':level, 'INDEX':fullindex, 'BOOKMARK':fullbookmark}
             )
         )
+        self.resources[fullbookmark] = {
+            'TYPE'      : 'SECTION',
+            'INDEX'     : fullindex,
+            'BOOKMARK'  : fullbookmark
+        }
 
     def _heading_close(self):
         del self._state[-1]
