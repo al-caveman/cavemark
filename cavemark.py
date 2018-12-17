@@ -1270,7 +1270,6 @@ class CaveMark:
         self._html[-1].append(self.frmt_list_item_prefix)
 
     def _list_close(self):
-        self._flush_pending_boxes()
         del self._state[-1]
         _, ordered = self._list[-1]
         del self._list[-1]
@@ -1300,6 +1299,7 @@ class CaveMark:
                 self._list_close()
 
     def _listparagraph_open(self):
+        self._flush_pending_boxes()
         self._state.append(_S_LISTPARAGRAPH_IN)
 
     def _listparagraph_close(self):
