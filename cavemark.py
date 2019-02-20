@@ -1314,15 +1314,16 @@ class CaveMark:
         self._heading_index[level:] = [0] * (6 - level)
         if bookmark is None:
             self._heading_bookmark[level-1] = str(self._heading_index[level-1])
+            fullbookmark = '.'.join(
+                i for i in self._heading_bookmark[self.heading_offset:level]
+            )
         else:
             self._heading_bookmark[level-1] = bookmark
+            fullbookmark = bookmark
         fullindex = '.'.join(
             str(i) for i in self._heading_index[self.heading_offset:level]
         )
         self._heading_fullindex = fullindex
-        fullbookmark = '.'.join(
-            i for i in self._heading_bookmark[self.heading_offset:level]
-        )
         self._heading_fullbookmark = fullbookmark
         self._html[-1].append(
             self.frmt_heading_prefix.format(
