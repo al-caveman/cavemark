@@ -155,14 +155,15 @@ class CaveMark:
                 'rule'      :'counter_f',
                 'definition':'counter_g',
                 'axiom'     :'counter_h',
-                'theorem'   :'counter_i',
-                'corollary' :'counter_j',
-                'conjecture':'counter_k',
-                'hypothesis':'counter_l',
-                'SECTION'   :'counter_m',
-                'question'  :'counter_n',
-                'answer'    :'counter_o',
-                'footnote'  :'counter_p',
+                'assumption':'counter_i',
+                'theorem'   :'counter_j',
+                'corollary' :'counter_k',
+                'conjecture':'counter_l',
+                'hypothesis':'counter_m',
+                'SECTION'   :'counter_n',
+                'question'  :'counter_o',
+                'answer'    :'counter_p',
+                'footnote'  :'counter_q',
             }
         else:
             self.resource_counters = resource_counters
@@ -250,6 +251,7 @@ class CaveMark:
             'rule'      :' <a href="#cite_{ID}">Rule {INDEX}</a>',
             'definition':' <a href="#cite_{ID}">Definition {INDEX}</a>',
             'axiom'     :' <a href="#cite_{ID}">Axiom {INDEX}</a>',
+            'assumption':' <a href="#cite_{ID}">Assumption {INDEX}</a>',
             'theorem'   :' <a href="#cite_{ID}">Theorem {INDEX}</a>',
             'corollary' :' <a href="#cite_{ID}">Corollary {INDEX}</a>',
             'conjecture':' <a href="#cite_{ID}">Conjecture {INDEX}</a>',
@@ -307,6 +309,12 @@ class CaveMark:
                 'axiom'     :'<p id="cite_{ID}">'
                              '<strong><a href="#cite_{ID}">'
                              'Axiom {INDEX}.'
+                             '</a></strong>'
+                             ' <em>{text}</em>'
+                             '</p>\n\n',
+                'assumption' :'<p id="cite_{ID}">'
+                             '<strong><a href="#cite_{ID}">'
+                             'Assumption {INDEX}.'
                              '</a></strong>'
                              ' <em>{text}</em>'
                              '</p>\n\n',
