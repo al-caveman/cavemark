@@ -152,18 +152,19 @@ class CaveMark:
                 'image'     :'counter_c',
                 'note'      :'counter_d',
                 'quotation' :'counter_e',
-                'rule'      :'counter_f',
-                'definition':'counter_g',
-                'axiom'     :'counter_h',
-                'assumption':'counter_i',
-                'theorem'   :'counter_j',
-                'corollary' :'counter_k',
-                'conjecture':'counter_l',
-                'hypothesis':'counter_m',
-                'SECTION'   :'counter_n',
-                'question'  :'counter_o',
-                'answer'    :'counter_p',
-                'footnote'  :'counter_q',
+                'arabic'    :'counter_f',
+                'rule'      :'counter_g',
+                'definition':'counter_h',
+                'axiom'     :'counter_i',
+                'assumption':'counter_j',
+                'theorem'   :'counter_k',
+                'corollary' :'counter_l',
+                'conjecture':'counter_m',
+                'hypothesis':'counter_n',
+                'SECTION'   :'counter_o',
+                'question'  :'counter_p',
+                'answer'    :'counter_q',
+                'footnote'  :'counter_r',
             }
         else:
             self.resource_counters = resource_counters
@@ -248,6 +249,7 @@ class CaveMark:
             'image'     :' <a href="#cite_{ID}">Figure {INDEX}</a>',
             'note'      :' <a href="#cite_{ID}">Note {INDEX}</a>',
             'quotation' :' <a href="#cite_{ID}">Quote {INDEX}</a>',
+            'arabic'    :' <a href="#cite_{ID}">Arabic text {INDEX}</a>',
             'rule'      :' <a href="#cite_{ID}">Rule {INDEX}</a>',
             'definition':' <a href="#cite_{ID}">Definition {INDEX}</a>',
             'axiom'     :' <a href="#cite_{ID}">Axiom {INDEX}</a>',
@@ -290,6 +292,17 @@ class CaveMark:
                              '<blockquote><em>'
                              '&ldquo;{text}&rdquo;'
                              '</em></blockquote>'
+                             '<footer style="text-align:right;">'
+                             '&mdash; <cite>{author}</cite>'
+                             '</footer>'
+                             '</figure>\n\n',
+                'arabic'    :'<figure id="cite_{ID}">'
+                             '<strong><a href="#cite_{ID}">'
+                             'Arabic text {INDEX}:'
+                             '</a></strong>'
+                             '<blockquote class="arabic">'
+                             '&rdquo;{text}&ldquo;'
+                             '</blockquote>'
                              '<footer style="text-align:right;">'
                              '&mdash; <cite>{author}</cite>'
                              '</footer>'
