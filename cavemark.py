@@ -147,24 +147,25 @@ class CaveMark:
         # counters per resource
         if resource_counters is None:
             self.resource_counters = {
-                'link'      :'counter_a',
-                'book'      :'counter_a',
-                'image'     :'counter_c',
-                'note'      :'counter_d',
-                'quotation' :'counter_e',
-                'arabic'    :'counter_f',
-                'rule'      :'counter_g',
-                'definition':'counter_h',
-                'axiom'     :'counter_i',
-                'assumption':'counter_j',
-                'theorem'   :'counter_k',
-                'corollary' :'counter_l',
-                'conjecture':'counter_m',
-                'hypothesis':'counter_n',
-                'SECTION'   :'counter_o',
-                'question'  :'counter_p',
-                'answer'    :'counter_q',
-                'footnote'  :'counter_r',
+                'link'       :'counter_a',
+                'book'       :'counter_a',
+                'image'      :'counter_c',
+                'note'       :'counter_d',
+                'quotation'  :'counter_e',
+                'translation':'counter_f',
+                'arabic'     :'counter_g',
+                'rule'       :'counter_h',
+                'definition' :'counter_i',
+                'axiom'      :'counter_j',
+                'assumption' :'counter_k',
+                'theorem'    :'counter_l',
+                'corollary'  :'counter_m',
+                'conjecture' :'counter_n',
+                'hypothesis' :'counter_o',
+                'SECTION'    :'counter_p',
+                'question'   :'counter_q',
+                'answer'     :'counter_r',
+                'footnote'   :'counter_s',
             }
         else:
             self.resource_counters = resource_counters
@@ -244,24 +245,25 @@ class CaveMark:
         # inline citation format
         if frmt_cite_inline is None:
             self.frmt_cite_inline = {
-            'link'      :' <a href="{url}">{text}</a>',
-            'book'      :' <a href="#cite_{ID}">[{INDEX}]</a>',
-            'image'     :' <a href="#cite_{ID}">Figure {INDEX}</a>',
-            'note'      :' <a href="#cite_{ID}">Note {INDEX}</a>',
-            'quotation' :' <a href="#cite_{ID}">Quote {INDEX}</a>',
-            'arabic'    :' <a href="#cite_{ID}">Arabic text {INDEX}</a>',
-            'rule'      :' <a href="#cite_{ID}">Rule {INDEX}</a>',
-            'definition':' <a href="#cite_{ID}">Definition {INDEX}</a>',
-            'axiom'     :' <a href="#cite_{ID}">Axiom {INDEX}</a>',
-            'assumption':' <a href="#cite_{ID}">Assumption {INDEX}</a>',
-            'theorem'   :' <a href="#cite_{ID}">Theorem {INDEX}</a>',
-            'corollary' :' <a href="#cite_{ID}">Corollary {INDEX}</a>',
-            'conjecture':' <a href="#cite_{ID}">Conjecture {INDEX}</a>',
-            'hypothesis':' <a href="#cite_{ID}">Hypothesis {INDEX}</a>',
-            'SECTION'   :' <a href="#{BOOKMARK}">Section {INDEX}</a>',
-            'question'  :' <a href="#cite_{ID}">Question {INDEX}</a>',
-            'answer'    :' <a href="#cite_{ID}">Answer {INDEX}</a>',
-            'footnote'  :'<sup><a href="#fn_{ID}">{INDEX}</a></sup>',
+            'link'       :' <a href="{url}">{text}</a>',
+            'book'       :' <a href="#cite_{ID}">[{INDEX}]</a>',
+            'image'      :' <a href="#cite_{ID}">Figure {INDEX}</a>',
+            'note'       :' <a href="#cite_{ID}">Note {INDEX}</a>',
+            'quotation'  :' <a href="#cite_{ID}">Quote {INDEX}</a>',
+            'translaton' :' <a href="#cite_{ID}">Translation {INDEX}</a>',
+            'arabic'     :' <a href="#cite_{ID}">Arabic text {INDEX}</a>',
+            'rule'       :' <a href="#cite_{ID}">Rule {INDEX}</a>',
+            'definition' :' <a href="#cite_{ID}">Definition {INDEX}</a>',
+            'axiom'      :' <a href="#cite_{ID}">Axiom {INDEX}</a>',
+            'assumption' :' <a href="#cite_{ID}">Assumption {INDEX}</a>',
+            'theorem'    :' <a href="#cite_{ID}">Theorem {INDEX}</a>',
+            'corollary'  :' <a href="#cite_{ID}">Corollary {INDEX}</a>',
+            'conjecture' :' <a href="#cite_{ID}">Conjecture {INDEX}</a>',
+            'hypothesis' :' <a href="#cite_{ID}">Hypothesis {INDEX}</a>',
+            'SECTION'    :' <a href="#{BOOKMARK}">Section {INDEX}</a>',
+            'question'   :' <a href="#cite_{ID}">Question {INDEX}</a>',
+            'answer'     :' <a href="#cite_{ID}">Answer {INDEX}</a>',
+            'footnote'   :'<sup><a href="#fn_{ID}">{INDEX}</a></sup>',
             }
         else:
             self.frmt_cite_inline = frmt_cite_inline
@@ -288,6 +290,17 @@ class CaveMark:
                 'quotation' :'<figure id="cite_{ID}">'
                              '<strong><a href="#cite_{ID}">'
                              'Quote {INDEX}:'
+                             '</a></strong>'
+                             '<blockquote><em>'
+                             '&ldquo;{text}&rdquo;'
+                             '</em></blockquote>'
+                             '<footer style="text-align:right;">'
+                             '&mdash; <cite>{author}</cite>'
+                             '</footer>'
+                             '</figure>\n\n',
+                'translation':'<figure id="cite_{ID}">'
+                             '<strong><a href="#cite_{ID}">'
+                             'Translation {INDEX}:'
                              '</a></strong>'
                              '<blockquote><em>'
                              '&ldquo;{text}&rdquo;'
